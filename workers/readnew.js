@@ -1,5 +1,5 @@
 // 构建完整的 HTML 页面
-let glhInfo;
+let glhInfo
 export const htmlContent = `
   <!DOCTYPE html>
   <html lang="zh-CN">
@@ -51,4 +51,59 @@ export const htmlContent = `
     </div>
   </body>
   </html>
-`;
+`
+
+export async function getGlhInfo () {
+  let glhInfo;
+  var urlencoded = new URLSearchParams()
+  urlencoded.append('name', 'glh')
+  urlencoded.append('msgtype', 'all')
+  var requestOptions = {
+    method: 'POST',
+    headers: {},
+    body: urlencoded,
+    redirect: 'follow'
+  }
+  await fetch('https://duanxianxia.com/api/getNewsByList', requestOptions)
+    .then(response => response.json())
+    .then(result => {
+      console.log(result)
+      glhInfo = result.html
+    })
+    .catch(error => console.log('error', error))
+  return new Response(glhInfo, {
+    status: 200,
+    headers: {
+      'Content-Type': 'text/html; charset=UTF-8',
+      'X-Custom-Header': 'CustomValue'
+    }
+  })
+
+}
+
+export async function getHtml () {
+  let glhInfo;
+  var urlencoded = new URLSearchParams()
+  urlencoded.append('name', 'glh')
+  urlencoded.append('msgtype', 'all')
+  var requestOptions = {
+    method: 'POST',
+    headers: {},
+    body: urlencoded,
+    redirect: 'follow'
+  }
+  await fetch('https://duanxianxia.com/api/getNewsByList', requestOptions)
+    .then(response => response.json())
+    .then(result => {
+      console.log(result)
+      glhInfo = result.html
+    })
+    .catch(error => console.log('error', error))
+  return new Response(glhInfo, {
+    status: 200,
+    headers: {
+      'Content-Type': 'text/html; charset=UTF-8',
+      'X-Custom-Header': 'CustomValue'
+    }
+  })
+}
