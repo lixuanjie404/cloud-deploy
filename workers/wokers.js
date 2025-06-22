@@ -28,7 +28,7 @@ export default {
         body: urlencoded,
         redirect: 'follow'
       }
-      await fetch('https://duanxianxia.com/api/getNewsByList', requestOptions)
+      await fetch('https://duanxianxia.cn/api/getNewsByList', requestOptions)
         .then(response => response.json())
         .then(result => {
           console.log(result)

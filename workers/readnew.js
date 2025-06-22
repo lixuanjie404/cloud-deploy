@@ -44,7 +44,7 @@ export const htmlContent = `
   </head>
   <body>
     <div class="container">
-      <h1>最新财经资讯</h1>
+      <h1>最新资讯</h1>
       <div class="news-list">
         ${glhInfo}  <!-- 这里插入API返回的HTML内容 -->
       </div>
@@ -64,7 +64,7 @@ export async function getGlhInfo () {
     body: urlencoded,
     redirect: 'follow'
   }
-  await fetch('https://duanxianxia.com/api/getNewsByList', requestOptions)
+  await fetch('https://duanxianxia.cn/api/getNewsByList', requestOptions)
     .then(response => response.json())
     .then(result => {
       console.log(result)
@@ -92,7 +92,7 @@ export async function getHtml () {
     body: urlencoded,
     redirect: 'follow'
   }
-  await fetch('https://duanxianxia.com/api/getNewsByList', requestOptions)
+  await fetch('https://duanxianxia.cn/api/getNewsByList', requestOptions)
     .then(response => response.json())
     .then(result => {
       console.log(result)
