@@ -1,0 +1,79 @@
+# ========================
+# Cloudflare Workers 配置
+# ========================
+name = "stock"       # 项目名称（必填）
+main = "workers/index.js"    # 入口文件路径（JS/TS）
+compatibility_date = "2024-06-20"  # 兼容性日期（必填）
+
+# ------------------------
+# 开发环境配置
+# ------------------------
+[dev]
+ip = "localhost"        # 本地开发服务器IP
+port = 8787             # 本地开发端口
+persist = true          # 启用持久化数据（模拟生产环境）
+
+# ------------------------
+# 环境变量（多环境支持）
+# ------------------------
+#[vars]
+#API_KEY = "your_api_key"  # 通用环境变量
+
+## 生产环境专用变量
+#[env.production]
+#vars = {
+#  API_KEY = "prod_key_123",
+#  DEBUG = "false"
+#}
+#
+## 预览环境变量
+#[env.preview]
+#vars = {
+#  API_KEY = "staging_key_456"
+#}
+
+# ------------------------
+# KV 存储绑定（持久化数据）
+# ------------------------
+kv_namespaces = [
+    { binding = "__STATIC_CONTENT", id = "3bc2acce297a4f32839dc5727f00c7d5" }  # 替换为你的KV ID
+]
+
+# ------------------------
+# D1 数据库绑定（SQLite）
+# ------------------------
+#[[d1_databases]]
+#binding = "DB"
+#database_name = "my-db"
+#database_id = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+
+# ------------------------
+# R2 存储绑定（对象存储）
+# ------------------------
+#[[r2_buckets]]
+#binding = "MY_BUCKET"
+#bucket_name = "my-bucket"
+#preview_bucket_name = "my-bucket-preview"
+
+# ------------------------
+# 静态站点托管（Workers Sites）
+# ------------------------
+[site]
+bucket = "./workers/stock"     # 静态文件目录
+#entry-point = "src"     # 编译目录
+#include = ["*.html"]    # 包含的文件类型
+#exclude = ["tmp/*"]     # 排除的路径
+
+
+# ------------------------
+# 自定义构建命令（可选）
+# ------------------------
+#[build]
+#command = "npm run build"  # 部署前执行的命令
+#watch = [ "src/**/*.js" ]  # 监听变化的文件
+
+# ------------------------
+# 触发器（定时任务）
+# ------------------------
+#[[triggers]]
+#cron = "0 * * * *"      # 每小时执行一次

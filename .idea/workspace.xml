@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="BRANCH:test" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </select>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="7e22ca09-6998-4e6e-ac25-fa657654def4" name="Default Changelist" comment="精简">
+      <change afterPath="$PROJECT_DIR$/workers2/stock/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/workers2/stock/js/web_ztlive.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/workers2/stock/js/ydbb.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/workers2/stock/news.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/workers2/stock/qxlive.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/workers2/stock/yidong.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/workers2/stock/ztlive.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.run/main.js.run.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.run/main.js.run.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/workers/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/workers2/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/workers/stock/qxlive.html" beforeDir="false" afterPath="$PROJECT_DIR$/workers/stock/qxlive.html" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+        <option value="package.json" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="test" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="24fuxrAul1yqz0o1ePT4tM0m1Ij" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/workers" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="ts.external.directory.path" value="D:\B117\SoftWare\WebStorm 2020.2.1\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
+    <property name="vue.rearranger.settings.migration" value="true" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\B117\MyProject\webCode\node\node-study\workers" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\B117\MyProject\webCode\node\node-study\worker" />
+      <recent name="D:\B117\MyProject\webCode\node\node-study" />
+      <recent name="D:\B117\MyProject\webCode\node\node-study\workers" />
+      <recent name="D:\B117\MyProject\node\node-study\workers" />
+    </key>
+  </component>
+  <component name="RunManager" selected="npm.dev">
+    <configuration name="dev" type="js.build_tools.npm" nameIsGenerated="true">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="dev" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Node.js.main.js" />
+      <item itemvalue="npm.dev" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="npm.dev" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="7e22ca09-6998-4e6e-ac25-fa657654def4" name="Default Changelist" comment="" />
+      <created>1644034211501</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1644034211501</updated>
+      <workItem from="1644034212581" duration="3624000" />
+      <workItem from="1644043747020" duration="2926000" />
+      <workItem from="1747552528391" duration="2445000" />
+      <workItem from="1747555933256" duration="5258000" />
+      <workItem from="1748070923963" duration="211000" />
+      <workItem from="1748072438572" duration="1212000" />
+      <workItem from="1748082181608" duration="20000" />
+      <workItem from="1750552982382" duration="4859000" />
+      <workItem from="1750557876878" duration="644000" />
+      <workItem from="1750558847888" duration="9000" />
+      <workItem from="1750578759562" duration="1943000" />
+      <workItem from="1750580715488" duration="681000" />
+      <workItem from="1750581408190" duration="968000" />
+      <workItem from="1750584025260" duration="656000" />
+    </task>
+    <task id="LOCAL-00001" summary="init">
+      <created>1747566088024</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1747566088024</updated>
+    </task>
+    <task id="LOCAL-00002" summary="change1">
+      <created>1747567434269</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1747567434269</updated>
+    </task>
+    <task id="LOCAL-00003" summary="测试">
+      <created>1750553585534</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1750553585534</updated>
+    </task>
+    <task id="LOCAL-00004" summary="域名替换">
+      <created>1750553853426</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1750553853426</updated>
+    </task>
+    <task id="LOCAL-00005" summary="使用express">
+      <created>1750561230613</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1750561230613</updated>
+    </task>
+    <task id="LOCAL-00006" summary="代理融合+静态页面">
+      <created>1750569396100</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1750569396100</updated>
+    </task>
+    <task id="LOCAL-00007" summary="精简">
+      <created>1750573803715</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1750573803715</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="test" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_NEW_TODO" value="false" />
+    <MESSAGE value="init" />
+    <MESSAGE value="change1" />
+    <MESSAGE value="测试" />
+    <MESSAGE value="域名替换" />
+    <MESSAGE value="使用express" />
+    <MESSAGE value="代理融合+静态页面" />
+    <MESSAGE value="精简" />
+    <option name="LAST_COMMIT_MESSAGE" value="精简" />
+    <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="683" y="228" key="#JavaScript" timestamp="1747566884765">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="683" y="228" key="#JavaScript/1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1747566884765" />
+    <state x="684" y="343" key="#Notifications" timestamp="1747555364483">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="684" y="343" key="#Notifications/1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1747555364483" />
+    <state x="414" y="175" width="1092" height="788" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1750579336438">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="414" y="175" width="1092" height="788" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1750579336438" />
+    <state x="683" y="320" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1750580870902">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="683" y="320" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1040@0.0.1920.1040" timestamp="1750580870902" />
+    <state x="740" y="249" key="#com.intellij.ide.macro.MacrosDialog" timestamp="1750573737895">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="740" y="249" key="#com.intellij.ide.macro.MacrosDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1750573737895" />
+    <state x="690" y="266" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1750577097538">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="690" y="266" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1750577097538" />
+    <state x="740" y="275" key="FileChooserDialogImpl" timestamp="1750567713921">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="740" y="275" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1750567713921" />
+    <state x="740" y="275" key="FileChooserDialogImpl/1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1748082199772" />
+    <state width="1899" height="504" key="GridCell.Tab.0.bottom" timestamp="1750583991976">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1899" height="504" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1750583991976" />
+    <state width="1899" height="504" key="GridCell.Tab.0.center" timestamp="1750583991975">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1899" height="504" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1750583991975" />
+    <state width="1899" height="504" key="GridCell.Tab.0.left" timestamp="1750583991975">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1899" height="504" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1750583991975" />
+    <state width="1899" height="504" key="GridCell.Tab.0.right" timestamp="1750583991976">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1899" height="504" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1750583991976" />
+    <state x="461" y="164" key="SettingsEditor" timestamp="1750580923032">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="461" y="164" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1750580923032" />
+    <state x="461" y="164" key="SettingsEditor/1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1747567021903" />
+    <state x="552" y="253" key="Vcs.Push.Dialog.v2" timestamp="1750575476331">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="552" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1750575476331" />
+    <state x="552" y="253" key="Vcs.Push.Dialog.v2/1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1747567435525" />
+    <state x="763" y="433" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1750569568896">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="763" y="433" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1920.1040@0.0.1920.1040" timestamp="1750569568896" />
+    <state x="662" y="252" width="596" height="536" key="find.popup" timestamp="1750580337132">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="662" y="252" width="596" height="536" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1750580337132" />
+    <state x="761" y="426" key="git4idea.remote.GitConfigureRemotesDialog" timestamp="1747565965225">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="761" y="426" key="git4idea.remote.GitConfigureRemotesDialog/1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1747565965225" />
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1750577052884">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1750577052884" />
+    <state x="790" y="311" key="svn.repositoryBrowser" timestamp="1747565856745">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="790" y="311" key="svn.repositoryBrowser/1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1747565856745" />
+  </component>
+</project>
