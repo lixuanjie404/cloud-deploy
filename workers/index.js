@@ -1,47 +1,51 @@
-import { Hono } from 'hono'
-// import { compress } from 'hono/compress'
-import { serveStatic } from 'hono/cloudflare-workers'
+/**
+ * Welcome to Cloudflare Workers! This is your first worker.
+ *
+ * - Run `npm run dev` in your terminal to start a development server
+ * - Open a browser tab at http://localhost:8787/ to see your worker in action
+ * - Run `npm run deploy` to publish your worker
+ *
+ * Learn more at https://developers.cloudflare.com/workers/
+ */
 
-// Start a Hono app
-const app = new Hono()
+const dxxHost = 'https://duanxianxia.cn'
+// 更新路由定义
+const routes = [
+  { path: '/api/', target: dxxHost },
+]
 
+export default {
+  async fetch (request, env, ctx) {
+    const url = new URL(request.url)
+    switch (url.pathname) {
+      case '/message':
+        return new Response('Hello, World!')
+      case '/random':
+        return new Response(crypto.randomUUID())
+      case '/test':
+        debugger;
+        return new Response(crypto.randomUUID())
+      default:
+        // 查找匹配的路由
+        const matchedRoute = routes.find(route =>
+          url.pathname.startsWith(route.path)
+        )
 
+        if (matchedRoute) {
+          // 转发请求
+          const response = await fetch(dxxHost + url.pathname, {
+            method: request.method,
+            body: request.body,
+            headers: request.header
+          })
+          const data = await response.json()
+          debugger;
 
-// 中间件
-// app.use('*', cors())          // 跨域支持
-// app.use('*', compress())      // 压缩响应（类似 compression）
-// app.use('*', secureHeaders()) // 安全头（类似 helmet）
-
-// 静态文件托管（假设你的文件在 Workers 的 KV 存储中）
-// app.use('/stock/*', serveStatic({ root: './stock' }))
-
-// You may also register routes for non OpenAPI directly on Hono
-app.get('/test', (c) => c.text('Hono!'))
-app.get('/*', serveStatic({
-  root: './stock'
-}))
-
-// 代理到 duanxianxia.cn
-// app.use('/workers/*', async (c) => {
-//   const url = new URL(c.req.path.replace('/workers', '/api'), 'http://duanxianxia.cn')
-//   const proxyReq = new Request(url, {
-//     method: c.req.method,
-//     headers: c.req.raw.headers,
-//     body: c.req.raw.body,
-//   })
-//
-//   // 添加自定义头
-//   proxyReq.headers.set('X-Proxy-By', 'Hono')
-//
-//   const response = await fetch(proxyReq)
-//   return response
-// })
-
-// app.get('/', (req, res) => {
-//   res.sendFile(__dirname + '/workers2/stock/index.html')
-// })
-
-
-// Export the Hono app
-export default app
-
+          return Response.json(data);
+        } else {
+          // 没有匹配的路由返回404
+          return new Response('Not Found', { status: 404 })
+        }
+    }
+  },
+}

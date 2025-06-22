@@ -1,4 +1,6 @@
 *.iml
+package-lock.json
+.wrangler/
 # Logs
 
 logs
