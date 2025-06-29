@@ -314,14 +314,19 @@
       <label class="switch"><input type="checkbox"><span class="slider round"></span></label>
     </div>
 
-    <div
-      style='width:100%;background:#f2f2f2;font-weight:bold;font-size:12px;text-align:left;padding: 4px 8px 4px 5px;margin-top:15px;'>
-      <span class='settitle'>语音资讯 &nbsp;</span><button id='set' class='btn btn-default btn-xs'
-        style='line-height:110%;padding:1px 3px;margin-top:-1px;'>设置</button><button id='open'
-        class='btn btn-default btn-xs'
-        style='line-height:110%;padding:1px 3px;margin-top:-1px;margin-left:3px;display:none;'>弹出</button>
-      <div style='float:right;margin-right:0px;font-size:12px;font-weight:normal;color:red;'>语音 <label
-          class="switch"><input type="checkbox" id='yyzx'><span class="slider round"></span></label></div>
+    <div style='width:100%;background:#f2f2f2;font-weight:bold;font-size:12px;text-align:left;padding: 4px 8px 4px 5px;margin-top:15px;'>
+      <span class='settitle'>语音资讯 &nbsp;</span>
+      <button id='set' class='btn btn-default btn-xs'
+              style='line-height:110%;padding:1px 3px;margin-top:-1px;'>设置
+      </button>
+      <button id='open'
+              class='btn btn-default btn-xs'
+              style='line-height:110%;padding:1px 3px;margin-top:-1px;margin-left:3px;'>弹出
+      </button>
+      <button id='lxjShowAll' class='btn btn-default btn-xs'
+              style='line-height:110%;padding:1px 3px;margin-top:-1px;'>懒人全开</button>
+      <div style='float:right;margin-right:0px;font-size:12px;font-weight:normal;color:red;'>语音<label
+              class="switch"><input type="checkbox" id='yyzx'><span class="slider round"></span></label></div>
     </div>
 
 
@@ -806,7 +811,6 @@
     getTicaiNews(ticai_type);
 
     function getTicaiNews(type) {
-
       $.ajax({
         type: 'POST',
         url: host + '/api/getTicaiNews',
@@ -822,7 +826,6 @@
       });
     }
 
-
     getJiuyanNews();
 
     function getJiuyanNews() {
@@ -833,13 +836,12 @@
         dataType: 'json',
         success: function (data) {
           $("#jiuyan_msg").html(data.html);
-
-
         }
       });
     }
 
     getInfo();
+    getInfo('juhe');
     function getInfo(from = 'dpzb', msgtype = 'all') {
       $.ajax({
         type: 'POST',
@@ -854,22 +856,10 @@
         }
       });
     }
-
-    getJiuyanNews('juhe');
-    function getJiuyanNews(from, msgtype = 'all') {
-      $.ajax({
-        type: 'POST',
-        url: host + '/api/getNewsByList',
-        data: {
-          name: from,
-          msgtype: msgtype
-        },
-        dataType: 'json',
-        success: function (data) {
-          $("#" + from + "_msg").html(data.html);
-        }
-      });
-    }
+    // 自动显示全部
+    $('#lxjShowAll').click(function (){
+      $('.showtype[type="list"]').trigger('click');
+    })
 
     var times = 0;
     function autoPlay(msg, audio = '') {
