@@ -33,7 +33,13 @@
                 <th style='width:70px;text-align:center;'>状态</th>
                 <th style='width:70px;text-align:center;'>涨停时间</th>
                 <th style='width:60px;text-align:center;'>封单</th>
-                <th style='text-align:left;max-width:150px;width:150px;'>涨停原因<div style='float:right;margin-right:20px;font-weight:normal;color:red;'>语音 <label class="switch" ><input type="checkbox" id='audio'><span class="slider round"></span></label></div></th>
+                <th style='text-align:left;max-width:150px;width:150px;'>涨停原因<div style='float:right;margin-right:20px;font-weight:normal;color:red;'>
+                    <button id='open'
+                            class='btn btn-default btn-xs'
+                            style='line-height:110%;padding:1px 3px;margin-top:-1px;margin-left:3px;'>弹出
+                    </button>
+                    语音 <label class="switch" ><input type="checkbox" id='audio'><span class="slider round"></span></label></div>
+                </th>
             </tr>
         </table>
 
@@ -43,7 +49,7 @@
         </table>
         </div>
 
-     
+
         <div class="panel panel-default" style='border:none;margin-top:20px;box-shadow: 0 1px 6px rgba(0, 0, 0, .1);background:#fcfcfc;height:170px;overflow:auto;display:none;'>
         <div class="panel-heading" style='text-align:left;padding: 7px 15px 5px;' ><span style='color:black;' id='stockname'></span>：<span id='reason'></span></div>
         <div class="panel-body" style='padding-top:3px;'>
@@ -60,18 +66,18 @@
         <div class="panel-body" style='padding-top:0px;height:150px;overflow:auto;width:100%;'>
             <div class='row'   style='margin-top:-2px;font-size:12px;'>
             <table class="table table-bordered" style='text-align:center;font-size:12px;'>
-        
+
                 <tbody id='yidong'></tbody>
             </table>
-           
+
+        </div>
+
+
+        </div>
         </div>
 
 
-        </div>
-        </div>
 
-
- 
     <audio src="" id="myaudio" controls="controls" autoplay="true" hidden="ture"></audio>
 
 </body>
@@ -82,24 +88,25 @@
                 var h = currentTime.getHours();
                 var i = currentTime.getMinutes();
                 var s = currentTime.getSeconds();
-  
+
                 if (h == 9 && i == 15 && s <2) {
                     location.reload()
                 }
-                
+
 
             }, 1000);
 </script>
 <script type="text/javascript" src='/js/web_ztlive.js?1'>
-    
+
+</script>
+<script>
+  $(function (){
+    $("#open").click(function () {
+      // window.open('/web/readnews/tdx', '_blank');
+      window.open('/ztlive.html', '_blank');
+    });
+  })
+
 </script>
 
-</html><script>
-var _hmt = _hmt || [];
-(function() {
-  var hm = document.createElement("script");
-  hm.src = "https://hm.baidu.com/hm.js?423edf2a3e642c55a0df7f5063f8f22c";
-  var s = document.getElementsByTagName("script")[0]; 
-  s.parentNode.insertBefore(hm, s);
-})();
-</script>
+</html>

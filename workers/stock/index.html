@@ -2,42 +2,60 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>首页</title>
-  <script src="https://code.jquery.com/jquery-2.0.0.min.js"></script>
-  <link rel="stylesheet" href="./css/layer.css" rel="stylesheet">
-  <script src="./js/layer.min.js"></script>
-  <style>
-    a {
-      color: #444;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>首页</title>
+    <script src="https://code.jquery.com/jquery-2.0.0.min.js"></script>
+    <link rel="stylesheet" href="./css/layer.css" rel="stylesheet">
+    <script src="./js/layer.min.js"></script>
+    <style>
+        a {
+            color: #444;
+        }
+    </style>
 </head>
 
 <body>
-  <ol>
+
+<ol>
     <li><a href="###" id="news">资讯</a></li>
-    <li><a href="/qxlive.html">市场情绪</a></li>
-    <li><a href="/yidong.html">异动(测试)</a></li>
-    <li><a href="/ztlive.html">实时涨停播报</a></li>
+    <li><a href="/qxlive.html" target="_blank">市场情绪</a></li>
+    <li><a href="/yidong.html" target="_blank">异动播报</a></li>
+    <li><a href="#" id="ztlive">实时涨停播报</a></li>
+    <li>--------------------</li>
     <li><a href="https://duanxianxia.cn/web/jjlive">隔夜单统计</a></li>
+    <li><a href="https://duanxianxia.cn/web/fupan">复盘</a></li>
+    <li><a href="https://duanxianxia.cn/web/fupangu/">复盘古</a></li>
     <li>--------------------</li>
     <li><a href="https://data.10jqka.com.cn/financial/yjyg/">业绩报</a></li>
-  </ol>
+</ol>
 </body>
 
 <script>
-  $('#news').click(function(){
+  $('#news').click(function () {
     layer.open({
       type: 2,
       title: '资讯',
       maxmin: true, //开启最大化最小化按钮
-      area: ['770px', '900px'],
+      area: ['666px','800px'],
       offset: 'rb',
       shade: 0,
+      fixed: false,
       content: '/news.html'
-    });
+    })
+  })
+
+  $('#ztlive').click(function () {
+    layer.open({
+      type: 2,
+      title: '实时涨停播报',
+      maxmin: true, //开启最大化最小化按钮
+      area: ['600px', '660px'],
+      offset: 'lb',
+      shade: 0,
+      fixed: false,
+      content: '/ztlive.html'
+    })
   })
 
 </script>

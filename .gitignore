@@ -1,6 +1,7 @@
 *.iml
 package-lock.json
 .wrangler/
+/.idea
 # Logs
 
 logs
