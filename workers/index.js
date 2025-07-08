@@ -39,7 +39,7 @@ export default {
             headers: request.header
           })
           const data = await response.json()
-          debugger;
+          // debugger;
 
           return Response.json(data);
         } else {
