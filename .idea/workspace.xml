@@ -25,7 +25,10 @@
     </select>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7e22ca09-6998-4e6e-ac25-fa657654def4" name="Default Changelist" comment="wrangler本地开发完成" />
+    <list default="true" id="7e22ca09-6998-4e6e-ac25-fa657654def4" name="Default Changelist" comment="wrangler本地开发完成">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/workers/stock/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/workers/stock/index.html" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -122,6 +125,8 @@
       <workItem from="1751210407432" duration="3397000" />
       <workItem from="1751369216346" duration="8232000" />
       <workItem from="1751972385286" duration="6502000" />
+      <workItem from="1751982269790" duration="891000" />
+      <workItem from="1752855810752" duration="627000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <created>1747566088024</created>
@@ -228,7 +233,14 @@
       <option name="project" value="LOCAL" />
       <updated>1751982110106</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="fix 资讯弹窗高度">
+      <created>1751982338930</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1751982338930</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -274,7 +286,8 @@
     <MESSAGE value="资讯弹窗优化" />
     <MESSAGE value="feat index部分弹窗，页面优化" />
     <MESSAGE value="feat index.html弹窗优化" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat index.html弹窗优化" />
+    <MESSAGE value="fix 资讯弹窗高度" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix 资讯弹窗高度" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="WindowStateProjectService">
@@ -311,26 +324,26 @@
     </state>
     <state x="740" y="275" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1750567713921" />
     <state x="740" y="275" key="FileChooserDialogImpl/1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1748082199772" />
-    <state width="1899" height="338" key="GridCell.Tab.0.bottom" timestamp="1751982192790">
+    <state width="1899" height="393" key="GridCell.Tab.0.bottom" timestamp="1752856131032">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1899" height="338" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1751982192790" />
-    <state width="1899" height="332" key="GridCell.Tab.0.bottom/1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1751211255789" />
-    <state width="1899" height="338" key="GridCell.Tab.0.center" timestamp="1751982192789">
+    <state width="1899" height="393" key="GridCell.Tab.0.bottom/1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1752856131032" />
+    <state width="1899" height="393" key="GridCell.Tab.0.center" timestamp="1752856131032">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1899" height="338" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1751982192789" />
-    <state width="1899" height="332" key="GridCell.Tab.0.center/1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1751211255789" />
-    <state width="1899" height="338" key="GridCell.Tab.0.left" timestamp="1751982192789">
+    <state width="1899" height="393" key="GridCell.Tab.0.center/1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1752856131032" />
+    <state width="1899" height="393" key="GridCell.Tab.0.left" timestamp="1752856131032">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1899" height="338" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1751982192789" />
-    <state width="1899" height="332" key="GridCell.Tab.0.left/1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1751211255789" />
-    <state width="1899" height="338" key="GridCell.Tab.0.right" timestamp="1751982192790">
+    <state width="1899" height="393" key="GridCell.Tab.0.left/1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1752856131032" />
+    <state width="1899" height="393" key="GridCell.Tab.0.right" timestamp="1752856131032">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state width="1899" height="338" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1751982192790" />
-    <state width="1899" height="332" key="GridCell.Tab.0.right/1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1751211255789" />
+    <state width="1899" height="393" key="GridCell.Tab.0.right/1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1752856131032" />
     <state width="1899" height="393" key="GridCell.Tab.1.bottom" timestamp="1751982192545">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -400,11 +413,15 @@
     </state>
     <state x="461" y="164" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1750580923032" />
     <state x="461" y="164" key="SettingsEditor/1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1747567021903" />
-    <state x="552" y="253" key="Vcs.Push.Dialog.v2" timestamp="1751982114069">
+    <state x="552" y="253" key="Vcs.Push.Dialog.v2" timestamp="1751983313196">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="552" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1751982114069" />
+    <state x="552" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1751983313196" />
     <state x="552" y="253" key="Vcs.Push.Dialog.v2/1920.0.1920.1040/0.0.1920.1040@0.0.1920.1040" timestamp="1751213302476" />
+    <state x="823" y="364" key="cloudConfig.SelfSettingsDialog" timestamp="1751983148828">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="823" y="364" key="cloudConfig.SelfSettingsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1751983148828" />
     <state x="763" y="433" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1750569568896">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

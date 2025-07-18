@@ -2,6 +2,7 @@
 package-lock.json
 .wrangler/
 /.idea/
+**/workspace.xml
 # Logs
 
 logs
