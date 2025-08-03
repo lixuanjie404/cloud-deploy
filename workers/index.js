@@ -23,6 +23,7 @@ export default {
       case '/random':
         return new Response(crypto.randomUUID())
       case '/test':
+      case '/uuid':
         debugger;
         return new Response(crypto.randomUUID())
       default:
@@ -41,7 +42,11 @@ export default {
           const data = await response.json()
           // debugger;
 
-          return Response.json(data);
+          let resp = Response.json(data)
+
+          let cacheDuration = 1800;
+          resp.headers.set('Cache-Control', `public, max-age=${cacheDuration}, s-maxage=${cacheDuration}`)
+          return resp;
         } else {
           // 没有匹配的路由返回404
           return new Response('Not Found', { status: 404 })

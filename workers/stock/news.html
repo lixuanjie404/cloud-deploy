@@ -235,7 +235,7 @@
         }
 
         .digest {
-            max-height: 6em;
+            /*max-height: 6em;*/
             /* 3行高度 (1.6em * 3 = 4.8em, 加一些余量) */
             overflow: hidden;
             position: relative;
@@ -301,6 +301,7 @@
 </head>
 
 <body>
+<button style="position: absolute;margin-top: 10px" id="test">test</button>
 <div class="container" style=''>
     <div style='font-weight:normal;color:red;text-align:right;line-height:13px;height:30px;display:none;'>语音开关
         <label class="switch"><input type="checkbox"><span class="slider round"></span></label>
@@ -447,7 +448,6 @@
         <div class="panel-body msg-body" id="tck_msg" style='overflow:auto;padding:5px 10px;'></div>
     </div>
 
-    <!--    <button style="float: left" id="test">test</button>-->
     <!--
         <div class="container" style='margin-top:20px;'> -->
     <audio src="" id="myaudio" controls="controls" autoplay="true" hidden="ture"></audio>
@@ -490,6 +490,7 @@
   var cls_status = 'all'
   var glh_status = 'all'
   var ths_status = 'all'
+  // 是否黑背景
   var black = $('body').attr('id')
   var stcn_status = 'all'
   var jiuyan_status = 'all'
@@ -872,7 +873,6 @@
     }
 
     getInfo()
-    getInfo('juhe')
 
     function getInfo (from = 'dpzb', msgtype = 'all') {
       $.ajax({
@@ -888,6 +888,22 @@
         }
       })
     }
+
+    function getJuheInfo (from = 'juhe', msgtype = 'all') {
+      $.ajax({
+        type: 'POST',
+        url: host + '/api/getNewsByList',
+        data: {
+          name: from,
+          msgtype: msgtype
+        },
+        dataType: 'json',
+        success: function (data) {
+          $('#juhe_msg>ul').html(data.html)
+        }
+      })
+    }
+    getJuheInfo()
 
     // 自动显示全部
     $('#lxjShowAll').click(function () {
@@ -913,8 +929,10 @@
       }
     })
     $('#test').click(function () {
-      var url = 'https://tts.baidu.com/text2audio?cuid=baike&lan=ZH&ctp=3&pdt=301&vol=99&spd=6&rate=32&per=0&tex=先显示系统通知'
-      audioQueue.add(url)
+      // 语音测试
+      // var url = 'https://tts.baidu.com/text2audio?cuid=baike&lan=ZH&ctp=3&pdt=301&vol=99&spd=6&rate=32&per=0&tex=先显示系统通知'
+      // audioQueue.add(url)
+
     })
 
     var times = 0
@@ -973,7 +991,9 @@
           return
         }
         const info = JSON.parse(e.data)
-        if (!zxtype.includes(info.from)) return false
+        if (!zxtype.includes(info.from) && !zxtype.includes('juhe')) {
+          return false
+        }
         //if ($.inArray(info.from, permit) == -1) return false;
         if (news[info.from].msgtype == 'pause') return false
         if (news[info.from].msgtype == 'import' && info.import == 0) return false
@@ -1018,6 +1038,33 @@
             }
           } else {
             $('#' + info.from + '_msg').html(info.html + $('#' + info.from + '_msg').html())
+          }
+          // 如果显示聚合面板
+          if (zxtype.includes('juhe')) {
+
+            const htmlString = info.html
+            // 将字符串转换为 jQuery 对象
+            const $temp = $(htmlString)
+            // 获取 <a> 标签的 href
+            const href = $temp.find('.jytitle a').attr('href')
+            let juheItem = `
+                <li class="layui-timeline-item ">
+                    <i class="layui-icon layui-timeline-axis"/>
+                    <div class="layui-timeline-content layui-text">
+                        <h3 class="layui-timeline-title">${info.time}</h3>
+                        <h3 class="layui-timeline-title newstitle">${info.title}</h3>
+                        <div class="news-container">
+                            <div class="newscontent digest">${info.digest}</div>
+                            <label class="expand-btn">展开</label>
+                        </div>
+                        <div class="newscontent">
+                            <a href="${href}" class="label label-default">${news[info.from].name}</a>
+                        </div>
+                    </div>
+                </li>
+            `
+
+            $('#juhe_msg>ul').html(juheItem + $('#juhe_msg>ul').html())
           }
         }
       }
