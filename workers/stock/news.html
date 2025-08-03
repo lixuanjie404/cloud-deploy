@@ -616,7 +616,9 @@
 
       const audio = new Audio(url)
       audio.play().catch(error => {
-        console.error('音频播放失败:', error)
+        // 先尝试重播
+        this.replay(url);
+        // console.error('音频播放失败:', error)
         this.playNext() // 跳过错误继续下一项
       })
       audio.onended = () => {
@@ -637,6 +639,21 @@
       } else {
         console.log('无法显示通知：权限未授予或浏览器不支持')
       }
+    }
+
+    // 重播
+    replay (url, times=0) {
+      times++
+      if (times > 5) return false
+      console.log('重播' + times)
+      $('#myaudio').attr('src', url)
+      var myAuto = $('#myaudio')[0];
+      let that = this;
+      myAuto.play().catch(error => {
+        setTimeout(function () {
+          that.replay(url,times)
+        }, 1000)
+      })
     }
 
   }
