@@ -1,88 +1,126 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>摸鱼专用</title>
-  <style>
-    body.moyu-body {
-      margin: 0;
-      padding: 0;
-      background-color: #f7f7f7;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      color: #333;
-    }
-
-    header.moyu-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 16px;
-      background-color: #ffffff;
-      border-bottom: 1px solid #e5e5e5;
-    }
-
-    .moyu-title {
-      font-size: 16px;
-      font-weight: 500;
-      color: #555;
-    }
-
-    .moyu-actions {
-      display: flex;
-      gap: 8px;
-    }
-
-    .moyu-btn {
-      background-color: #f0f0f0;
-      border: 1px solid #dcdcdc;
-      border-radius: 4px;
-      padding: 4px 8px;
-      font-size: 13px;
-      color: #555;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-
-    .moyu-btn:hover {
-      background-color: #e8e8e8;
-    }
-
-    main.moyu-main {
-      width: 100%;
-      height: calc(100vh - 42px);
-    }
-
-    iframe.moyu-iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background-color: #fff;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>首页</title>
+<script src="https://code.jquery.com/jquery-2.0.0.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/layer/3.5.1/theme/default/layer.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/layer/3.5.1/layer.min.js"></script>
+<style>
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background-color: #f9f9f9;
+    color: #555;
+    margin: 0;
+    padding: 20px;
+  }
+  .menu {
+    list-style: none;
+    padding: 0;
+    max-width: 260px;
+  }
+  .menu li {
+    background: #fff;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    box-shadow: 0 0 0 rgba(0,0,0,0);
+    transition: all 0.2s ease;
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+  .menu li:hover {
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    background: #f3f3f3;
+  }
+  .menu a {
+    text-decoration: none;
+    color: #555;
+    display: flex;
+    align-items: center;
+  }
+  .icon {
+    font-size: 14px;
+    color: #aaa;
+    margin-right: 6px;
+  }
+  .divider {
+    color: #ccc;
+    text-align: center;
+    font-size: 12px;
+    padding: 4px 0;
+  }
+  iframe {
+    border: none;
+    float: right;
+    margin-top: 40px;
+    width: 50%;
+    height: 280px;
+    background: #fff;
+    border-radius: 6px;
+  }
+</style>
 </head>
-<body class="moyu-body">
-  <header class="moyu-header">
-    <div class="moyu-title">工作监控面板</div>
-    <div class="moyu-actions">
-      <button class="moyu-btn" onclick="location.reload()">刷新</button>
-      <button class="moyu-btn" onclick="toggleFullScreen()">全屏</button>
-    </div>
-  </header>
-  <main class="moyu-main">
-    <iframe class="moyu-iframe" src="https://example.com"></iframe>
-  </main>
+<body>
 
-  <script>
-    function toggleFullScreen() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
-      } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        }
-      }
-    }
-  </script>
+<ol class="menu">
+  <li><a href="#/news.html" id="news"><span class="icon">📰</span>资讯</a></li>
+  <li><a href="/qxlive.html"><span class="icon">📊</span>市场情绪</a></li>
+  <li><a href="#/yidong.html" id="yidong"><span class="icon">📢</span>异动播报</a></li>
+  <li><a href="#/ztlive.html" id="ztlive"><span class="icon">📈</span>实时涨停播报</a></li>
+  <li class="divider">──────</li>
+  <li><a href="https://duanxianxia.cn/web/jjlive" target="_blank"><span class="icon">⏳</span>隔夜单统计</a></li>
+  <li><a href="https://duanxianxia.cn/web/fupan" target="_blank"><span class="icon">📅</span>复盘</a></li>
+  <li><a href="https://duanxianxia.cn/web/fupangu/" target="_blank"><span class="icon">📂</span>复盘古</a></li>
+  <li class="divider">──────</li>
+  <li><a href="https://data.10jqka.com.cn/financial/yjyg/" target="_blank"><span class="icon">📑</span>业绩报</a></li>
+</ol>
+
+<iframe src="https://www.duanxianxia.cn/web/amount" name="amount"></iframe>
+
+<script>
+  $('#news').click(function () {
+    layer.open({
+      id: 'newsT',
+      type: 2,
+      title: '资讯',
+      maxmin: true,
+      area: ['666px', '88%'],
+      offset: 'b',
+      shade: 0,
+      fixed: false,
+      content: '/news.html'
+    })
+  })
+
+  $('#yidong').click(function () {
+    layer.open({
+      id: 'yidong_',
+      type: 2,
+      title: '异动播报',
+      maxmin: false,
+      area: ['660px', '600px'],
+      offset: 'lb',
+      shade: 0,
+      fixed: false,
+      content: '/yidong.html'
+    })
+  })
+
+  $('#ztlive').click(function () {
+    layer.open({
+      id: 'ztliveT',
+      type: 2,
+      title: '实时涨停播报',
+      maxmin: true,
+      area: ['660px', '600px'],
+      offset: 'rb',
+      shade: 0,
+      fixed: false,
+      content: ['/ztlive.html', 'no']
+    })
+  })
+</script>
+
 </body>
 </html>
