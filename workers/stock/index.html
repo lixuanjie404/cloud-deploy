@@ -2,13 +2,19 @@
 <html lang="zh-CN">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>首页</title>
   <script src="https://code.jquery.com/jquery-2.0.0.min.js"></script>
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/layer/3.5.1/theme/default/layer.min.css" crossorigin="anonymous" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/layer/3.5.1/layer.min.js" crossorigin="anonymous"></script>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/layer/3.5.1/theme/default/layer.min.css"
+    crossorigin="anonymous"
+  />
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/layer/3.5.1/layer.min.js"
+    crossorigin="anonymous"
+  ></script>
 
   <style>
     body {
@@ -23,7 +29,7 @@
 
     h1 {
       margin: 20px 0;
-      color: #333;
+      color: #444444;
     }
 
     ol {
@@ -50,17 +56,17 @@
       padding: 10px;
       border-radius: 8px;
       text-decoration: none;
-      background: #f1f3f5;
-      color: #444;
-      font-weight: 500;
-      transition: all 0.2s ease;
+      background: #ececec;
+      color: #666666;
+      font-weight: 400;
+      transition: all 0.25s ease;
     }
 
     ol li a:hover {
-      background: #4dabf7;
-      color: white;
-      transform: translateY(-2px);
-      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+      background: #c0c0c0;
+      color: #444444;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
 
     .divider {
@@ -72,7 +78,6 @@
       margin-top: 30px;
       border: none;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       width: 90%;
       max-width: 600px;
       height: 280px;
@@ -116,9 +121,9 @@
         offset: 'b',
         shade: 0,
         fixed: false,
-        content: '/news.html'
-      })
-    })
+        content: '/news.html',
+      });
+    });
 
     $('#qxlive').click(function () {
       layer.open({
@@ -130,9 +135,9 @@
         offset: 'b',
         shade: 0,
         fixed: false,
-        content: '/qxlive.html'
-      })
-    })
+        content: '/qxlive.html',
+      });
+    });
 
     $('#yidong').click(function () {
       layer.open({
@@ -144,9 +149,9 @@
         offset: 'lb',
         shade: 0,
         fixed: false,
-        content: '/yidong.html'
-      })
-    })
+        content: '/yidong.html',
+      });
+    });
 
     $('#ztlive').click(function () {
       layer.open({
@@ -158,10 +163,9 @@
         offset: 'rb',
         shade: 0,
         fixed: false,
-        content: ['/ztlive.html', 'no']
-      })
-    })
+        content: ['/ztlive.html', 'no'],
+      });
+    });
   </script>
-
 </body>
 </html>
