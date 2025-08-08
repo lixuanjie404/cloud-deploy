@@ -1,171 +1,88 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>首页</title>
-  <script src="https://code.jquery.com/jquery-2.0.0.min.js"></script>
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/layer/3.5.1/theme/default/layer.min.css"
-    crossorigin="anonymous"
-  />
-  <script
-    src="https://cdnjs.cloudflare.com/ajax/libs/layer/3.5.1/layer.min.js"
-    crossorigin="anonymous"
-  ></script>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>摸鱼专用</title>
   <style>
-    body {
-      font-family: "Segoe UI", Arial, sans-serif;
-      background: #f8f9fa;
+    body.moyu-body {
       margin: 0;
       padding: 0;
+      background-color: #f7f7f7;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      color: #333;
+    }
+
+    header.moyu-header {
       display: flex;
-      flex-direction: column;
       align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      background-color: #ffffff;
+      border-bottom: 1px solid #e5e5e5;
     }
 
-    h1 {
-      margin: 20px 0;
-      color: #444444;
+    .moyu-title {
+      font-size: 16px;
+      font-weight: 500;
+      color: #555;
     }
 
-    ol {
-      list-style: none;
-      padding: 0;
-      margin: 20px 0;
+    .moyu-actions {
       display: flex;
-      flex-direction: column;
-      gap: 10px;
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-      max-width: 320px;
-      width: 90%;
+      gap: 8px;
     }
 
-    ol li {
-      text-align: center;
+    .moyu-btn {
+      background-color: #f0f0f0;
+      border: 1px solid #dcdcdc;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 13px;
+      color: #555;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
     }
 
-    ol li a {
-      display: block;
-      padding: 10px;
-      border-radius: 8px;
-      text-decoration: none;
-      background: #ececec;
-      color: #666666;
-      font-weight: 400;
-      transition: all 0.25s ease;
+    .moyu-btn:hover {
+      background-color: #e8e8e8;
     }
 
-    ol li a:hover {
-      background: #c0c0c0;
-      color: #444444;
-      transform: translateY(-1px);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    main.moyu-main {
+      width: 100%;
+      height: calc(100vh - 42px);
     }
 
-    .divider {
-      border-top: 1px solid #dee2e6;
-      margin: 5px 0;
-    }
-
-    iframe {
-      margin-top: 30px;
+    iframe.moyu-iframe {
+      width: 100%;
+      height: 100%;
       border: none;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 600px;
-      height: 280px;
-    }
-
-    @media (max-width: 600px) {
-      iframe {
-        height: 200px;
-      }
+      background-color: #fff;
     }
   </style>
 </head>
-
-<body>
-
-  <h1>📊 数据面板</h1>
-
-  <ol>
-    <li><a href="#/news.html" id="news">资讯</a></li>
-    <li><a href="/qxlive.html" id="qxlive">市场情绪</a></li>
-    <li><a href="#/yidong.html" id="yidong">异动播报</a></li>
-    <li><a href="#/ztlive.html" id="ztlive">实时涨停播报</a></li>
-    <li class="divider"></li>
-    <li><a href="https://duanxianxia.cn/web/jjlive" target="_blank">隔夜单统计</a></li>
-    <li><a href="https://duanxianxia.cn/web/fupan" target="_blank">复盘</a></li>
-    <li><a href="https://duanxianxia.cn/web/fupangu/" target="_blank">复盘古</a></li>
-    <li class="divider"></li>
-    <li><a href="https://data.10jqka.com.cn/financial/yjyg/">业绩报</a></li>
-  </ol>
-
-  <iframe src="https://www.duanxianxia.cn/web/amount" name="amount"></iframe>
+<body class="moyu-body">
+  <header class="moyu-header">
+    <div class="moyu-title">工作监控面板</div>
+    <div class="moyu-actions">
+      <button class="moyu-btn" onclick="location.reload()">刷新</button>
+      <button class="moyu-btn" onclick="toggleFullScreen()">全屏</button>
+    </div>
+  </header>
+  <main class="moyu-main">
+    <iframe class="moyu-iframe" src="https://example.com"></iframe>
+  </main>
 
   <script>
-    $('#news').click(function () {
-      layer.open({
-        id: 'newsT',
-        type: 2,
-        title: '资讯',
-        maxmin: true,
-        area: ['666px', '88%'],
-        offset: 'b',
-        shade: 0,
-        fixed: false,
-        content: '/news.html',
-      });
-    });
-
-    $('#qxlive').click(function () {
-      layer.open({
-        id: 'qxlive_',
-        type: 2,
-        title: '市场情绪',
-        maxmin: false,
-        area: ['60%', '70%'],
-        offset: 'b',
-        shade: 0,
-        fixed: false,
-        content: '/qxlive.html',
-      });
-    });
-
-    $('#yidong').click(function () {
-      layer.open({
-        id: 'yidong_',
-        type: 2,
-        title: '异动播报',
-        maxmin: false,
-        area: ['660px', '600px'],
-        offset: 'lb',
-        shade: 0,
-        fixed: false,
-        content: '/yidong.html',
-      });
-    });
-
-    $('#ztlive').click(function () {
-      layer.open({
-        id: 'ztliveT',
-        type: 2,
-        title: '实时涨停播报',
-        maxmin: true,
-        area: ['660px', '600px'],
-        offset: 'rb',
-        shade: 0,
-        fixed: false,
-        content: ['/ztlive.html', 'no'],
-      });
-    });
+    function toggleFullScreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
   </script>
 </body>
 </html>
