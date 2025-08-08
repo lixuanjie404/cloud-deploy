@@ -1,101 +1,167 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>首页</title>
-    <script src="https://code.jquery.com/jquery-2.0.0.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>首页</title>
+  <script src="https://code.jquery.com/jquery-2.0.0.min.js"></script>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/layer/3.5.1/theme/default/layer.min.css"
-          integrity="sha512-I5UV9PDF9Gobdby8PH3VE3TkRXhi/J0H1iKG6On93n4vEIxvgtF0samxsZypwMD2Jdd2uZDs/fG1NQ+psQq/MQ=="
-          crossorigin="anonymous" referrerpolicy="no-referrer"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/layer/3.5.1/theme/default/layer.min.css" crossorigin="anonymous" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/layer/3.5.1/layer.min.js" crossorigin="anonymous"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/layer/3.5.1/layer.min.js"
-            integrity="sha512-0iG/yadTz/ltYp8fbzzZeJqp7ub0a0O8o3BFUKlCqUg7G72OSM2ASLiaheRfek5Plo6vJ4Wv7OBjYnPbOuwO1w=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <style>
-        a {
-            color: #444;
-        }
-    </style>
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f8f9fa;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      margin: 20px 0;
+      color: #333;
+    }
+
+    ol {
+      list-style: none;
+      padding: 0;
+      margin: 20px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      max-width: 320px;
+      width: 90%;
+    }
+
+    ol li {
+      text-align: center;
+    }
+
+    ol li a {
+      display: block;
+      padding: 10px;
+      border-radius: 8px;
+      text-decoration: none;
+      background: #f1f3f5;
+      color: #444;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    ol li a:hover {
+      background: #4dabf7;
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .divider {
+      border-top: 1px solid #dee2e6;
+      margin: 5px 0;
+    }
+
+    iframe {
+      margin-top: 30px;
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      width: 90%;
+      max-width: 600px;
+      height: 280px;
+    }
+
+    @media (max-width: 600px) {
+      iframe {
+        height: 200px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<ol>
+  <h1>📊 数据面板</h1>
+
+  <ol>
     <li><a href="#/news.html" id="news">资讯</a></li>
-    <li><a href="/qxlive.html">市场情绪</a></li>
+    <li><a href="/qxlive.html" id="qxlive">市场情绪</a></li>
     <li><a href="#/yidong.html" id="yidong">异动播报</a></li>
     <li><a href="#/ztlive.html" id="ztlive">实时涨停播报</a></li>
-    <li>--------------------</li>
+    <li class="divider"></li>
     <li><a href="https://duanxianxia.cn/web/jjlive" target="_blank">隔夜单统计</a></li>
     <li><a href="https://duanxianxia.cn/web/fupan" target="_blank">复盘</a></li>
     <li><a href="https://duanxianxia.cn/web/fupangu/" target="_blank">复盘古</a></li>
-    <li>--------------------</li>
+    <li class="divider"></li>
     <li><a href="https://data.10jqka.com.cn/financial/yjyg/">业绩报</a></li>
-</ol>
-<IFrame src='https://www.duanxianxia.cn/web/amount' frameborder="0" style='float:right;margin-top:666px;width:50%;height:280px;'
-        name='amount'></IFrame>
+  </ol>
+
+  <iframe src="https://www.duanxianxia.cn/web/amount" name="amount"></iframe>
+
+  <script>
+    $('#news').click(function () {
+      layer.open({
+        id: 'newsT',
+        type: 2,
+        title: '资讯',
+        maxmin: true,
+        area: ['666px', '88%'],
+        offset: 'b',
+        shade: 0,
+        fixed: false,
+        content: '/news.html'
+      })
+    })
+
+    $('#qxlive').click(function () {
+      layer.open({
+        id: 'qxlive_',
+        type: 2,
+        title: '市场情绪',
+        maxmin: false,
+        area: ['60%', '70%'],
+        offset: 'b',
+        shade: 0,
+        fixed: false,
+        content: '/qxlive.html'
+      })
+    })
+
+    $('#yidong').click(function () {
+      layer.open({
+        id: 'yidong_',
+        type: 2,
+        title: '异动播报',
+        maxmin: false,
+        area: ['660px', '600px'],
+        offset: 'lb',
+        shade: 0,
+        fixed: false,
+        content: '/yidong.html'
+      })
+    })
+
+    $('#ztlive').click(function () {
+      layer.open({
+        id: 'ztliveT',
+        type: 2,
+        title: '实时涨停播报',
+        maxmin: true,
+        area: ['660px', '600px'],
+        offset: 'rb',
+        shade: 0,
+        fixed: false,
+        content: ['/ztlive.html', 'no']
+      })
+    })
+  </script>
+
 </body>
-
-<script>
-  $('#news').click(function () {
-    layer.open({
-      id: 'newsT',
-      type: 2,
-      title: '资讯',
-      maxmin: true, //开启最大化最小化按钮
-      area: ['666px', '88%'],
-      offset: 'b',
-      shade: 0,
-      fixed: false,
-      content: '/news.html'
-    })
-  })
-
-  $('#qxlive').click(function () {
-    layer.open({
-      id: 'qxlive_',
-      type: 2,
-      title: '市场情绪',
-      maxmin: false, //开启最大化最小化按钮
-      area: ['60%', '70%'],
-      offset: 'b',
-      shade: 0,
-      fixed: false,
-      content: '/qxlive.html'
-    })
-  })
-
-  $('#yidong').click(function () {
-    layer.open({
-      id: 'yidong_',
-      type: 2,
-      title: '异动播报',
-      maxmin: false, //开启最大化最小化按钮
-      area: ['660px', '600px'],
-      offset: 'lb',
-      shade: 0,
-      fixed: false,
-      content: '/yidong.html'
-    })
-  })
-
-  $('#ztlive').click(function () {
-    layer.open({
-      id: 'ztliveT',
-      type: 2,
-      title: '实时涨停播报',
-      maxmin: true, //开启最大化最小化按钮
-      area: ['660px', '600px'],
-      offset: 'rb',
-      shade: 0,
-      fixed: false,
-      content: ['/ztlive.html', 'no']
-    })
-  })
-
-</script>
-
 </html>
