@@ -183,7 +183,10 @@
       offset: 'lb',
       shade: 0,
       fixed: false,
-      content: 'https://duanxianxia.cn/web/fupan'
+      content: 'https://duanxianxia.cn/web/fupan',
+      success: function(layero, index){
+        layer.full(index); // 最大化
+      }
     })
   })
 
