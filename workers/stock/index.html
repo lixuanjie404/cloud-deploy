@@ -149,6 +149,28 @@
           box-shadow: var(--shadow);
       }
 
+      .panel-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+      }
+
+      .toggle-preview {
+          font-size: 12px;
+          padding: 6px 12px;
+          border-radius: 999px;
+          background: #f4f6fb;
+      }
+
+      .toggle-preview:hover {
+          background: #e9edf7;
+      }
+
+      .iframe-wrap.is-collapsed {
+          display: none;
+      }
+
       .panel h3 {
           margin-top: 0;
           margin-bottom: 12px;
@@ -346,9 +368,12 @@
     </section>
 
     <section class="panel">
-      <h3>市场概览</h3>
+      <div class="panel-header">
+        <h3>市场概览</h3>
+        <button class="ghost-btn toggle-preview" id="togglePreview" type="button">收起</button>
+      </div>
       <p>默认展示类似资讯门户的卡片布局，内嵌的行情与成交额保持在可视区域，避免突兀。</p>
-      <div class="iframe-wrap">
+      <div class="iframe-wrap" id="previewFrame">
         <iframe src="https://www.duanxianxia.cn/web/amount" id="amount" name="amount"></iframe>
       </div>
     </section>
@@ -410,6 +435,12 @@
 
   $('#openNews').on('click', function () {
     $('#news').trigger('click')
+  })
+
+  $('#togglePreview').on('click', function () {
+    var preview = $('#previewFrame')
+    preview.toggleClass('is-collapsed')
+    $(this).text(preview.hasClass('is-collapsed') ? '展开' : '收起')
   })
 
   $('.jjlive-link').on('click', function (event) {
