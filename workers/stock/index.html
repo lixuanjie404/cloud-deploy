@@ -156,15 +156,48 @@
           gap: 12px;
       }
 
-      .toggle-preview {
+      .preview-toggle {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
           font-size: 12px;
-          padding: 6px 12px;
-          border-radius: 999px;
-          background: #f4f6fb;
+          color: var(--muted);
       }
 
-      .toggle-preview:hover {
-          background: #e9edf7;
+      .preview-toggle input {
+          position: absolute;
+          opacity: 0;
+          pointer-events: none;
+      }
+
+      .toggle-track {
+          width: 40px;
+          height: 22px;
+          border-radius: 999px;
+          background: #e2e8f0;
+          position: relative;
+          transition: background 0.2s ease;
+      }
+
+      .toggle-track::after {
+          content: "";
+          position: absolute;
+          top: 3px;
+          left: 3px;
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background: #fff;
+          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
+          transition: transform 0.2s ease;
+      }
+
+      .preview-toggle input:checked + .toggle-track {
+          background: rgba(47, 111, 237, 0.4);
+      }
+
+      .preview-toggle input:checked + .toggle-track::after {
+          transform: translateX(18px);
       }
 
       .iframe-wrap.is-collapsed {
@@ -370,7 +403,11 @@
     <section class="panel">
       <div class="panel-header">
         <h3>市场概览</h3>
-        <button class="ghost-btn toggle-preview" id="togglePreview" type="button">收起</button>
+        <label class="preview-toggle">
+          <input type="checkbox" id="togglePreview" checked>
+          <span class="toggle-track"></span>
+          <span class="toggle-label">显示</span>
+        </label>
       </div>
       <p>默认展示类似资讯门户的卡片布局，内嵌的行情与成交额保持在可视区域，避免突兀。</p>
       <div class="iframe-wrap" id="previewFrame">
@@ -437,10 +474,11 @@
     $('#news').trigger('click')
   })
 
-  $('#togglePreview').on('click', function () {
+  $('#togglePreview').on('change', function () {
     var preview = $('#previewFrame')
-    preview.toggleClass('is-collapsed')
-    $(this).text(preview.hasClass('is-collapsed') ? '展开' : '收起')
+    var isChecked = $(this).is(':checked')
+    preview.toggleClass('is-collapsed', !isChecked)
+    $(this).closest('.preview-toggle').find('.toggle-label').text(isChecked ? '显示' : '隐藏')
   })
 
   $('.jjlive-link').on('click', function (event) {
