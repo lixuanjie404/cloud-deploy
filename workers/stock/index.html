@@ -373,7 +373,7 @@
       <ul>
         <li><a href="https://data.10jqka.com.cn/financial/yjyg/" target="_blank">业绩报</a></li>
         <li><a href="https://wenda.tdx.com.cn/site/wenda/page-user-center.html" target="_blank">问小达问句</a></li>
-        <li><a href="https://duanxianxia.cn/web/jjlive" target="_blank">隔夜单统计</a></li>
+        <li><a href="#jjlive" class="jjlive-link">隔夜单统计</a></li>
       </ul>
     </details>
   </footer>
@@ -385,7 +385,7 @@
     <li><a href="#/news.html" id="news"><span class="icon">📰</span>资讯</a></li>
     <li><a href="/qxlive.html" target="_blank"><span class="icon">📊</span>市场情绪</a></li>
     <li class="divider">──────start</li>
-    <li><a href="https://duanxianxia.cn/web/jjlive" target="_blank"><span class="icon">⏳</span>隔夜单统计</a></li>
+    <li><a href="#jjlive" class="jjlive-link"><span class="icon">⏳</span>隔夜单统计</a></li>
     <li class="divider">──────go</li>
     <li><a href="#/yidong.html" id="yidong"><span class="icon">📢</span>异动播报</a></li>
     <li><a href="#/ztlive.html" id="ztlive"><span class="icon">🟢</span>实时涨停播报</a></li>
@@ -410,6 +410,24 @@
 
   $('#openNews').on('click', function () {
     $('#news').trigger('click')
+  })
+
+  $('.jjlive-link').on('click', function (event) {
+    event.preventDefault()
+    layer.open({
+      id: 'jjlive_',
+      type: 2,
+      area: ['100%', '100%'],
+      title: '隔夜单统计',
+      maxmin: true,
+      offset: 'auto',
+      shade: 0,
+      fixed: false,
+      content: 'https://duanxianxia.cn/web/jjlive',
+      success: function (layero, index) {
+        layer.full(index)
+      }
+    })
   })
 
   $('#news').click(function () {
