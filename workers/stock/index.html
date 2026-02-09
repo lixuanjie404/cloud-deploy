@@ -8,92 +8,449 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/layer/3.5.1/theme/default/layer.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/layer/3.5.1/layer.min.js"></script>
   <style>
+      :root {
+          color-scheme: light;
+          --bg: #f6f7fb;
+          --card: #ffffff;
+          --text: #1f2a44;
+          --muted: #667085;
+          --accent: #2f6fed;
+          --accent-soft: rgba(47, 111, 237, 0.12);
+          --shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+      }
+
+      * {
+          box-sizing: border-box;
+      }
+
       .main-body {
-          font-family: "Segoe UI", Arial, sans-serif;
-          background-color: #f9f9f9;
-          color: #555;
+          font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+          background: var(--bg);
+          color: var(--text);
           margin: 0;
-          padding: 20px;
+      }
+
+      .page {
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+      }
+
+      .topbar {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 18px 6vw;
+          background: #fff;
+          box-shadow: 0 1px 0 rgba(15, 23, 42, 0.05);
+          position: sticky;
+          top: 0;
+          z-index: 10;
+      }
+
+      .brand {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-weight: 600;
+      }
+
+      .brand-badge {
+          width: 36px;
+          height: 36px;
+          border-radius: 12px;
+          background: var(--accent-soft);
+          display: grid;
+          place-items: center;
+          color: var(--accent);
+          font-weight: 700;
+      }
+
+      .nav-links {
+          display: flex;
+          gap: 20px;
+          font-size: 14px;
+          color: var(--muted);
+      }
+
+      .nav-links span {
+          cursor: default;
+      }
+
+      .action-group {
+          display: flex;
+          gap: 12px;
+      }
+
+      .ghost-btn,
+      .primary-btn {
+          border: none;
+          padding: 8px 16px;
+          border-radius: 999px;
+          font-size: 14px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+      }
+
+      .ghost-btn {
+          background: transparent;
+          color: var(--muted);
+      }
+
+      .ghost-btn:hover {
+          background: #f0f2f8;
+          color: var(--text);
+      }
+
+      .primary-btn {
+          background: var(--accent);
+          color: #fff;
+          box-shadow: 0 6px 18px rgba(47, 111, 237, 0.2);
+      }
+
+      .primary-btn:hover {
+          transform: translateY(-1px);
+      }
+
+      .content {
+          flex: 1;
+          padding: 40px 6vw 64px;
+          display: grid;
+          grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+          gap: 28px;
+      }
+
+      .hero-card {
+          background: var(--card);
+          border-radius: 24px;
+          padding: 32px;
+          box-shadow: var(--shadow);
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+      }
+
+      .hero-title {
+          font-size: 28px;
+          margin: 0;
+      }
+
+      .hero-sub {
+          font-size: 15px;
+          color: var(--muted);
+          margin: 0;
+          line-height: 1.6;
+      }
+
+      .stat-grid {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 16px;
+      }
+
+      .stat-card {
+          background: #f9fafc;
+          border-radius: 16px;
+          padding: 16px;
+      }
+
+      .stat-card span {
+          display: block;
+          font-size: 12px;
+          color: var(--muted);
+      }
+
+      .stat-card strong {
+          font-size: 20px;
+          margin-top: 6px;
+          display: block;
+      }
+
+      .panel {
+          background: var(--card);
+          border-radius: 20px;
+          padding: 22px;
+          box-shadow: var(--shadow);
+      }
+
+      .panel h3 {
+          margin-top: 0;
+          margin-bottom: 12px;
+      }
+
+      .panel p {
+          color: var(--muted);
+          margin-top: 0;
+          line-height: 1.6;
+      }
+
+      .panel .tag {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: var(--accent-soft);
+          color: var(--accent);
+          padding: 6px 12px;
+          border-radius: 999px;
+          font-size: 12px;
+          font-weight: 600;
+      }
+
+      .iframe-wrap {
+          margin-top: 18px;
+          border-radius: 16px;
+          overflow: hidden;
+          border: 1px solid #edf0f6;
+      }
+
+      #amount {
+          border: none;
+          width: 100%;
+          height: 280px;
+          background: #fff;
+      }
+
+      .tool-panel {
+          position: fixed;
+          right: 24px;
+          bottom: 24px;
+          width: 260px;
+          background: #0f172a;
+          color: #e2e8f0;
+          border-radius: 16px;
+          padding: 16px;
+          box-shadow: 0 12px 30px rgba(15, 23, 42, 0.35);
+          opacity: 0;
+          transform: translateY(12px);
+          pointer-events: none;
+          transition: all 0.2s ease;
+      }
+
+      .tool-panel.is-open {
+          opacity: 1;
+          transform: translateY(0);
+          pointer-events: auto;
+      }
+
+      .tool-panel h4 {
+          margin: 0 0 10px;
+          font-size: 14px;
+          font-weight: 600;
       }
 
       .menu {
           list-style: none;
           padding: 0;
-          max-width: 260px;
+          margin: 0;
+          display: grid;
+          gap: 8px;
       }
 
       .menu li {
-          background: #fff;
-          margin-bottom: 8px;
-          border-radius: 6px;
-          box-shadow: 0 0 0 rgba(0, 0, 0, 0);
-          transition: all 0.2s ease;
+          background: rgba(255, 255, 255, 0.08);
+          border-radius: 10px;
           padding: 8px 12px;
-          font-size: 14px;
+          font-size: 13px;
+          transition: all 0.2s ease;
       }
 
       .menu li:hover {
-          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-          background: #f3f3f3;
+          background: rgba(255, 255, 255, 0.16);
       }
 
       .menu a {
           text-decoration: none;
-          color: #555;
+          color: inherit;
           display: flex;
           align-items: center;
+          gap: 6px;
+      }
+
+      .divider {
+          color: rgba(226, 232, 240, 0.4);
+          text-align: center;
+          font-size: 11px;
+          padding: 4px 0;
       }
 
       .icon {
           font-size: 14px;
-          color: #aaa;
-          margin-right: 6px;
+          opacity: 0.7;
       }
 
-      .divider {
-          color: #ccc;
-          text-align: center;
-          font-size: 12px;
-          padding: 4px 0;
+      .footer {
+          padding: 0 6vw 30px;
+          color: var(--muted);
+          font-size: 13px;
+          display: flex;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 12px;
       }
 
-      #amount {
-          border: none;
-          float: right;
-          margin-top: 234px;
-          width: 60%;
-          height: 280px;
+      .footer details {
           background: #fff;
-          border-radius: 6px;
+          border-radius: 12px;
+          padding: 8px 12px;
+          box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+      }
+
+      .footer summary {
+          cursor: pointer;
+          list-style: none;
+          font-weight: 600;
+          color: var(--text);
+      }
+
+      .footer ul {
+          list-style: none;
+          padding: 8px 0 0;
+          margin: 0;
+          display: grid;
+          gap: 6px;
+      }
+
+      .footer a {
+          color: var(--muted);
+          text-decoration: none;
+      }
+
+      .footer a:hover {
+          color: var(--accent);
+      }
+
+      @media (max-width: 960px) {
+          .content {
+              grid-template-columns: 1fr;
+          }
+      }
+
+      @media (max-width: 720px) {
+          .topbar {
+              flex-wrap: wrap;
+              gap: 12px;
+          }
+
+          .nav-links {
+              display: none;
+          }
+
+          .content {
+              padding: 28px 6vw 48px;
+          }
       }
   </style>
 </head>
 <body class="main-body">
 
-<ol class="menu">
-  <li><a href="#/news.html" id="news"><span class="icon">📰</span>资讯</a></li>
-  <li><a href="/qxlive.html" target="_blank"><span class="icon"></span>市场情绪</a></li>
-  <li class="divider">──────start</li>
-  <li><a href="https://duanxianxia.cn/web/jjlive" target="_blank"><span class="icon">⏳</span>隔夜单统计</a></li>
-  <li class="divider">──────go</li>
-  <li><a href="#/yidong.html" id="yidong"><span class="icon">📢</span>异动播报</a></li>
-  <li><a href="#/ztlive.html" id="ztlive">实时涨停播报</a></li>
-  <li>
-    <a href="https://wenda.tdx.com.cn/site/wenda/stock_index.html?message=去除st,去除北交所,成交额前100,量比,实际换手率"
-       target="_blank">
-      <span class="icon">🍜</span>问小达
-    </a>
-  </li>
-  <li><a href="https://wenda.tdx.com.cn/site/wenda/page-user-center.html">问小达问句</a></li>
-  <li><a href="#https://duanxianxia.cn/web/fupangu/" id="lianban"><span class="icon">📂</span>复盘古</a></li>
-  <li class="divider">──────end</li>
-  <li><a href="#https://duanxianxia.cn/web/fupan" id="fupan"><span class="icon">📅</span>涨停复盘</a></li>
-  <li><a href="https://data.10jqka.com.cn/financial/yjyg/" target="_blank"><span class="icon">📑</span>业绩报</a></li>
-</ol>
+<div class="page">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-badge">DX</div>
+      <div>
+        <div>盘面观察站</div>
+        <small class="nav-links">数据清单 · 市场速览 · 智能提醒</small>
+      </div>
+    </div>
+    <div class="nav-links">
+      <span>行情动态</span>
+      <span>策略洞察</span>
+      <span>风控观察</span>
+    </div>
+    <div class="action-group">
+      <button class="ghost-btn" id="toggleTools">辅助入口</button>
+      <button class="primary-btn" id="openNews">立即查看</button>
+    </div>
+  </header>
 
-<iframe src="https://www.duanxianxia.cn/web/amount" id="amount" name="amount"></iframe>
+  <main class="content">
+    <section class="hero-card">
+      <span class="tag">实时监控 · 温和视角</span>
+      <h1 class="hero-title">欢迎回来，今天的市场情况一目了然。</h1>
+      <p class="hero-sub">首页展示为常规数据门户，核心工具被收纳在轻量浮层中，避免第一眼显得过于“工具化”。互动弹窗则保持清晰友好。</p>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <span>今日关注</span>
+          <strong>热度主题</strong>
+        </div>
+        <div class="stat-card">
+          <span>资金迹象</span>
+          <strong>活跃行业</strong>
+        </div>
+        <div class="stat-card">
+          <span>策略提醒</span>
+          <strong>波动提示</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h3>市场概览</h3>
+      <p>默认展示类似资讯门户的卡片布局，内嵌的行情与成交额保持在可视区域，避免突兀。</p>
+      <div class="iframe-wrap">
+        <iframe src="https://www.duanxianxia.cn/web/amount" id="amount" name="amount"></iframe>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h3>关注点整理</h3>
+      <p>将需要进一步操作的入口收起，保持页面像常规资讯网站。交互弹窗仍支持最大化与定位。</p>
+      <p><strong>提示：</strong>右下角的辅助入口会显示隐藏功能。</p>
+    </section>
+
+    <section class="panel">
+      <h3>市场情绪</h3>
+      <p>快速阅读短线情绪走势，保持外观为资讯页面的常态。</p>
+      <a class="tag" href="/qxlive.html" target="_blank">打开情绪面板</a>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>数据源已对齐，呈现为常规门户风格。</span>
+    <details>
+      <summary>更多入口</summary>
+      <ul>
+        <li><a href="https://data.10jqka.com.cn/financial/yjyg/" target="_blank">业绩报</a></li>
+        <li><a href="https://wenda.tdx.com.cn/site/wenda/page-user-center.html" target="_blank">问小达问句</a></li>
+        <li><a href="https://duanxianxia.cn/web/jjlive" target="_blank">隔夜单统计</a></li>
+      </ul>
+    </details>
+  </footer>
+</div>
+
+<aside class="tool-panel" id="toolPanel">
+  <h4>辅助入口</h4>
+  <ol class="menu">
+    <li><a href="#/news.html" id="news"><span class="icon">📰</span>资讯</a></li>
+    <li><a href="/qxlive.html" target="_blank"><span class="icon">📊</span>市场情绪</a></li>
+    <li class="divider">──────start</li>
+    <li><a href="https://duanxianxia.cn/web/jjlive" target="_blank"><span class="icon">⏳</span>隔夜单统计</a></li>
+    <li class="divider">──────go</li>
+    <li><a href="#/yidong.html" id="yidong"><span class="icon">📢</span>异动播报</a></li>
+    <li><a href="#/ztlive.html" id="ztlive"><span class="icon">🟢</span>实时涨停播报</a></li>
+    <li>
+      <a href="https://wenda.tdx.com.cn/site/wenda/stock_index.html?message=去除st,去除北交所,成交额前100,量比,实际换手率"
+         target="_blank">
+        <span class="icon">🍜</span>问小达
+      </a>
+    </li>
+    <li><a href="https://wenda.tdx.com.cn/site/wenda/page-user-center.html" target="_blank">问小达问句</a></li>
+    <li><a href="#https://duanxianxia.cn/web/fupangu/" id="lianban"><span class="icon">📂</span>复盘古</a></li>
+    <li class="divider">──────end</li>
+    <li><a href="#https://duanxianxia.cn/web/fupan" id="fupan"><span class="icon">📅</span>涨停复盘</a></li>
+    <li><a href="https://data.10jqka.com.cn/financial/yjyg/" target="_blank"><span class="icon">📑</span>业绩报</a></li>
+  </ol>
+</aside>
 
 <script>
+  $('#toggleTools').on('click', function () {
+    $('#toolPanel').toggleClass('is-open')
+  })
+
+  $('#openNews').on('click', function () {
+    $('#news').trigger('click')
+  })
+
   $('#news').click(function () {
     layer.open({
       id: 'newsT',
