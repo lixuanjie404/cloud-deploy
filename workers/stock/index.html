@@ -229,6 +229,7 @@
 
       .iframe-wrap {
           margin-top: 18px;
+          width: 100%;
           border-radius: 16px;
           overflow: hidden;
           border: 1px solid #edf0f6;
@@ -237,8 +238,10 @@
       #amount {
           border: none;
           width: 100%;
+          min-width: 100%;
           height: 280px;
           background: #fff;
+          display: block;
       }
 
       .tool-panel {
@@ -478,6 +481,11 @@
     previewToggle.prop('checked', isVisible)
     previewFrame.toggleClass('is-collapsed', !isVisible)
     previewLabel.text(isVisible ? '显示' : '隐藏')
+    if (isVisible) {
+      setTimeout(function () {
+        $('#amount').css({ width: '100%', minWidth: '100%' })
+      }, 0)
+    }
   }
 
   var savedPreviewState = localStorage.getItem(previewStorageKey)
