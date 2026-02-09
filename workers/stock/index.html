@@ -469,11 +469,26 @@
     $('#news').trigger('click')
   })
 
-  $('#togglePreview').on('change', function () {
-    var preview = $('#previewFrame')
+  var previewToggle = $('#togglePreview')
+  var previewFrame = $('#previewFrame')
+  var previewLabel = previewToggle.closest('.preview-toggle').find('.toggle-label')
+  var previewStorageKey = 'stock_preview_visible'
+
+  function applyPreviewState(isVisible) {
+    previewToggle.prop('checked', isVisible)
+    previewFrame.toggleClass('is-collapsed', !isVisible)
+    previewLabel.text(isVisible ? '显示' : '隐藏')
+  }
+
+  var savedPreviewState = localStorage.getItem(previewStorageKey)
+  if (savedPreviewState !== null) {
+    applyPreviewState(savedPreviewState === 'true')
+  }
+
+  previewToggle.on('change', function () {
     var isChecked = $(this).is(':checked')
-    preview.toggleClass('is-collapsed', !isChecked)
-    $(this).closest('.preview-toggle').find('.toggle-label').text(isChecked ? '显示' : '隐藏')
+    applyPreviewState(isChecked)
+    localStorage.setItem(previewStorageKey, String(isChecked))
   })
 
   $('.jjlive-link').on('click', function (event) {
