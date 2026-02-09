@@ -201,7 +201,11 @@
       }
 
       .iframe-wrap.is-collapsed {
-          display: none;
+          max-height: 0;
+          opacity: 0;
+          visibility: hidden;
+          margin-top: 0;
+          pointer-events: none;
       }
 
       .panel h3 {
@@ -233,6 +237,8 @@
           border-radius: 16px;
           overflow: hidden;
           border: 1px solid #edf0f6;
+          max-height: 320px;
+          transition: max-height 0.2s ease, opacity 0.2s ease;
       }
 
       #amount {
