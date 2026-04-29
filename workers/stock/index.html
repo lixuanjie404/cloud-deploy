@@ -79,7 +79,57 @@
 
       .action-group {
           display: flex;
+          align-items: center;
           gap: 12px;
+      }
+
+      .data-center {
+          position: relative;
+      }
+
+      .data-center-trigger {
+          min-width: 96px;
+      }
+
+      .data-center-menu {
+          position: absolute;
+          top: calc(100% + 10px);
+          right: 0;
+          width: 210px;
+          background: #fff;
+          border: 1px solid #e9edf6;
+          border-radius: 14px;
+          padding: 8px;
+          box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+          opacity: 0;
+          visibility: hidden;
+          transform: translateY(-4px);
+          pointer-events: none;
+          transition: opacity 0.18s ease, transform 0.18s ease;
+          z-index: 30;
+      }
+
+      .data-center.open .data-center-menu {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+          pointer-events: auto;
+      }
+
+      .data-center-menu a {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          text-decoration: none;
+          color: var(--text);
+          border-radius: 10px;
+          padding: 9px 10px;
+          font-size: 13px;
+      }
+
+      .data-center-menu a:hover {
+          background: #f5f8ff;
+          color: var(--accent);
       }
 
       .ghost-btn,
@@ -390,6 +440,14 @@
       </div>
     </div>
     <div class="action-group">
+      <div class="data-center" id="dataCenter">
+        <button class="ghost-btn data-center-trigger" id="dataCenterTrigger" aria-expanded="false">数据中心 ▾</button>
+        <div class="data-center-menu" id="dataCenterMenu">
+          <a href="https://data.eastmoney.com/report/industry.jshtml" target="_blank" rel="noopener noreferrer">
+            <span>📘</span><span>行业研报</span>
+          </a>
+        </div>
+      </div>
       <button class="ghost-btn" id="toggleTools">辅助入口</button>
       <button class="primary-btn" id="openNews">立即查看</button>
     </div>
@@ -469,6 +527,54 @@
 <script>
   $('#toggleTools').on('click', function () {
     $('#toolPanel').toggleClass('is-open')
+  })
+
+  var dataCenter = $('#dataCenter')
+  var dataCenterTrigger = $('#dataCenterTrigger')
+  var dataCenterMenu = $('#dataCenterMenu')
+  var dataCenterTimer
+
+  function setDataCenterOpen(open) {
+    dataCenter.toggleClass('open', open)
+    dataCenterTrigger.attr('aria-expanded', open ? 'true' : 'false')
+    dataCenterTrigger.text(open ? '数据中心 ▴' : '数据中心 ▾')
+  }
+
+  function queueDataCenterClose(delay) {
+    clearTimeout(dataCenterTimer)
+    dataCenterTimer = setTimeout(function () {
+      setDataCenterOpen(false)
+    }, delay || 120)
+  }
+
+  dataCenterTrigger.on('click', function (event) {
+    event.preventDefault()
+    event.stopPropagation()
+    clearTimeout(dataCenterTimer)
+    setDataCenterOpen(!dataCenter.hasClass('open'))
+  })
+
+  dataCenter.on('mouseenter', function () {
+    clearTimeout(dataCenterTimer)
+    setDataCenterOpen(true)
+  })
+
+  dataCenter.on('mouseleave', function () {
+    queueDataCenterClose(180)
+  })
+
+  dataCenterMenu.on('click', function (event) {
+    event.stopPropagation()
+  })
+
+  $(document).on('click', function () {
+    setDataCenterOpen(false)
+  })
+
+  $(document).on('keydown', function (event) {
+    if (event.key === 'Escape') {
+      setDataCenterOpen(false)
+    }
   })
 
   $('#openNews').on('click', function () {
