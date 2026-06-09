@@ -1070,7 +1070,7 @@ $(function () {
     }
   }
 
-  var _0x159581 = new WebSocket(_0x20fe38[_0x2b6a0a(177, "$l#T")]);
+  var _0x159581 = new WebSocket("wss://m.duanxianxia.com/wss3");
 
   _0x159581[_0x2b6a0a(609, "p2xk")] = function () {
     _0x159581["send"](_0x20fe38["ZWlxt"]);
