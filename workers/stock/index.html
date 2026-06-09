@@ -8,97 +8,645 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/layer/3.5.1/theme/default/layer.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/layer/3.5.1/layer.min.js"></script>
   <style>
+      :root {
+          color-scheme: light;
+          --bg: #f6f7fb;
+          --card: #ffffff;
+          --text: #1f2a44;
+          --muted: #667085;
+          --accent: #2f6fed;
+          --accent-soft: rgba(47, 111, 237, 0.12);
+          --shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+      }
+
+      * {
+          box-sizing: border-box;
+      }
+
       .main-body {
-          font-family: "Segoe UI", Arial, sans-serif;
-          background-color: #f9f9f9;
-          color: #555;
+          font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+          background: var(--bg);
+          color: var(--text);
           margin: 0;
-          padding: 20px;
+      }
+
+      .page {
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+      }
+
+      .topbar {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 18px 6vw;
+          background: #fff;
+          box-shadow: 0 1px 0 rgba(15, 23, 42, 0.05);
+          position: sticky;
+          top: 0;
+          z-index: 10;
+      }
+
+      .brand {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-weight: 600;
+      }
+
+      .brand-badge {
+          width: 36px;
+          height: 36px;
+          border-radius: 12px;
+          background: var(--accent-soft);
+          display: grid;
+          place-items: center;
+          color: var(--accent);
+          font-weight: 700;
+      }
+
+      .nav-links {
+          display: flex;
+          gap: 20px;
+          font-size: 14px;
+          color: var(--muted);
+      }
+
+      .nav-links span {
+          cursor: default;
+      }
+
+      .action-group {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+      }
+
+      .data-center {
+          position: relative;
+      }
+
+      .data-center-trigger {
+          min-width: 96px;
+      }
+
+      .data-center-menu {
+          position: absolute;
+          top: calc(100% + 10px);
+          right: 0;
+          width: 210px;
+          background: #fff;
+          border: 1px solid #e9edf6;
+          border-radius: 14px;
+          padding: 8px;
+          box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+          opacity: 0;
+          visibility: hidden;
+          transform: translateY(-4px);
+          pointer-events: none;
+          transition: opacity 0.18s ease, transform 0.18s ease;
+          z-index: 30;
+      }
+
+      .data-center.open .data-center-menu {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+          pointer-events: auto;
+      }
+
+      .data-center-menu a {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          text-decoration: none;
+          color: var(--text);
+          border-radius: 10px;
+          padding: 9px 10px;
+          font-size: 13px;
+      }
+
+      .data-center-menu a:hover {
+          background: #f5f8ff;
+          color: var(--accent);
+      }
+
+      .ghost-btn,
+      .primary-btn {
+          border: none;
+          padding: 8px 16px;
+          border-radius: 999px;
+          font-size: 14px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+      }
+
+      .ghost-btn {
+          background: transparent;
+          color: var(--muted);
+      }
+
+      .ghost-btn:hover {
+          background: #f0f2f8;
+          color: var(--text);
+      }
+
+      .primary-btn {
+          background: var(--accent);
+          color: #fff;
+          box-shadow: 0 6px 18px rgba(47, 111, 237, 0.2);
+      }
+
+      .primary-btn:hover {
+          transform: translateY(-1px);
+      }
+
+      .content {
+          flex: 1;
+          padding: 40px 6vw 64px;
+          display: grid;
+          grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+          gap: 28px;
+      }
+
+      .hero-card {
+          background: var(--card);
+          border-radius: 24px;
+          padding: 32px;
+          box-shadow: var(--shadow);
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+      }
+
+      .hero-title {
+          font-size: 28px;
+          margin: 0;
+      }
+
+      .hero-sub {
+          font-size: 15px;
+          color: var(--muted);
+          margin: 0;
+          line-height: 1.6;
+      }
+
+      .panel {
+          background: var(--card);
+          border-radius: 20px;
+          padding: 22px;
+          box-shadow: var(--shadow);
+      }
+
+      .panel-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+      }
+
+      .preview-toggle {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 12px;
+          color: var(--muted);
+      }
+
+      .preview-toggle input {
+          position: absolute;
+          opacity: 0;
+          pointer-events: none;
+      }
+
+      .toggle-track {
+          width: 40px;
+          height: 22px;
+          border-radius: 999px;
+          background: #e2e8f0;
+          position: relative;
+          transition: background 0.2s ease;
+      }
+
+      .toggle-track::after {
+          content: "";
+          position: absolute;
+          top: 3px;
+          left: 3px;
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background: #fff;
+          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
+          transition: transform 0.2s ease;
+      }
+
+      .preview-toggle input:checked + .toggle-track {
+          background: rgba(47, 111, 237, 0.4);
+      }
+
+      .preview-toggle input:checked + .toggle-track::after {
+          transform: translateX(18px);
+      }
+
+      .iframe-wrap.is-collapsed {
+          opacity: 0;
+          visibility: hidden;
+          pointer-events: none;
+      }
+
+      .panel h3 {
+          margin-top: 0;
+          margin-bottom: 12px;
+      }
+
+      .panel p {
+          color: var(--muted);
+          margin-top: 0;
+          line-height: 1.6;
+      }
+
+      .panel .tag {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: var(--accent-soft);
+          color: var(--accent);
+          padding: 6px 12px;
+          border-radius: 999px;
+          font-size: 12px;
+          font-weight: 600;
+      }
+
+      .iframe-wrap {
+          margin-top: 18px;
+          width: 100%;
+          border-radius: 16px;
+          overflow: hidden;
+          border: 1px solid #edf0f6;
+          transition: opacity 0.2s ease;
+      }
+
+      #amount {
+          border: none;
+          width: 100%;
+          min-width: 100%;
+          height: 280px;
+          background: #fff;
+          display: block;
+      }
+
+      .tool-panel {
+          position: fixed;
+          right: 24px;
+          bottom: 24px;
+          width: 260px;
+          background: #0f172a;
+          color: #e2e8f0;
+          border-radius: 16px;
+          padding: 16px;
+          box-shadow: 0 12px 30px rgba(15, 23, 42, 0.35);
+          opacity: 0;
+          transform: translateY(12px);
+          pointer-events: none;
+          transition: all 0.2s ease;
+      }
+
+      .tool-panel.is-open {
+          opacity: 1;
+          transform: translateY(0);
+          pointer-events: auto;
+      }
+
+      .tool-panel h4 {
+          margin: 0 0 10px;
+          font-size: 14px;
+          font-weight: 600;
       }
 
       .menu {
           list-style: none;
           padding: 0;
-          max-width: 260px;
+          margin: 0;
+          display: grid;
+          gap: 8px;
       }
 
       .menu li {
-          background: #fff;
-          margin-bottom: 8px;
-          border-radius: 6px;
-          box-shadow: 0 0 0 rgba(0, 0, 0, 0);
-          transition: all 0.2s ease;
+          background: rgba(255, 255, 255, 0.08);
+          border-radius: 10px;
           padding: 8px 12px;
-          font-size: 14px;
+          font-size: 13px;
+          transition: all 0.2s ease;
       }
 
       .menu li:hover {
-          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-          background: #f3f3f3;
+          background: rgba(255, 255, 255, 0.16);
       }
 
       .menu a {
           text-decoration: none;
-          color: #555;
+          color: inherit;
           display: flex;
           align-items: center;
+          gap: 6px;
+      }
+
+      .divider {
+          color: rgba(226, 232, 240, 0.4);
+          text-align: center;
+          font-size: 11px;
+          padding: 4px 0;
       }
 
       .icon {
           font-size: 14px;
-          color: #aaa;
-          margin-right: 6px;
+          opacity: 0.7;
       }
 
-      .divider {
-          color: #ccc;
-          text-align: center;
-          font-size: 12px;
-          padding: 4px 0;
+      .footer {
+          padding: 0 6vw 30px;
+          color: var(--muted);
+          font-size: 13px;
+          display: flex;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 12px;
       }
 
-      #amount {
-          border: none;
-          float: right;
-          margin-top: 234px;
-          width: 60%;
-          height: 280px;
+      .footer details {
           background: #fff;
-          border-radius: 6px;
+          border-radius: 12px;
+          padding: 8px 12px;
+          box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+      }
+
+      .footer summary {
+          cursor: pointer;
+          list-style: none;
+          font-weight: 600;
+          color: var(--text);
+      }
+
+      .footer ul {
+          list-style: none;
+          padding: 8px 0 0;
+          margin: 0;
+          display: grid;
+          gap: 6px;
+      }
+
+      .footer a {
+          color: var(--muted);
+          text-decoration: none;
+      }
+
+      .footer a:hover {
+          color: var(--accent);
+      }
+
+      @media (max-width: 960px) {
+          .content {
+              grid-template-columns: 1fr;
+          }
+      }
+
+      @media (max-width: 720px) {
+          .topbar {
+              flex-wrap: wrap;
+              gap: 12px;
+          }
+
+          .nav-links {
+              display: none;
+          }
+
+          .content {
+              padding: 28px 6vw 48px;
+          }
       }
   </style>
 </head>
 <body class="main-body">
 
-<ol class="menu">
-  <li><a href="#/news.html" id="news"><span class="icon">📰</span>资讯</a></li>
-  <li><a href="/qxlive.html" target="_blank"><span class="icon"></span>市场情绪</a></li>
-  <li class="divider">──────start</li>
-  <li><a href="https://duanxianxia.cn/web/jjlive" target="_blank"><span class="icon">⏳</span>隔夜单统计</a></li>
-  <li class="divider">──────go</li>
-  <li><a href="#/yidong.html" id="yidong"><span class="icon">📢</span>异动播报</a></li>
-  <li><a href="#/ztlive.html" id="ztlive">实时涨停播报</a></li>
-  <li>
-    <a href="https://wenda.tdx.com.cn/site/wenda/stock_index.html?message=去除st,去除北交所,成交额前100,量比,实际换手率"
-       target="_blank">
-      <span class="icon">🍜</span>问小达
-    </a>
-  </li>
-  <li><a href="https://wenda.tdx.com.cn/site/wenda/page-user-center.html">问小达问句</a></li>
-  <li><a href="#https://duanxianxia.cn/web/fupangu/" id="lianban"><span class="icon">📂</span>复盘古</a></li>
-  <li class="divider">──────end</li>
-  <li><a href="#https://duanxianxia.cn/web/fupan" id="fupan"><span class="icon">📅</span>涨停复盘</a></li>
-  <li><a href="https://data.10jqka.com.cn/financial/yjyg/" target="_blank"><span class="icon">📑</span>业绩报</a></li>
-</ol>
+<div class="page">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-badge">DX</div>
+      <div>
+        <div>信息工作台</div>
+        <small class="nav-links">数据清单 · 日常速览 · 智能提醒</small>
+      </div>
+    </div>
+    <div class="action-group">
+      <div class="data-center" id="dataCenter">
+        <button class="ghost-btn data-center-trigger" id="dataCenterTrigger" aria-expanded="false">数据中心 ▾</button>
+        <div class="data-center-menu" id="dataCenterMenu">
+          <a href="https://data.eastmoney.com/report/industry.jshtml" target="_blank" rel="noopener noreferrer">
+            <span>📘</span><span>行业研报</span>
+          </a>
+          <a href="https://www.jiuyangongshe.com/" target="_blank" rel="noopener noreferrer">
+            <span>🌐</span><span>韭研公社</span>
+          </a>
+          <a href="https://724.guzhang.com/" target="_blank" rel="noopener noreferrer">
+            <span>🧭</span><span>聚合资讯</span>
+          </a>
+          <a href="https://xuangutong.com.cn/top-gainer" target="_blank" rel="noopener noreferrer">
+            <span>🔥</span><span>热点解读</span>
+          </a>
+        </div>
+      </div>
+      <button class="ghost-btn" id="toggleTools">辅助入口</button>
+      <button class="primary-btn" id="openNews">立即查看</button>
+    </div>
+  </header>
 
-<iframe src="https://www.duanxianxia.cn/web/amount" id="amount" name="amount"></iframe>
+  <main class="content">
+    <section class="hero-card">
+      <h1 class="hero-title">欢迎回来，今日内容已准备就绪。</h1>
+      <p class="hero-sub">首页保持常规信息门户风格，工具入口收纳在轻量浮层中，避免第一眼显得过于“工具化”。互动弹窗仍然清晰易用。</p>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <h3>今日概览</h3>
+        <label class="preview-toggle">
+          <input type="checkbox" id="togglePreview" checked>
+          <span class="toggle-track"></span>
+          <span class="toggle-label">显示</span>
+        </label>
+      </div>
+      <p>默认展示类似资讯门户的卡片布局，内嵌的数据保持在可视区域，避免突兀。</p>
+      <div class="iframe-wrap" id="previewFrame">
+        <iframe src="https://www.duanxianxia.cn/web/amount" id="amount" name="amount" width="100%" height="280"></iframe>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h3>关注点整理</h3>
+      <p>将需要进一步操作的入口收起，保持页面像常规资讯网站。交互弹窗仍支持最大化与定位。</p>
+      <p><strong>提示：</strong>右下角的辅助入口会显示隐藏功能。</p>
+    </section>
+
+    <section class="panel">
+      <h3>情绪概览</h3>
+      <p>快速阅读短线情绪走势，保持外观为资讯页面的常态。</p>
+      <a class="tag" href="/qxlive.html" target="_blank">打开情绪面板</a>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>数据源已对齐，呈现为常规门户风格。</span>
+    <details>
+      <summary>更多入口</summary>
+      <ul>
+        <li><a href="https://data.10jqka.com.cn/financial/yjyg/" target="_blank">业绩报</a></li>
+        <li><a href="https://wenda.tdx.com.cn/site/wenda/page-user-center.html" target="_blank">问小达问句</a></li>
+        <li><a href="#jjlive" class="jjlive-link">隔夜单统计</a></li>
+      </ul>
+    </details>
+  </footer>
+</div>
+
+<aside class="tool-panel" id="toolPanel">
+  <h4>辅助入口</h4>
+  <ol class="menu">
+    <li><a href="#/news.html" id="news"><span class="icon">📰</span>资讯</a></li>
+    <li><a href="/qxlive.html" target="_blank"><span class="icon">📊</span>情绪面板</a></li>
+    <li class="divider">──────start</li>
+    <li><a href="#jjlive" class="jjlive-link"><span class="icon">⏳</span>隔夜单统计</a></li>
+    <li class="divider">──────go</li>
+    <li><a href="#/yidong.html" id="yidong"><span class="icon">📢</span>异动播报</a></li>
+    <li><a href="#/ztlive.html" id="ztlive"><span class="icon">🟢</span>实时涨停播报</a></li>
+    <li>
+      <a href="https://wenda.tdx.com.cn/site/wenda/stock_index.html?message=去除st,去除北交所,成交额前100,量比,实际换手率"
+         target="_blank">
+        <span class="icon">🍜</span>问小达
+      </a>
+    </li>
+    <li><a href="https://wenda.tdx.com.cn/site/wenda/page-user-center.html" target="_blank">问小达问句</a></li>
+    <li><a href="#https://duanxianxia.cn/web/fupangu/" id="lianban"><span class="icon">📂</span>复盘古</a></li>
+    <li class="divider">──────end</li>
+    <li><a href="#https://duanxianxia.cn/web/fupan" id="fupan"><span class="icon">📅</span>涨停复盘</a></li>
+    <li><a href="https://data.10jqka.com.cn/financial/yjyg/" target="_blank"><span class="icon">📑</span>业绩报</a></li>
+  </ol>
+</aside>
 
 <script>
+  $('#toggleTools').on('click', function () {
+    $('#toolPanel').toggleClass('is-open')
+  })
+
+  var dataCenter = $('#dataCenter')
+  var dataCenterTrigger = $('#dataCenterTrigger')
+  var dataCenterMenu = $('#dataCenterMenu')
+  var dataCenterTimer
+
+  function setDataCenterOpen(open) {
+    dataCenter.toggleClass('open', open)
+    dataCenterTrigger.attr('aria-expanded', open ? 'true' : 'false')
+    dataCenterTrigger.text(open ? '数据中心 ▴' : '数据中心 ▾')
+  }
+
+  function queueDataCenterClose(delay) {
+    clearTimeout(dataCenterTimer)
+    dataCenterTimer = setTimeout(function () {
+      setDataCenterOpen(false)
+    }, delay || 120)
+  }
+
+  dataCenterTrigger.on('click', function (event) {
+    event.preventDefault()
+    event.stopPropagation()
+    clearTimeout(dataCenterTimer)
+    setDataCenterOpen(!dataCenter.hasClass('open'))
+  })
+
+  dataCenter.on('mouseenter', function () {
+    clearTimeout(dataCenterTimer)
+    setDataCenterOpen(true)
+  })
+
+  dataCenter.on('mouseleave', function () {
+    queueDataCenterClose(180)
+  })
+
+  dataCenterMenu.on('click', function (event) {
+    event.stopPropagation()
+  })
+
+  $(document).on('click', function () {
+    setDataCenterOpen(false)
+  })
+
+  $(document).on('keydown', function (event) {
+    if (event.key === 'Escape') {
+      setDataCenterOpen(false)
+    }
+  })
+
+  $('#openNews').on('click', function () {
+    $('#news').trigger('click')
+  })
+
+  var previewToggle = $('#togglePreview')
+  var previewFrame = $('#previewFrame')
+  var previewLabel = previewToggle.closest('.preview-toggle').find('.toggle-label')
+  var previewStorageKey = 'stock_preview_visible'
+
+  function applyPreviewState(isVisible) {
+    previewToggle.prop('checked', isVisible)
+    previewFrame.toggleClass('is-collapsed', !isVisible)
+    previewLabel.text(isVisible ? '显示' : '隐藏')
+    if (isVisible) {
+      var iframe = $('#amount')
+      iframe.css({ width: '100%', minWidth: '100%', height: '280px' })
+      previewFrame[0].offsetHeight
+      requestAnimationFrame(function () {
+        iframe.css({ width: '100%', minWidth: '100%' })
+      })
+    }
+  }
+
+  var savedPreviewState = localStorage.getItem(previewStorageKey)
+  if (savedPreviewState !== null) {
+    applyPreviewState(savedPreviewState === 'true')
+  }
+
+  previewToggle.on('change', function () {
+    var isChecked = $(this).is(':checked')
+    applyPreviewState(isChecked)
+    localStorage.setItem(previewStorageKey, String(isChecked))
+  })
+
+  $('.jjlive-link').on('click', function (event) {
+    event.preventDefault()
+    layer.open({
+      id: 'jjlive_',
+      type: 2,
+      move: true,
+      moveOut: true,
+      area: ['100%', '100%'],
+      title: '隔夜单统计',
+      maxmin: true,
+      offset: 'auto',
+      shade: 0,
+      fixed: false,
+      content: 'https://duanxianxia.cn/web/jjlive',
+      success: function (layero, index) {
+        layer.full(index)
+      }
+    })
+  })
+
   $('#news').click(function () {
     layer.open({
       id: 'newsT',
       type: 2,
       title: '资讯',
+      move: true,
+      moveOut: true,
       maxmin: true,
       area: ['666px', '88%'],
       offset: 'b',
@@ -113,6 +661,8 @@
       id: 'yidong_',
       type: 2,
       title: '异动播报',
+      move: true,
+      moveOut: true,
       maxmin: false,
       area: ['660px', '600px'],
       offset: 'lb',
@@ -129,6 +679,8 @@
       id: 'ztliveT',
       type: 2,
       title: '实时涨停播报',
+      move: true,
+      moveOut: true,
       maxmin: true,
       area: ['660px', '700px'], // 初始尺寸
       offset: 'rb',
@@ -163,6 +715,8 @@
     layer.open({
       id: 'lianban_',
       type: 2,
+      move: true,
+      moveOut: true,
       area: ['60%', '100%'],
       title: '昨日涨停',
       maxmin: true,
@@ -177,6 +731,8 @@
     layer.open({
       id: 'fupan_',
       type: 2,
+      move: true,
+      moveOut: true,
       area: ['100%', '100%'],
       title: '涨停复盘',
       maxmin: true,

@@ -1070,7 +1070,12 @@ $(function () {
     }
   }
 
-  var _0x159581 = new WebSocket(_0x20fe38[_0x2b6a0a(177, "$l#T")]);
+  var _0x159581 = new WebSocket("wss://m.duanxianxia.com/wss3");
+  var ztlivePingTimer = setInterval(function () {
+    if (_0x159581.readyState === WebSocket.OPEN) {
+      _0x159581.send("ping");
+    }
+  }, 60000);
 
   _0x159581[_0x2b6a0a(609, "p2xk")] = function () {
     _0x159581["send"](_0x20fe38["ZWlxt"]);
@@ -1247,7 +1252,11 @@ $(function () {
         _0x322c0b["parent"]["closekline"]();
       }
     }
-  }, _0x159581[_0x2b6a0a(590, "$tt*")] = function (_0x3929c9) {}, _0x159581["onerror"] = function (_0x2bc8da) {}, setInterval(function () {
+  }, _0x159581[_0x2b6a0a(590, "$tt*")] = function (_0x3929c9) {
+    clearInterval(ztlivePingTimer);
+  }, _0x159581["onerror"] = function (_0x2bc8da) {
+    clearInterval(ztlivePingTimer);
+  }, setInterval(function () {
     var _0x4d16e4 = _0x2b6a0a;
     if (_0x20fe38["TgZQc"](_0x20fe38[_0x4d16e4(671, "M^8r")], _0x20fe38[_0x4d16e4(174, "UzFP")])) var _0x5194d5 = _0x159581["send"](_0x20fe38[_0x4d16e4(148, "RYoR")]);else {
       _0x5d9e7b(this)[_0x4d16e4(504, "UzFP")](_0x4d16e4(154, "Zg(s"))[_0x4d16e4(679, "$COn")](_0x20fe38["xuQVa"])["siblings"]()["removeClass"](_0x4d16e4(585, "p2xk"))["addClass"](_0x20fe38["EQaQm"]), _0x2d21cd = _0x20fe38["QbRbC"](_0x4bd6c0, this)[_0x4d16e4(521, "RYoR")](), _0x1fd7e9 = _0x20fe38["Ilikq"](_0x2377b7, this)[_0x4d16e4(225, "RT%1")](_0x20fe38["YHZkS"]), _0x2b04bf = _0x20fe38[_0x4d16e4(145, "I14X")](_0x2c55be, this)[_0x4d16e4(654, "RYoR")](_0x20fe38[_0x4d16e4(144, "j&^U")]), _0x480493 = _0x20fe38["YRIYc"](_0x3a3f83, this)[_0x4d16e4(363, "dap7")](_0x20fe38["Fbadl"]);
