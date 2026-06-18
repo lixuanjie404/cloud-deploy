@@ -1,24 +1,1405 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="zh">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>首页</title>
+  <script src="https://code.jquery.com/jquery-2.0.0.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/layer/3.5.1/theme/default/layer.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/layer/3.5.1/layer.min.js"></script>
   <style>
-    a {
-      color: #444;
-    }
+      :root {
+          color-scheme: light;
+          --bg: #f6f7fb;
+          --card: #ffffff;
+          --text: #1f2a44;
+          --muted: #667085;
+          --accent: #2f6fed;
+          --accent-soft: rgba(47, 111, 237, 0.12);
+          --shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+          --topbar-bg: #ffffff;
+          --topbar-shadow: 0 1px 0 rgba(15, 23, 42, 0.05);
+          --hero-gradient: linear-gradient(135deg, #ffffff 0%, #f8fbff 52%, #eef4ff 100%);
+          --timeline-role-bg: linear-gradient(135deg, #f8fafc, #eef4ff);
+          --timeline-border: #edf0f6;
+          --timeline-slot-bg: rgba(248, 250, 252, 0.78);
+          --ghost-btn-hover: #f0f2f8;
+          --menu-item-bg: rgba(255, 255, 255, 0.08);
+          --menu-item-hover: rgba(255, 255, 255, 0.16);
+      }
+
+      [data-theme="dark"] {
+          color-scheme: dark;
+          --bg: #0f172a;
+          --card: #1e293b;
+          --text: #e2e8f0;
+          --muted: #94a3b8;
+          --accent: #60a5fa;
+          --accent-soft: rgba(96, 165, 250, 0.15);
+          --shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+          --topbar-bg: #1e293b;
+          --topbar-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+          --hero-gradient: linear-gradient(135deg, #1e293b 0%, #1e293b 52%, #334155 100%);
+          --timeline-role-bg: linear-gradient(135deg, #1e293b, #334155);
+          --timeline-border: #334155;
+          --timeline-slot-bg: rgba(30, 41, 59, 0.78);
+          --ghost-btn-hover: #334155;
+          --menu-item-bg: rgba(255, 255, 255, 0.06);
+          --menu-item-hover: rgba(255, 255, 255, 0.12);
+      }
+
+      * {
+          box-sizing: border-box;
+      }
+
+      .main-body {
+          font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+          background: var(--bg);
+          color: var(--text);
+          margin: 0;
+      }
+
+      .page {
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          overflow-x: hidden;
+      }
+
+      .topbar {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 18px 6vw;
+          background: var(--topbar-bg);
+          box-shadow: var(--topbar-shadow);
+          position: sticky;
+          top: 0;
+          z-index: 10;
+      }
+
+      .brand {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-weight: 600;
+      }
+
+      .brand-badge {
+          width: 36px;
+          height: 36px;
+          border-radius: 12px;
+          background: var(--accent-soft);
+          display: grid;
+          place-items: center;
+          color: var(--accent);
+          font-weight: 700;
+      }
+
+      .nav-links {
+          display: flex;
+          gap: 20px;
+          font-size: 14px;
+          color: var(--muted);
+      }
+
+      .nav-links span {
+          cursor: default;
+      }
+
+      .action-group {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+      }
+
+      .data-center {
+          position: relative;
+      }
+
+      .data-center-trigger {
+          min-width: 96px;
+      }
+
+      .data-center-menu {
+          position: absolute;
+          top: calc(100% + 10px);
+          right: 0;
+          width: 210px;
+          background: var(--card);
+          border: 1px solid #e9edf6;
+          border-radius: 14px;
+          padding: 8px;
+          box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+          opacity: 0;
+          visibility: hidden;
+          transform: translateY(-4px);
+          pointer-events: none;
+          transition: opacity 0.18s ease, transform 0.18s ease;
+          z-index: 30;
+      }
+
+      .data-center.open .data-center-menu {
+          opacity: 1;
+          visibility: visible;
+          transform: translateY(0);
+          pointer-events: auto;
+      }
+
+      .data-center-menu a {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          text-decoration: none;
+          color: var(--text);
+          border-radius: 10px;
+          padding: 9px 10px;
+          font-size: 13px;
+      }
+
+      .data-center-menu a:hover {
+          background: #f5f8ff;
+          color: var(--accent);
+      }
+
+      .ztlive-draggable-layer .layui-layer-title,
+      .yidong-draggable-layer .layui-layer-title {
+          cursor: move;
+          user-select: none;
+      }
+
+      .ghost-btn,
+      .primary-btn {
+          border: none;
+          padding: 8px 16px;
+          border-radius: 999px;
+          font-size: 14px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+      }
+
+      .ghost-btn {
+          background: transparent;
+          color: var(--muted);
+      }
+
+      .ghost-btn:hover {
+          background: var(--ghost-btn-hover);
+          color: var(--text);
+      }
+
+      .primary-btn {
+          background: var(--accent);
+          color: #fff;
+          box-shadow: 0 6px 18px rgba(47, 111, 237, 0.2);
+      }
+
+      .primary-btn:hover {
+          transform: translateY(-1px);
+      }
+
+      .content {
+          flex: 1;
+          padding: 24px 6vw 32px;
+          display: grid;
+          grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+          gap: 16px;
+      }
+
+      .hero-card {
+          position: relative;
+          overflow: hidden;
+          background:
+              radial-gradient(circle at top right, rgba(47, 111, 237, 0.18), transparent 34%),
+              var(--hero-gradient);
+          border: 1px solid rgba(47, 111, 237, 0.08);
+          border-radius: 20px;
+          padding: 14px 20px;
+          box-shadow: var(--shadow);
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+      }
+
+      .hero-card::after {
+          content: "";
+          position: absolute;
+          right: -56px;
+          bottom: -64px;
+          width: 180px;
+          height: 180px;
+          border-radius: 50%;
+          background: rgba(47, 111, 237, 0.08);
+          pointer-events: none;
+      }
+
+      .hero-card .panel-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          position: relative;
+          z-index: 1;
+      }
+
+      .hero-card h3 {
+          margin: 0;
+      }
+
+      .ai-tool-strip {
+          position: relative;
+          z-index: 1;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+      }
+
+      .ai-tool-heading {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+          color: var(--muted);
+          font-size: 12px;
+      }
+
+      .ai-tool-heading strong {
+          color: var(--text);
+          font-size: 12px;
+      }
+
+      .ai-tool-grid {
+          display: grid;
+          grid-template-columns: repeat(5, minmax(0, 1fr));
+          gap: 6px;
+      }
+
+      .ai-tool-card {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          min-height: 36px;
+          padding: 6px 8px;
+          border: 1px solid rgba(226, 232, 240, 0.9);
+          border-radius: 10px;
+          background: rgba(255, 255, 255, 0.82);
+          color: var(--text);
+          text-decoration: none;
+          box-shadow: 0 12px 26px rgba(15, 23, 42, 0.06);
+          backdrop-filter: blur(10px);
+          transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+      }
+
+      .ai-tool-card:hover {
+          transform: translateY(-2px);
+          border-color: rgba(47, 111, 237, 0.32);
+          box-shadow: 0 16px 32px rgba(47, 111, 237, 0.14);
+      }
+
+      .ai-tool-icon {
+          width: 20px;
+          height: 20px;
+          flex: 0 0 20px;
+          display: grid;
+          place-items: center;
+          border-radius: 6px;
+          background: var(--accent-soft);
+          color: var(--accent);
+          font-size: 10px;
+          font-weight: 800;
+      }
+
+      .ai-tool-name {
+          display: block;
+          font-size: 11px;
+          font-weight: 700;
+      }
+
+      .ai-tool-desc {
+          display: block;
+          margin-top: 0;
+          color: var(--muted);
+          font-size: 9px;
+      }
+
+      .panel {
+          background: var(--card);
+          border-radius: 20px;
+          padding: 12px 16px;
+          box-shadow: var(--shadow);
+      }
+
+      .panel-compact {
+          padding-bottom: 8px;
+      }
+
+      .annual-rhythm {
+          display: flex;
+          gap: 8px;
+          justify-content: space-between;
+      }
+
+      .annual-rhythm .season {
+          display: flex;
+          align-items: center;
+          gap: 2px;
+          background: var(--accent-soft);
+          padding: 4px 6px;
+          border-radius: 6px;
+          font-size: 11px;
+          color: var(--accent);
+      }
+
+      .annual-rhythm .season .s {
+          font-weight: 700;
+          padding-right: 4px;
+      }
+
+      .annual-rhythm .season span:not(.s) {
+          color: var(--muted);
+          font-size: 10px;
+      }
+
+      .panel-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+      }
+
+      .preview-toggle {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 12px;
+          color: var(--muted);
+      }
+
+      .preview-toggle input {
+          position: absolute;
+          opacity: 0;
+          pointer-events: none;
+      }
+
+      .toggle-track {
+          width: 40px;
+          height: 22px;
+          border-radius: 999px;
+          background: #e2e8f0;
+          position: relative;
+          transition: background 0.2s ease;
+      }
+
+      .toggle-track::after {
+          content: "";
+          position: absolute;
+          top: 3px;
+          left: 3px;
+          width: 16px;
+          height: 16px;
+          border-radius: 50%;
+          background: var(--card);
+          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
+          transition: transform 0.2s ease;
+      }
+
+      .preview-toggle input:checked + .toggle-track {
+          background: rgba(47, 111, 237, 0.4);
+      }
+
+      .preview-toggle input:checked + .toggle-track::after {
+          transform: translateX(18px);
+      }
+
+      .iframe-wrap.is-collapsed {
+          opacity: 0;
+          visibility: hidden;
+          pointer-events: none;
+      }
+
+      .panel h3 {
+          margin-top: 0;
+          margin-bottom: 8px;
+          font-size: 14px;
+      }
+
+      .panel p {
+          font-size: 12px;
+          margin-bottom: 8px;
+          color: var(--muted);
+          margin-top: 0;
+          line-height: 1.6;
+      }
+          line-height: 1.6;
+      }
+
+      .panel .tag {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          background: var(--accent-soft);
+          color: var(--accent);
+          padding: 6px 12px;
+          border-radius: 999px;
+          font-size: 12px;
+          font-weight: 600;
+      }
+
+      .focus-timeline {
+          margin-top: 16px;
+          display: grid;
+          gap: 12px;
+      }
+
+      .focus-timeline.compact {
+          gap: 8px;
+          margin-bottom: 16px;
+      }
+
+      .timeline-head,
+      .timeline-row {
+          display: grid;
+          grid-template-columns: 96px repeat(4, minmax(0, 1fr));
+          gap: 10px;
+          align-items: stretch;
+      }
+
+      /* 紧凑时间轴样式 */
+      .focus-timeline.compact .timeline-row {
+          grid-template-columns: 72px repeat(4, minmax(0, 1fr));
+          gap: 6px;
+      }
+
+      .focus-timeline.compact .timeline-role {
+          min-height: 52px;
+          padding: 8px;
+          font-size: 12px;
+      }
+
+      .focus-timeline.compact .timeline-role strong {
+          font-size: 12px;
+      }
+
+      .focus-timeline.compact .timeline-role small {
+          font-size: 10px;
+      }
+
+      .focus-timeline.compact .timeline-slot {
+          min-height: 52px;
+          padding: 6px 8px;
+      }
+
+      .timeline-label {
+          font-size: 12px;
+          margin-top: 12px;
+      }
+
+      .focus-timeline.compact .timeline-label {
+          font-size: 11px;
+          margin-top: 8px;
+      }
+
+      .timeline-hint {
+          font-size: 10px;
+      }
+
+      .timeline-dot {
+          width: 8px;
+          height: 8px;
+      }
+
+      .focus-timeline.compact .timeline-dot {
+          width: 6px;
+          height: 6px;
+      }
+
+      .timeline-slot::before {
+          top: 12px;
+          left: 8px;
+          right: 8px;
+      }
+
+      .focus-timeline.compact .timeline-slot::before {
+          top: 10px;
+      }
+
+      .timeline-popover {
+          bottom: calc(100% + 8px);
+          width: 180px;
+          padding: 10px;
+      }
+
+      .timeline-popover strong {
+          font-size: 12px;
+      }
+
+      .timeline-popover span {
+          font-size: 11px;
+      }
+
+      /* 年度节奏时间轴 */
+      .timeline-head.yearly,
+      .timeline-row.yearly {
+          grid-template-columns: 0 repeat(12, minmax(0, 1fr));
+          gap: 4px;
+      }
+
+      .focus-timeline.compact .timeline-head.yearly,
+      .focus-timeline.compact .timeline-row.yearly {
+          grid-template-columns: 0 repeat(12, 1fr);
+          gap: 3px;
+      }
+
+      .timeline-head.yearly span {
+          text-align: center;
+          font-size: 10px;
+          color: var(--muted);
+      }
+
+      .season-label {
+          color: var(--accent) !important;
+          font-weight: 700;
+          text-align: center !important;
+      }
+
+      .timeline-slot.monthly {
+          min-height: 46px;
+          padding: 6px 4px;
+      }
+
+      .timeline-slot.monthly .timeline-label {
+          font-size: 10px;
+          margin-top: 10px;
+          line-height: 1.2;
+      }
+
+      .timeline-slot.monthly .timeline-dot {
+          width: 6px;
+          height: 6px;
+      }
+
+      .timeline-slot.monthly .timeline-slot::before {
+          top: 8px;
+      }
+
+      .timeline-slot.monthly::before {
+          top: 10px;
+          left: 4px;
+          right: 4px;
+      }
+
+      .timeline-head.yearly {
+          color: var(--muted);
+          font-size: 12px;
+          padding: 0 2px;
+      }
+
+      .timeline-head span:not(:first-child) {
+          text-align: center;
+      }
+
+      .timeline-role {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          gap: 4px;
+          min-height: 86px;
+          padding: 12px;
+          border-radius: 16px;
+          background: var(--timeline-role-bg);
+          border: 1px solid var(--timeline-border);
+      }
+
+      .timeline-role strong {
+          font-size: 14px;
+          color: var(--text);
+      }
+
+      .timeline-role small {
+          color: var(--muted);
+          font-size: 11px;
+      }
+
+      .timeline-slot {
+          position: relative;
+          min-height: 86px;
+          padding: 12px;
+          border: 1px solid var(--timeline-border);
+          border-radius: 16px;
+          background: var(--timeline-slot-bg);
+          overflow: visible;
+          cursor: default;
+          transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+      }
+
+      .timeline-slot::before {
+          content: "";
+          position: absolute;
+          top: 18px;
+          left: 12px;
+          right: 12px;
+          height: 2px;
+          border-radius: 999px;
+          background: linear-gradient(90deg, rgba(47, 111, 237, 0.25), rgba(47, 111, 237, 0.05));
+      }
+
+      .timeline-dot {
+          position: relative;
+          z-index: 1;
+          display: block;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          background: var(--accent);
+          box-shadow: 0 0 0 5px rgba(47, 111, 237, 0.12);
+      }
+
+      .timeline-label {
+          display: block;
+          margin-top: 18px;
+          color: var(--text);
+          font-size: 13px;
+          font-weight: 700;
+      }
+
+      .timeline-hint {
+          display: block;
+          margin-top: 5px;
+          color: var(--muted);
+          font-size: 11px;
+      }
+
+      .timeline-popover {
+          position: absolute;
+          left: 50%;
+          bottom: calc(100% + 10px);
+          z-index: 20;
+          width: min(230px, 78vw);
+          padding: 12px;
+          border-radius: 14px;
+          background: #0f172a;
+          color: #fff;
+          box-shadow: 0 18px 40px rgba(15, 23, 42, 0.22);
+          opacity: 0;
+          visibility: hidden;
+          transform: translate(-50%, 6px);
+          pointer-events: none;
+          transition: opacity 0.16s ease, transform 0.16s ease, visibility 0.16s ease;
+      }
+
+      .timeline-popover::after {
+          content: "";
+          position: absolute;
+          left: 50%;
+          bottom: -6px;
+          width: 12px;
+          height: 12px;
+          background: #0f172a;
+          transform: translateX(-50%) rotate(45deg);
+      }
+
+      .timeline-popover strong {
+          display: block;
+          margin-bottom: 6px;
+          font-size: 13px;
+      }
+
+      .timeline-popover span {
+          display: block;
+          color: rgba(255, 255, 255, 0.78);
+          font-size: 12px;
+          line-height: 1.55;
+      }
+
+      .timeline-slot:hover,
+      .timeline-slot:focus-within {
+          z-index: 3;
+          transform: translateY(-2px);
+          border-color: rgba(47, 111, 237, 0.35);
+          background: var(--card);
+          box-shadow: 0 14px 30px rgba(47, 111, 237, 0.12);
+      }
+
+      .timeline-slot:hover .timeline-popover,
+      .timeline-slot:focus-within .timeline-popover {
+          opacity: 1;
+          visibility: visible;
+          transform: translate(-50%, 0);
+      }
+
+      .iframe-wrap {
+          margin-top: 18px;
+          width: 100%;
+          border-radius: 16px;
+          overflow: hidden;
+          border: 1px solid #edf0f6;
+          transition: opacity 0.2s ease;
+      }
+
+      #amount {
+          border: none;
+          width: 100%;
+          min-width: 100%;
+          height: 180px;
+          background: var(--card);
+          display: block;
+      }
+
+      .tool-panel {
+          position: fixed;
+          right: 24px;
+          bottom: 24px;
+          width: 260px;
+          background: #0f172a;
+          color: #e2e8f0;
+          border-radius: 16px;
+          padding: 16px;
+          box-shadow: 0 12px 30px rgba(15, 23, 42, 0.35);
+          opacity: 0;
+          transform: translateY(12px);
+          pointer-events: none;
+          transition: all 0.2s ease;
+      }
+
+      .tool-panel.is-open {
+          opacity: 1;
+          transform: translateY(0);
+          pointer-events: auto;
+      }
+
+      .tool-panel h4 {
+          margin: 0 0 10px;
+          font-size: 14px;
+          font-weight: 600;
+      }
+
+      .menu {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          display: grid;
+          gap: 8px;
+      }
+
+      .menu li {
+          background: var(--menu-item-bg);
+          border-radius: 10px;
+          padding: 8px 12px;
+          font-size: 13px;
+          transition: all 0.2s ease;
+      }
+
+      .menu li:hover {
+          background: var(--menu-item-hover);
+      }
+
+      .menu a {
+          text-decoration: none;
+          color: inherit;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+      }
+
+      .divider {
+          color: rgba(226, 232, 240, 0.4);
+          text-align: center;
+          font-size: 11px;
+          padding: 4px 0;
+      }
+
+      .menu-group-title {
+          color: var(--muted);
+          font-size: 11px;
+          font-weight: 600;
+          padding: 12px 8px 4px;
+          letter-spacing: 0.05em;
+      }
+
+      .icon {
+          font-size: 14px;
+          opacity: 0.7;
+      }
+
+      .footer {
+          padding: 0 6vw 30px;
+          color: var(--muted);
+          font-size: 13px;
+          display: flex;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          gap: 12px;
+      }
+
+      .footer details {
+          background: var(--card);
+          border-radius: 12px;
+          padding: 8px 12px;
+          box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+      }
+
+      .footer summary {
+          cursor: pointer;
+          list-style: none;
+          font-weight: 600;
+          color: var(--text);
+      }
+
+      .footer ul {
+          list-style: none;
+          padding: 8px 0 0;
+          margin: 0;
+          display: grid;
+          gap: 6px;
+      }
+
+      .footer a {
+          color: var(--muted);
+          text-decoration: none;
+      }
+
+      .footer a:hover {
+          color: var(--accent);
+      }
+
+      @media (max-width: 1100px) {
+          .ai-tool-grid {
+              grid-template-columns: repeat(3, minmax(0, 1fr));
+          }
+      }
+
+      @media (max-width: 960px) {
+          .content {
+              grid-template-columns: 1fr;
+          }
+      }
+
+      @media (max-width: 720px) {
+          .topbar {
+              flex-wrap: wrap;
+              gap: 12px;
+          }
+
+          .nav-links {
+              display: none;
+          }
+
+          .content {
+              padding: 28px 6vw 48px;
+          }
+
+          .hero-card {
+              min-height: auto;
+              padding: 24px;
+          }
+
+          .ai-tool-heading {
+              align-items: flex-start;
+              flex-direction: column;
+          }
+
+          .ai-tool-grid {
+              grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+
+          .focus-timeline {
+              overflow-x: auto;
+              padding-bottom: 4px;
+          }
+
+          .timeline-head,
+          .timeline-row {
+              min-width: 620px;
+          }
+      }
   </style>
 </head>
+<body class="main-body">
 
-<body>
-  <ol>
-    <li><a href="/news.html">资讯</a></li>
-    <li><a href="/qxlive.html">市场情绪</a></li>
-    <li><a href="/yidong.html">异动(测试)</a></li>
-    <li><a href="/ztlive.html">实时涨停播报</a></li>
+<div class="page">
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-badge">DX</div>
+      <div>
+        <div>信息工作台</div>
+        <small class="nav-links">数据清单 · 日常速览 · 智能提醒</small>
+      </div>
+    </div>
+    <div class="action-group">
+      <div class="data-center" id="dataCenter">
+        <button class="ghost-btn data-center-trigger" id="dataCenterTrigger" aria-expanded="false">数据中心 ▾</button>
+        <div class="data-center-menu" id="dataCenterMenu">
+          <a href="https://data.eastmoney.com/report/industry.jshtml" target="_blank" rel="noopener noreferrer">
+            <span>📘</span><span>行业研报</span>
+          </a>
+          <a href="https://www.jiuyangongshe.com/" target="_blank" rel="noopener noreferrer">
+            <span>🌐</span><span>韭研公社</span>
+          </a>
+          <a href="https://724.guzhang.com/" target="_blank" rel="noopener noreferrer">
+            <span>🧭</span><span>聚合资讯</span>
+          </a>
+          <a href="https://xuangutong.com.cn/top-gainer" target="_blank" rel="noopener noreferrer">
+            <span>🔥</span><span>热点解读</span>
+          </a>
+          <a href="https://ima.qq.com/" target="_blank" rel="noopener noreferrer">
+            <span>🐧</span><span>腾讯ima</span>
+          </a>
+        </div>
+      </div>
+      <button class="ghost-btn" id="toggleTheme" title="切换主题 (Ctrl+Shift+D)">🌙</button>
+      <button class="ghost-btn" id="toggleTools">辅助入口</button>
+      <button class="primary-btn" id="openNews">立即查看</button>
+    </div>
+  </header>
+
+  <main class="content">
+    <section class="hero-card">
+      <div class="panel-header">
+        <h3>工作台</h3>
+      </div>
+      <div class="ai-tool-strip" aria-label="AI 对话工具">
+        <div class="ai-tool-heading">
+          <strong>AI 对话工具</strong>
+        </div>
+        <div class="ai-tool-grid">
+          <a class="ai-tool-card" href="https://chat.z.ai/" target="_blank" rel="noopener noreferrer">
+            <span class="ai-tool-icon">Z</span>
+            <span><span class="ai-tool-name">Z.ai</span><span class="ai-tool-desc">轻量对话</span></span>
+          </a>
+          <a class="ai-tool-card" href="https://chat.deepseek.com/" target="_blank" rel="noopener noreferrer">
+            <span class="ai-tool-icon">D</span>
+            <span><span class="ai-tool-name">DeepSeek</span><span class="ai-tool-desc">深度推理</span></span>
+          </a>
+          <a class="ai-tool-card" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">
+            <span class="ai-tool-icon">G</span>
+            <span><span class="ai-tool-name">ChatGPT</span><span class="ai-tool-desc">综合助手</span></span>
+          </a>
+          <a class="ai-tool-card" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">
+            <span class="ai-tool-icon">✦</span>
+            <span><span class="ai-tool-name">Gemini</span><span class="ai-tool-desc">Google AI</span></span>
+          </a>
+          <a class="ai-tool-card" href="https://chatglm.cn/" target="_blank" rel="noopener noreferrer">
+            <span class="ai-tool-icon">智</span>
+            <span><span class="ai-tool-name">智谱清言 Agent</span><span class="ai-tool-desc">国产助手</span></span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel panel-compact">
+      <div class="panel-header">
+        <h3>今日概览</h3>
+        <label class="preview-toggle">
+          <input type="checkbox" id="togglePreview" checked>
+          <span class="toggle-track"></span>
+          <span class="toggle-label">显示</span>
+        </label>
+      </div>
+      <p>默认展示类似资讯门户的卡片布局，内嵌的数据保持在可视区域，避免突兀。</p>
+      <div class="iframe-wrap" id="previewFrame">
+        <iframe src="https://www.duanxianxia.cn/web/amount" id="amount" name="amount" width="100%" height="280"></iframe>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h3>关注点整理</h3>
+      <p>以日常工作流方式整理常用入口，默认只呈现轻量节奏视图；悬浮在节点上可查看该角色在当前阶段适合打开的工具。</p>
+      <div class="focus-timeline" aria-label="双角色横向时间轴">
+        <div class="timeline-head" aria-hidden="true">
+          <span></span>
+          <span>启动</span>
+          <span>收集</span>
+          <span>跟进</span>
+          <span>复核</span>
+        </div>
+        <div class="timeline-row">
+          <div class="timeline-role">
+            <strong>程序员</strong>
+            <small>构建 / 排查</small>
+          </div>
+          <div class="timeline-slot" tabindex="0">
+            <span class="timeline-dot"></span>
+            <span class="timeline-label">环境确认</span>
+            <span class="timeline-hint">悬浮查看</span>
+            <div class="timeline-popover"><strong>可能使用</strong><span>AI 对话工具、问句中心、入口状态检查。</span></div>
+          </div>
+          <div class="timeline-slot" tabindex="0">
+            <span class="timeline-dot"></span>
+            <span class="timeline-label">资料整理</span>
+            <span class="timeline-hint">悬浮查看</span>
+            <div class="timeline-popover"><strong>可能使用</strong><span>数据中心、聚合资讯、专题资料。</span></div>
+          </div>
+          <div class="timeline-slot" tabindex="0">
+            <span class="timeline-dot"></span>
+            <span class="timeline-label">问题跟进</span>
+            <span class="timeline-hint">悬浮查看</span>
+            <div class="timeline-popover"><strong>可能使用</strong><span>辅助入口、实时提醒、变更窗口。</span></div>
+          </div>
+          <div class="timeline-slot" tabindex="0">
+            <span class="timeline-dot"></span>
+            <span class="timeline-label">结果复核</span>
+            <span class="timeline-hint">悬浮查看</span>
+            <div class="timeline-popover"><strong>可能使用</strong><span>归档记录、清单对照、AI 总结。</span></div>
+          </div>
+        </div>
+        <div class="timeline-row">
+          <div class="timeline-role">
+            <strong>信息观察者</strong>
+            <small>阅读 / 记录</small>
+          </div>
+          <div class="timeline-slot" tabindex="0">
+            <span class="timeline-dot"></span>
+            <span class="timeline-label">晨间速览</span>
+            <span class="timeline-hint">悬浮查看</span>
+            <div class="timeline-popover"><strong>可能使用</strong><span>今日概览、聚合资讯、AI 摘要。</span></div>
+          </div>
+          <div class="timeline-slot" tabindex="0">
+            <span class="timeline-dot"></span>
+            <span class="timeline-label">线索归档</span>
+            <span class="timeline-hint">悬浮查看</span>
+            <div class="timeline-popover"><strong>可能使用</strong><span>线索解读、资料入口、观察清单。</span></div>
+          </div>
+          <div class="timeline-slot" tabindex="0">
+            <span class="timeline-dot"></span>
+            <span class="timeline-label">即时观察</span>
+            <span class="timeline-hint">悬浮查看</span>
+            <div class="timeline-popover"><strong>可能使用</strong><span>轻量提醒、状态面板、临时记录。</span></div>
+          </div>
+          <div class="timeline-slot" tabindex="0">
+            <span class="timeline-dot"></span>
+            <span class="timeline-label">收尾整理</span>
+            <span class="timeline-hint">悬浮查看</span>
+            <div class="timeline-popover"><strong>可能使用</strong><span>复核入口、留存清单、AI 归纳。</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h3>情绪概览</h3>
+      <p>快速阅读短线情绪走势，保持外观为资讯页面的常态。</p>
+      <a class="tag" href="/qxlive.html" target="_blank">打开情绪面板</a>
+    </section>
+  </main>
+</div>
+
+<aside class="tool-panel" id="toolPanel">
+  <h4>辅助入口</h4>
+  <ol class="menu">
+    <li class="menu-group-title">📊 资讯数据</li>
+    <li><a href="#/news.html" id="news"><span class="icon">📰</span>资讯</a></li>
+    <li><a href="/qxlive.html" target="_blank"><span class="icon">📈</span>情绪面板</a></li>
+    <li><a href="#jjlive" class="jjlive-link"><span class="icon">📉</span>隔夜单</a></li>
+
+    <li class="menu-group-title">📡 实时监控</li>
+    <li><a href="#/yidong.html" id="yidong"><span class="icon">📢</span>异动播报</a></li>
+    <li><a href="#/ztlive.html" id="ztlive"><span class="icon">🟢</span>涨停播报</a></li>
+
+    <li class="menu-group-title">🛠 分析工具</li>
+    <li>
+      <a href="https://wenda.tdx.com.cn/site/wenda/stock_index.html?message=去除st,去除北交所,成交额前100,量比,实际换手率"
+         target="_blank">
+        <span class="icon">🍜</span>问小达
+      </a>
+    </li>
+    <li><a href="https://wenda.tdx.com.cn/site/wenda/page-user-center.html" target="_blank"><span class="icon">📝</span>问句库</a></li>
+    <li><a href="#https://duanxianxia.cn/web/fupangu/" id="lianban"><span class="icon">📂</span>复盘古</a></li>
+    <li><a href="#https://duanxianxia.cn/web/fupan" id="fupan"><span class="icon">📅</span>涨停复盘</a></li>
+
+    <li class="menu-group-title">📑 财务数据</li>
+    <li><a href="https://data.10jqka.com.cn/financial/yjyg/" target="_blank"><span class="icon">📋</span>业绩报</a></li>
   </ol>
-</body>
+</aside>
 
+<script>
+  // ========== 主题切换 ==========
+  var themeToggle = $('#toggleTheme')
+  var themeKey = 'site_theme'
+
+  function applyTheme(isDark) {
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light')
+    themeToggle.text(isDark ? '☀️' : '🌙')
+    localStorage.setItem(themeKey, isDark ? 'dark' : 'light')
+  }
+
+  var savedTheme = localStorage.getItem(themeKey)
+  if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    applyTheme(true)
+  }
+
+  themeToggle.on('click', function () {
+    var isDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    applyTheme(!isDark)
+  })
+
+  // ========== 快捷键 ==========
+  var shortcuts = {
+    '1': function() { $('#news').trigger('click') },
+    '2': function() { $('.jjlive-link').trigger('click') },
+    '3': function() { $('#yidong').trigger('click') },
+    '4': function() { $('#ztlive').trigger('click') },
+    '5': function() { $('#fupan').trigger('click') },
+    't': function() { $('#toggleTools').trigger('click') },
+    'd': function() { $('#dataCenterTrigger').trigger('click') },
+    '?': function() { showShortcutsHelp() }
+  }
+
+  function showShortcutsHelp() {
+    layer.open({
+      type: 1,
+      title: '快捷键',
+      area: ['320px', 'auto'],
+      content: '<div style="padding:16px;line-height:2;"><strong>常用快捷键：</strong><br>1 - 资讯<br>2 - 隔夜单统计<br>3 - 异动播报<br>4 - 实时涨停播报<br>5 - 涨停复盘<br>t - 切换辅助入口<br>d - 数据中心<br>? - 显示此帮助<br><br><em>Ctrl+Shift+D - 切换深色模式</em></div>'
+    })
+  }
+
+  // 按 ? 显示帮助（需要先获取焦点）
+  $(document).on('keydown', function(e) {
+    // 如果在输入框中，不触发快捷键
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return
+
+    // Ctrl+Shift+D 切换主题
+    if (e.ctrlKey && e.shiftKey && e.key === 'D') {
+      e.preventDefault()
+      themeToggle.trigger('click')
+      return
+    }
+
+    // 单键快捷键
+    var key = e.key.toLowerCase()
+    if (shortcuts[key] && !e.ctrlKey && !e.shiftKey && !e.altKey) {
+      e.preventDefault()
+      shortcuts[key]()
+    }
+  })
+
+  // ========== 辅助入口面板 ==========
+  $('#toggleTools').on('click', function () {
+    $('#toolPanel').toggleClass('is-open')
+  })
+
+  // 点击外部关闭辅助入口
+  $('#toolPanel').on('click', function(e) {
+    e.stopPropagation()
+  })
+
+  var dataCenter = $('#dataCenter')
+  var dataCenterTrigger = $('#dataCenterTrigger')
+  var dataCenterMenu = $('#dataCenterMenu')
+  var dataCenterTimer
+
+  function setDataCenterOpen(open) {
+    dataCenter.toggleClass('open', open)
+    dataCenterTrigger.attr('aria-expanded', open ? 'true' : 'false')
+    dataCenterTrigger.text(open ? '数据中心 ▴' : '数据中心 ▾')
+  }
+
+  function queueDataCenterClose(delay) {
+    clearTimeout(dataCenterTimer)
+    dataCenterTimer = setTimeout(function () {
+      setDataCenterOpen(false)
+    }, delay || 120)
+  }
+
+  dataCenterTrigger.on('click', function (event) {
+    event.preventDefault()
+    event.stopPropagation()
+    clearTimeout(dataCenterTimer)
+    setDataCenterOpen(!dataCenter.hasClass('open'))
+  })
+
+  dataCenter.on('mouseenter', function () {
+    clearTimeout(dataCenterTimer)
+    setDataCenterOpen(true)
+  })
+
+  dataCenter.on('mouseleave', function () {
+    queueDataCenterClose(180)
+  })
+
+  dataCenterMenu.on('click', function (event) {
+    event.stopPropagation()
+  })
+
+  $(document).on('click', function () {
+    setDataCenterOpen(false)
+  })
+
+  $(document).on('keydown', function (event) {
+    if (event.key === 'Escape') {
+      setDataCenterOpen(false)
+    }
+  })
+
+  $('#openNews').on('click', function () {
+    $('#news').trigger('click')
+  })
+
+  var previewToggle = $('#togglePreview')
+  var previewFrame = $('#previewFrame')
+  var previewLabel = previewToggle.closest('.preview-toggle').find('.toggle-label')
+  var previewStorageKey = 'stock_preview_visible'
+
+  function applyPreviewState(isVisible) {
+    previewToggle.prop('checked', isVisible)
+    previewFrame.toggleClass('is-collapsed', !isVisible)
+    previewLabel.text(isVisible ? '显示' : '隐藏')
+    if (isVisible) {
+      var iframe = $('#amount')
+      iframe.css({ width: '100%', minWidth: '100%', height: '280px' })
+      previewFrame[0].offsetHeight
+      requestAnimationFrame(function () {
+        iframe.css({ width: '100%', minWidth: '100%' })
+      })
+    }
+  }
+
+  var savedPreviewState = localStorage.getItem(previewStorageKey)
+  if (savedPreviewState !== null) {
+    applyPreviewState(savedPreviewState === 'true')
+  }
+
+  previewToggle.on('change', function () {
+    var isChecked = $(this).is(':checked')
+    applyPreviewState(isChecked)
+    localStorage.setItem(previewStorageKey, String(isChecked))
+  })
+
+  $('.jjlive-link').on('click', function (event) {
+    event.preventDefault()
+    layer.open({
+      id: 'jjlive_',
+      type: 2,
+      move: true,
+      moveOut: true,
+      area: ['100%', '100%'],
+      title: '隔夜单统计',
+      maxmin: true,
+      offset: 'auto',
+      shade: 0,
+      fixed: false,
+      content: 'https://duanxianxia.cn/web/jjlive',
+      success: function (layero, index) {
+        layer.full(index)
+      }
+    })
+  })
+
+  $('#news').click(function () {
+    layer.open({
+      id: 'newsT',
+      type: 2,
+      title: '资讯',
+      move: true,
+      moveOut: true,
+      maxmin: true,
+      area: ['666px', '88%'],
+      offset: 'b',
+      shade: 0,
+      fixed: false,
+      content: '/news.html'
+    })
+  })
+
+  $('#yidong').click(function () {
+    layer.open({
+      id: 'yidong_',
+      type: 2,
+      title: '异动播报',
+      skin: 'yidong-draggable-layer',
+      move: '.layui-layer-title',
+      moveType: 1,
+      moveOut: true,
+      maxmin: false,
+      area: ['660px', '600px'],
+      offset: 'lb',
+      shade: 0,
+      fixed: false,
+      content: '/yidong.html'
+    })
+  })
+
+  $('#ztlive').click(function () {
+    // 目标：让弹窗高度与内嵌页面高度一致
+    var iframeEl
+    var index = layer.open({
+      id: 'ztliveT',
+      type: 2,
+      title: '实时涨停播报',
+      skin: 'ztlive-draggable-layer',
+      move: '.layui-layer-title',
+      moveType: 1,
+      moveOut: true,
+      maxmin: true,
+      area: ['660px', '700px'], // 初始尺寸
+      offset: 'rb',
+      shade: 0,
+      fixed: false,
+      content: ['/ztlive.html', 'no'],
+      success: function (layero, idx) {
+        // layero 是弹窗 DOM，查找其中的 iframe
+        iframeEl = layero.find('iframe')[0]
+        // 如果 layer.iframeAuto 可用，尝试让 iframe 自适应高度
+        try {
+          layer.iframeAuto(idx)
+        } catch (e) {
+          // ignore
+        }
+        // 当 iframe 内容加载完成时再触发一次自适应
+        if (iframeEl) {
+          $(iframeEl).on('load.ztlive', function () {
+            try { layer.iframeAuto(idx) } catch (e) {}
+          })
+        }
+      },
+      end: function () {
+        // 关闭时清理事件
+        $(window).off('resize.ztlive_' + index)
+        if (iframeEl) { $(iframeEl).off('load.ztlive') }
+      }
+    })
+  })
+
+  $('#lianban').click(function () {
+    layer.open({
+      id: 'lianban_',
+      type: 2,
+      move: true,
+      moveOut: true,
+      area: ['60%', '100%'],
+      title: '昨日涨停',
+      maxmin: true,
+      offset: 'auto',
+      shade: 0,
+      fixed: false,
+      content: 'https://duanxianxia.cn/web/fupangu'
+    })
+  })
+
+  $('#fupan').click(function () {
+    layer.open({
+      id: 'fupan_',
+      type: 2,
+      move: true,
+      moveOut: true,
+      area: ['100%', '100%'],
+      title: '涨停复盘',
+      maxmin: true,
+      offset: 'lb',
+      shade: 0,
+      fixed: false,
+      content: 'https://duanxianxia.cn/web/fupan',
+      success: function(layero, index){
+        layer.full(index); // 最大化
+      }
+    })
+  })
+
+  // 窗口尺寸变化时重新自适应
+  // $(window).on('resize.ztlive_' + index, function () {
+  //   try { layer.iframeAuto(index) } catch (e) {}
+  // })
+</script>
+
+</body>
 </html>
