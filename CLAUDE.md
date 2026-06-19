@@ -49,3 +49,9 @@ node workers2/main.js   # 运行在 3000 端口
 ## 配置
 
 - **`wrangler.jsonc`**: Cloudflare Workers 配置 — 使用 `workers/index.js` 作为入口，静态资源来自 `workers/stock/`，启用 Node.js 兼容性
+
+## 代码规范
+
+### JavaScript
+- **不使用 `var`**，优先使用 `let` 和 `const`
+- **优先使用 jQuery 选择元素**，如 `$('#id')`、$('.class')` 而非 `document.querySelector`
