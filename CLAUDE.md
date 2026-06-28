@@ -26,19 +26,15 @@
 npm run dev      # 启动 wrangler 开发服务器
 npm run deploy   # 部署到 Cloudflare Workers
 
-# Express 本地开发（替代方案）
-node workers2/main.js   # 运行在 3000 端口
 ```
 
 ## 架构
 
 ### 入口文件
 - **`workers/index.js`**: Cloudflare Workers 请求处理器 — 将 `/api/*` 请求代理到 `duanxianxia.cn` 后端，包含 30 分钟缓存
-- **`workers2/main.js`**: Express 服务器 — 从 `workers2/stock/` 提供静态文件，将 `/api` 代理到后端，运行在 3000 端口
 
 ### 静态资源
 - **`workers/stock/`**: 用于 Cloudflare Workers 部署的 HTML 和 JS 文件
-- **`workers2/stock/`**: Express 本地开发用的相同静态文件
 
 ### 路由逻辑（workers/index.js）
 - `/message` → 返回 "Hello, World!"

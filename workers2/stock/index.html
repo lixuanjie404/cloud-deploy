@@ -741,8 +741,15 @@
           box-shadow: 0 14px 30px rgba(47, 111, 237, 0.12);
       }
 
-      .timeline-slot:hover .timeline-popover,
-      .timeline-slot:focus-within .timeline-popover,
+      /* 悬浮显示 popover（仅针对无 data-links 的 slot） */
+      .timeline-slot:not([data-links]):hover .timeline-popover,
+      .timeline-slot:not([data-links]):focus-within .timeline-popover {
+          opacity: 1;
+          visibility: visible;
+          transform: translate(-50%, 0);
+      }
+
+      /* 点击显示 popover（有 data-links 的 slot） */
       .timeline-slot.active .timeline-popover {
           opacity: 1;
           visibility: visible;
@@ -1008,9 +1015,9 @@
         </div>
       </div>
 
-      <div class="ai-tool-strip" aria-label="宏观资讯">
+      <div class="ai-tool-strip" aria-label="十五五计划">
         <div class="ai-tool-heading">
-          <strong>宏观</strong>
+          <strong>十五五计划</strong>
         </div>
         <div class="ai-tool-grid">
           <a class="ai-tool-card" href="https://www.gov.cn/zhengce/202510/content_7046050.htm" target="_blank" rel="noopener noreferrer">
@@ -1020,6 +1027,18 @@
           <a class="ai-tool-card" href="https://cpc.people.com.cn/n1/2025/1029/c461139-40592086.html" target="_blank" rel="noopener noreferrer">
             <span class="ai-tool-icon">党</span>
             <span><span class="ai-tool-name">人民日报</span><span class="ai-tool-desc">党建要闻</span></span>
+          </a>
+        </div>
+      </div>
+
+      <div class="ai-tool-strip" aria-label="周期">
+        <div class="ai-tool-heading">
+          <strong>周期</strong>
+        </div>
+        <div class="ai-tool-grid">
+          <a class="ai-tool-card" href="https://polymarket.com/zh" target="_blank" rel="noopener noreferrer">
+            <span class="ai-tool-icon">预</span>
+            <span><span class="ai-tool-name">Polymarket</span><span class="ai-tool-desc">预测市场</span></span>
           </a>
         </div>
       </div>
