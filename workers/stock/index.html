@@ -3,47 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>首页</title>
+  <title>项目工作台</title>
   <script src="https://code.jquery.com/jquery-2.0.0.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/layer/3.5.1/theme/default/layer.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/layer/3.5.1/layer.min.js"></script>
   <style>
       :root {
           color-scheme: light;
-          --bg: #f6f7fb;
+          --bg: #f5f5f0;
           --card: #ffffff;
-          --text: #1f2a44;
-          --muted: #667085;
-          --accent: #2f6fed;
-          --accent-soft: rgba(47, 111, 237, 0.12);
-          --shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
-          --topbar-bg: #ffffff;
-          --topbar-shadow: 0 1px 0 rgba(15, 23, 42, 0.05);
-          --hero-gradient: linear-gradient(135deg, #ffffff 0%, #f8fbff 52%, #eef4ff 100%);
-          --timeline-role-bg: linear-gradient(135deg, #f8fafc, #eef4ff);
-          --timeline-border: #edf0f6;
-          --timeline-slot-bg: rgba(248, 250, 252, 0.78);
-          --ghost-btn-hover: #f0f2f8;
-          --menu-item-bg: rgba(255, 255, 255, 0.08);
-          --menu-item-hover: rgba(255, 255, 255, 0.16);
+          --text: #2c2c2c;
+          --muted: #6b7280;
+          --accent: #4a8c6f;
+          --accent-soft: rgba(74, 140, 111, 0.10);
+          --shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+          --topbar-bg: #fafaf7;
+          --topbar-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+          --hero-gradient: linear-gradient(135deg, #ffffff 0%, #f9faf7 52%, #f0f4ef 100%);
+          --timeline-role-bg: linear-gradient(135deg, #f8f9f6, #f0f4ef);
+          --timeline-border: #e5e7e3;
+          --timeline-slot-bg: rgba(248, 249, 246, 0.78);
+          --ghost-btn-hover: #eceee9;
+          --menu-item-bg: rgba(0, 0, 0, 0.04);
+          --menu-item-hover: rgba(0, 0, 0, 0.08);
       }
 
       [data-theme="dark"] {
           color-scheme: dark;
-          --bg: #0f172a;
-          --card: #1e293b;
-          --text: #e2e8f0;
-          --muted: #94a3b8;
-          --accent: #60a5fa;
-          --accent-soft: rgba(96, 165, 250, 0.15);
+          --bg: #1a1a1a;
+          --card: #252525;
+          --text: #d4d4d4;
+          --muted: #858585;
+          --accent: #5fb98a;
+          --accent-soft: rgba(95, 185, 138, 0.14);
           --shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-          --topbar-bg: #1e293b;
+          --topbar-bg: #222222;
           --topbar-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
-          --hero-gradient: linear-gradient(135deg, #1e293b 0%, #1e293b 52%, #334155 100%);
-          --timeline-role-bg: linear-gradient(135deg, #1e293b, #334155);
-          --timeline-border: #334155;
-          --timeline-slot-bg: rgba(30, 41, 59, 0.78);
-          --ghost-btn-hover: #334155;
+          --hero-gradient: linear-gradient(135deg, #252525 0%, #252525 52%, #2e2e2e 100%);
+          --timeline-role-bg: linear-gradient(135deg, #252525, #2e2e2e);
+          --timeline-border: #333333;
+          --timeline-slot-bg: rgba(37, 37, 37, 0.78);
+          --ghost-btn-hover: #333333;
           --menu-item-bg: rgba(255, 255, 255, 0.06);
           --menu-item-hover: rgba(255, 255, 255, 0.12);
       }
@@ -53,7 +53,7 @@
       }
 
       .main-body {
-          font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+          font-family: "SF Mono", "Cascadia Code", "Fira Code", "Consolas", "PingFang SC", monospace;
           background: var(--bg);
           color: var(--text);
           margin: 0;
@@ -88,7 +88,7 @@
       .brand-badge {
           width: 36px;
           height: 36px;
-          border-radius: 12px;
+          border-radius: 6px;
           background: var(--accent-soft);
           display: grid;
           place-items: center;
@@ -127,10 +127,10 @@
           right: 0;
           width: 210px;
           background: var(--card);
-          border: 1px solid #e9edf6;
-          border-radius: 14px;
+          border: 1px solid #e0e2dc;
+          border-radius: 6px;
           padding: 8px;
-          box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
           opacity: 0;
           visibility: hidden;
           transform: translateY(-4px);
@@ -152,13 +152,13 @@
           gap: 8px;
           text-decoration: none;
           color: var(--text);
-          border-radius: 10px;
+          border-radius: 5px;
           padding: 9px 10px;
           font-size: 13px;
       }
 
       .data-center-menu a:hover {
-          background: #f5f8ff;
+          background: #f2f4ef;
           color: var(--accent);
       }
 
@@ -176,10 +176,10 @@
           right: 0;
           width: 180px;
           background: var(--card);
-          border: 1px solid #e9edf6;
-          border-radius: 14px;
+          border: 1px solid #e0e2dc;
+          border-radius: 6px;
           padding: 8px;
-          box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
           opacity: 0;
           visibility: hidden;
           transform: translateY(-4px);
@@ -201,14 +201,14 @@
           gap: 8px;
           text-decoration: none;
           color: var(--text);
-          border-radius: 10px;
+          border-radius: 5px;
           padding: 9px 10px;
           font-size: 13px;
           cursor: pointer;
       }
 
       .monitor-menu a:hover {
-          background: #f5f8ff;
+          background: #f2f4ef;
           color: var(--accent);
       }
 
@@ -222,7 +222,7 @@
       .primary-btn {
           border: none;
           padding: 8px 16px;
-          border-radius: 999px;
+          border-radius: 4px;
           font-size: 14px;
           cursor: pointer;
           transition: all 0.2s ease;
@@ -241,7 +241,7 @@
       .primary-btn {
           background: var(--accent);
           color: #fff;
-          box-shadow: 0 6px 18px rgba(47, 111, 237, 0.2);
+          box-shadow: 0 6px 18px rgba(74, 140, 111, 0.15);
       }
 
       .primary-btn:hover {
@@ -260,10 +260,10 @@
           position: relative;
           overflow: hidden;
           background:
-              radial-gradient(circle at top right, rgba(47, 111, 237, 0.18), transparent 34%),
+              radial-gradient(circle at top right, rgba(74, 140, 111, 0.14), transparent 34%),
               var(--hero-gradient);
-          border: 1px solid rgba(47, 111, 237, 0.08);
-          border-radius: 20px;
+          border: 1px solid rgba(74, 140, 111, 0.06);
+          border-radius: 8px;
           padding: 14px 20px;
           box-shadow: var(--shadow);
           display: flex;
@@ -279,7 +279,7 @@
           width: 180px;
           height: 180px;
           border-radius: 50%;
-          background: rgba(47, 111, 237, 0.08);
+          background: rgba(74, 140, 111, 0.06);
           pointer-events: none;
       }
 
@@ -331,7 +331,7 @@
           min-height: 36px;
           padding: 6px 8px;
           border: 1px solid rgba(226, 232, 240, 0.9);
-          border-radius: 10px;
+          border-radius: 5px;
           background: rgba(255, 255, 255, 0.82);
           color: var(--text);
           text-decoration: none;
@@ -342,8 +342,8 @@
 
       .ai-tool-card:hover {
           transform: translateY(-2px);
-          border-color: rgba(47, 111, 237, 0.32);
-          box-shadow: 0 16px 32px rgba(47, 111, 237, 0.14);
+          border-color: rgba(74, 140, 111, 0.22);
+          box-shadow: 0 16px 32px rgba(74, 140, 111, 0.11);
       }
 
       .ai-tool-icon {
@@ -374,7 +374,7 @@
 
       .panel {
           background: var(--card);
-          border-radius: 20px;
+          border-radius: 8px;
           padding: 12px 16px;
           box-shadow: var(--shadow);
       }
@@ -434,8 +434,8 @@
       .toggle-track {
           width: 40px;
           height: 22px;
-          border-radius: 999px;
-          background: #e2e8f0;
+          border-radius: 4px;
+          background: #d4d4d4;
           position: relative;
           transition: background 0.2s ease;
       }
@@ -454,7 +454,7 @@
       }
 
       .preview-toggle input:checked + .toggle-track {
-          background: rgba(47, 111, 237, 0.4);
+          background: rgba(74, 140, 111, 0.30);
       }
 
       .preview-toggle input:checked + .toggle-track::after {
@@ -490,7 +490,7 @@
           background: var(--accent-soft);
           color: var(--accent);
           padding: 6px 12px;
-          border-radius: 999px;
+          border-radius: 4px;
           font-size: 12px;
           font-weight: 600;
       }
@@ -655,7 +655,7 @@
           gap: 4px;
           min-height: 86px;
           padding: 12px;
-          border-radius: 16px;
+          border-radius: 6px;
           background: var(--timeline-role-bg);
           border: 1px solid var(--timeline-border);
       }
@@ -675,7 +675,7 @@
           min-height: 86px;
           padding: 12px;
           border: 1px solid var(--timeline-border);
-          border-radius: 16px;
+          border-radius: 6px;
           background: var(--timeline-slot-bg);
           overflow: visible;
           cursor: default;
@@ -689,8 +689,8 @@
           left: 12px;
           right: 12px;
           height: 2px;
-          border-radius: 999px;
-          background: linear-gradient(90deg, rgba(47, 111, 237, 0.25), rgba(47, 111, 237, 0.05));
+          border-radius: 4px;
+          background: linear-gradient(90deg, rgba(74, 140, 111, 0.18), rgba(74, 140, 111, 0.04));
       }
 
       .timeline-dot {
@@ -701,7 +701,7 @@
           height: 10px;
           border-radius: 50%;
           background: var(--accent);
-          box-shadow: 0 0 0 5px rgba(47, 111, 237, 0.12);
+          box-shadow: 0 0 0 5px rgba(74, 140, 111, 0.10);
       }
 
       .timeline-label {
@@ -726,10 +726,10 @@
           z-index: 20;
           width: min(230px, 78vw);
           padding: 12px;
-          border-radius: 14px;
-          background: #0f172a;
+          border-radius: 6px;
+          background: #1a1a1a;
           color: #fff;
-          box-shadow: 0 18px 40px rgba(15, 23, 42, 0.22);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
           opacity: 0;
           visibility: hidden;
           transform: translate(-50%, 6px);
@@ -744,7 +744,7 @@
           bottom: -6px;
           width: 12px;
           height: 12px;
-          background: #0f172a;
+          background: #1a1a1a;
           transform: translateX(-50%) rotate(45deg);
       }
 
@@ -779,16 +779,16 @@
       }
 
       .timeline-popover .timeline-links a:hover {
-          background: rgba(96, 165, 250, 0.35);
+          background: rgba(95, 185, 138, 0.25);
       }
 
       .timeline-slot:hover,
       .timeline-slot:focus-within {
           z-index: 3;
           transform: translateY(-2px);
-          border-color: rgba(47, 111, 237, 0.35);
+          border-color: rgba(74, 140, 111, 0.24);
           background: var(--card);
-          box-shadow: 0 14px 30px rgba(47, 111, 237, 0.12);
+          box-shadow: 0 14px 30px rgba(74, 140, 111, 0.10);
       }
 
       /* 悬浮显示 popover（仅针对无 data-links 的 slot） */
@@ -810,9 +810,9 @@
       .iframe-wrap {
           margin-top: 18px;
           width: 100%;
-          border-radius: 16px;
+          border-radius: 6px;
           overflow: hidden;
-          border: 1px solid #edf0f6;
+          border: 1px solid #e0e2dc;
           transition: opacity 0.2s ease;
       }
 
@@ -830,11 +830,11 @@
           right: 24px;
           bottom: 24px;
           width: 260px;
-          background: #0f172a;
-          color: #e2e8f0;
-          border-radius: 16px;
+          background: #1a1a1a;
+          color: #d4d4d4;
+          border-radius: 6px;
           padding: 16px;
-          box-shadow: 0 12px 30px rgba(15, 23, 42, 0.35);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
           opacity: 0;
           transform: translateY(12px);
           pointer-events: none;
@@ -863,7 +863,7 @@
 
       .menu li {
           background: var(--menu-item-bg);
-          border-radius: 10px;
+          border-radius: 5px;
           padding: 8px 12px;
           font-size: 13px;
           transition: all 0.2s ease;
@@ -913,9 +913,9 @@
 
       .footer details {
           background: var(--card);
-          border-radius: 12px;
+          border-radius: 6px;
           padding: 8px 12px;
-          box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
       }
 
       .footer summary {
@@ -999,43 +999,43 @@
 <div class="page">
   <header class="topbar">
     <div class="brand">
-      <div class="brand-badge">DX</div>
+      <div class="brand-badge">SW</div>
       <div>
         <div>信息工作台</div>
-        <small class="nav-links">数据清单 · 日常速览 · 智能提醒</small>
+        <small class="nav-links">任务清单 · 日常速览 · 智能提醒</small>
       </div>
     </div>
     <div class="action-group">
       <div class="data-center" id="dataCenter">
-        <button class="ghost-btn data-center-trigger" id="dataCenterTrigger" aria-expanded="false">数据中心 ▾</button>
+        <button class="ghost-btn data-center-trigger" id="dataCenterTrigger" aria-expanded="false">资料中心 ▾</button>
         <div class="data-center-menu" id="dataCenterMenu">
           <a href="https://data.eastmoney.com/report/industry.jshtml" target="_blank" rel="noopener noreferrer">
-            <span>📘</span><span>行业研报</span>
+            <span>📘</span><span>行业周刊</span>
           </a>
           <a href="https://www.jiuyangongshe.com/" target="_blank" rel="noopener noreferrer">
-            <span>🌐</span><span>韭研公社</span>
+            <span>🌐</span><span>技术社区</span>
           </a>
           <a href="https://724.guzhang.com/" target="_blank" rel="noopener noreferrer">
-            <span>🧭</span><span>聚合资讯</span>
+            <span>🧭</span><span>聚合快讯</span>
           </a>
           <a href="https://xuangutong.com.cn/top-gainer" target="_blank" rel="noopener noreferrer">
-            <span>🔥</span><span>热点解读</span>
+            <span>🔥</span><span>热点速览</span>
           </a>
           <a href="https://ima.qq.com/" target="_blank" rel="noopener noreferrer">
-            <span>🐧</span><span>腾讯ima</span>
+            <span>🐧</span><span>知识管理</span>
           </a>
         </div>
       </div>
       <button class="ghost-btn" id="toggleTheme" title="切换主题 (Ctrl+Shift+D)">🌙</button>
       <div class="monitor-dropdown" id="monitorDropdown">
-        <button class="ghost-btn monitor-trigger" id="monitorTrigger">实时监控 ▾</button>
+        <button class="ghost-btn monitor-trigger" id="monitorTrigger">在线状态 ▾</button>
         <div class="monitor-menu" id="monitorMenu">
-          <a href="javascript:void(0)" id="yidong"><span>📢</span><span>市场雷达</span></a>
-          <a href="javascript:void(0)" id="ztlive"><span>🟢</span><span>涨停播报</span></a>
+          <a href="javascript:void(0)" id="yidong"><span>🔔</span><span>异常告警</span></a>
+          <a href="javascript:void(0)" id="ztlive"><span>🟡</span><span>状态广播</span></a>
         </div>
       </div>
-      <button class="ghost-btn" id="toggleTools">辅助入口</button>
-      <button class="primary-btn" id="openNews">立即查看</button>
+      <button class="ghost-btn" id="toggleTools">工具集</button>
+      <button class="primary-btn" id="openNews">开始工作</button>
     </div>
   </header>
 
@@ -1044,22 +1044,22 @@
       <div class="panel-header">
         <h3>工作台</h3>
       </div>
-      <div class="ai-tool-strip" aria-label="AI 对话工具">
+      <div class="ai-tool-strip" aria-label="AI 辅助">
         <div class="ai-tool-heading">
-          <strong>AI 对话工具</strong>
+          <strong>AI 辅助</strong>
         </div>
         <div class="ai-tool-grid">
           <a class="ai-tool-card" href="https://chat.z.ai/" target="_blank" rel="noopener noreferrer">
             <span class="ai-tool-icon">Z</span>
-            <span><span class="ai-tool-name">Z.ai</span><span class="ai-tool-desc">轻量对话</span></span>
+            <span><span class="ai-tool-name">Z.ai</span><span class="ai-tool-desc">快速问答</span></span>
           </a>
           <a class="ai-tool-card" href="https://chat.deepseek.com/" target="_blank" rel="noopener noreferrer">
             <span class="ai-tool-icon">D</span>
-            <span><span class="ai-tool-name">DeepSeek</span><span class="ai-tool-desc">深度推理</span></span>
+            <span><span class="ai-tool-name">DeepSeek</span><span class="ai-tool-desc">深度分析</span></span>
           </a>
           <a class="ai-tool-card" href="https://chatgpt.com/" target="_blank" rel="noopener noreferrer">
             <span class="ai-tool-icon">G</span>
-            <span><span class="ai-tool-name">ChatGPT</span><span class="ai-tool-desc">综合助手</span></span>
+            <span><span class="ai-tool-name">ChatGPT</span><span class="ai-tool-desc">通用助手</span></span>
           </a>
           <a class="ai-tool-card" href="https://gemini.google.com/" target="_blank" rel="noopener noreferrer">
             <span class="ai-tool-icon">✦</span>
@@ -1067,47 +1067,47 @@
           </a>
           <a class="ai-tool-card" href="https://chatglm.cn/" target="_blank" rel="noopener noreferrer">
             <span class="ai-tool-icon">智</span>
-            <span><span class="ai-tool-name">智谱清言 Agent</span><span class="ai-tool-desc">国产助手</span></span>
+            <span><span class="ai-tool-name">智谱 Agent</span><span class="ai-tool-desc">中文助手</span></span>
           </a>
         </div>
       </div>
 
-      <div class="ai-tool-strip" aria-label="十五五计划">
+      <div class="ai-tool-strip" aria-label="政策参考">
         <div class="ai-tool-heading">
-          <strong>十五五计划</strong>
+          <strong>政策参考</strong>
         </div>
         <div class="ai-tool-grid">
           <a class="ai-tool-card" href="https://www.gov.cn/zhengce/202510/content_7046050.htm" target="_blank" rel="noopener noreferrer">
             <span class="ai-tool-icon">政</span>
-            <span><span class="ai-tool-name">国务院政策</span><span class="ai-tool-desc">中国政府网</span></span>
+            <span><span class="ai-tool-name">政策速递</span><span class="ai-tool-desc">官方来源</span></span>
           </a>
           <a class="ai-tool-card" href="https://cpc.people.com.cn/n1/2025/1029/c461139-40592086.html" target="_blank" rel="noopener noreferrer">
             <span class="ai-tool-icon">党</span>
-            <span><span class="ai-tool-name">人民日报</span><span class="ai-tool-desc">党建要闻</span></span>
+            <span><span class="ai-tool-name">要闻参考</span><span class="ai-tool-desc">综合要闻</span></span>
           </a>
         </div>
       </div>
 
-      <div class="ai-tool-strip" aria-label="周期">
+      <div class="ai-tool-strip" aria-label="趋势">
         <div class="ai-tool-heading">
-          <strong>周期</strong>
+          <strong>趋势</strong>
         </div>
         <div class="ai-tool-grid">
           <a class="ai-tool-card" href="https://polymarket.com/zh" target="_blank" rel="noopener noreferrer">
             <span class="ai-tool-icon">预</span>
-            <span><span class="ai-tool-name">Polymarket</span><span class="ai-tool-desc">预测市场</span></span>
+            <span><span class="ai-tool-name">Polymarket</span><span class="ai-tool-desc">预测平台</span></span>
           </a>
         </div>
       </div>
 
-      <div class="ai-tool-strip" aria-label="挖掘工具">
+      <div class="ai-tool-strip" aria-label="资源工具">
         <div class="ai-tool-heading">
-          <strong>挖掘</strong>
+          <strong>资源</strong>
         </div>
         <div class="ai-tool-grid">
           <a class="ai-tool-card" href="https://ima.qq.com/wikis" target="_blank" rel="noopener noreferrer">
             <span class="ai-tool-icon">知</span>
-            <span><span class="ai-tool-name">知识库</span><span class="ai-tool-desc">腾讯ima</span></span>
+            <span><span class="ai-tool-name">资料库</span><span class="ai-tool-desc">知识管理</span></span>
           </a>
         </div>
       </div>
@@ -1115,21 +1115,21 @@
 
     <section class="panel panel-compact">
       <div class="panel-header">
-        <h3>今日概览</h3>
+        <h3>今日进度</h3>
         <label class="preview-toggle">
           <input type="checkbox" id="togglePreview" checked>
           <span class="toggle-track"></span>
           <span class="toggle-label">显示</span>
         </label>
       </div>
-      <p>默认展示类似资讯门户的卡片布局，内嵌的数据保持在可视区域，避免突兀。</p>
+      <p>默认展示类似快讯门户的卡片布局，内嵌的数据保持在可视区域，避免突兀。</p>
       <div class="iframe-wrap" id="previewFrame">
         <iframe src="https://www.duanxianxia.cn/web/amount" id="amount" name="amount" width="100%" height="280"></iframe>
       </div>
     </section>
 
     <section class="panel">
-      <h3>关注点整理</h3>
+      <h3>关注事项</h3>
       <p>以日常工作流方式整理常用入口，默认只呈现轻量节奏视图；悬浮在节点上可查看该角色在当前阶段适合打开的工具。</p>
       <div class="focus-timeline" aria-label="双角色横向时间轴">
         <div class="timeline-head" aria-hidden="true">
@@ -1146,79 +1146,79 @@
           </div>
           <div class="timeline-slot" tabindex="0">
             <span class="timeline-dot"></span>
-            <span class="timeline-label">环境确认</span>
+            <span class="timeline-label">环境检查</span>
             <span class="timeline-hint">悬浮查看</span>
-            <div class="timeline-popover"><strong>可能使用</strong><span>AI 对话工具、问句中心、入口状态检查。</span></div>
+            <div class="timeline-popover"><strong>可能使用</strong><span>AI 辅助、问句中心、入口状态检查。</span></div>
           </div>
           <div class="timeline-slot" tabindex="0">
             <span class="timeline-dot"></span>
-            <span class="timeline-label">资料整理</span>
+            <span class="timeline-label">资料归档</span>
             <span class="timeline-hint">悬浮查看</span>
-            <div class="timeline-popover"><strong>可能使用</strong><span>数据中心、聚合资讯、专题资料。</span></div>
+            <div class="timeline-popover"><strong>可能使用</strong><span>资料中心、聚合快讯、专题资料。</span></div>
           </div>
           <div class="timeline-slot" tabindex="0">
             <span class="timeline-dot"></span>
-            <span class="timeline-label">问题跟进</span>
+            <span class="timeline-label">问题追踪</span>
             <span class="timeline-hint">悬浮查看</span>
-            <div class="timeline-popover"><strong>可能使用</strong><span>辅助入口、实时提醒、变更窗口。</span></div>
+            <div class="timeline-popover"><strong>可能使用</strong><span>工具集、实时提醒、变更窗口。</span></div>
           </div>
           <div class="timeline-slot" tabindex="0">
             <span class="timeline-dot"></span>
-            <span class="timeline-label">结果复核</span>
+            <span class="timeline-label">结果校验</span>
             <span class="timeline-hint">悬浮查看</span>
             <div class="timeline-popover"><strong>可能使用</strong><span>归档记录、清单对照、AI 总结。</span></div>
           </div>
         </div>
         <div class="timeline-row">
           <div class="timeline-role">
-            <strong>信息观察者</strong>
-            <small>阅读 / 记录</small>
+            <strong>内容跟进</strong>
+            <small>浏览 / 归档</small>
           </div>
           <div class="timeline-slot" tabindex="0" data-links="https://www.jin10.com/activities/2026/02/pizza_index/index.html|https://data.eastmoney.com/rzrq/total.html">
             <span class="timeline-dot"></span>
-            <span class="timeline-label">晨间速览</span>
+            <span class="timeline-label">晨间同步</span>
             <span class="timeline-hint">点击访问</span>
             <div class="timeline-popover">
               <strong>快速入口</strong>
               <div class="timeline-links">
-                <a href="https://www.jin10.com/activities/2026/02/pizza_index/index.html" target="_blank">金十数据</a>
-                <a href="https://data.eastmoney.com/rzrq/total.html" target="_blank">融资融券余额</a>
+                <a href="https://www.jin10.com/activities/2026/02/pizza_index/index.html" target="_blank">项目周报</a>
+                <a href="https://data.eastmoney.com/rzrq/total.html" target="_blank">资源使用概览</a>
               </div>
             </div>
           </div>
           <div class="timeline-slot" tabindex="0">
             <span class="timeline-dot"></span>
-            <span class="timeline-label">线索归档</span>
+            <span class="timeline-label">线索整理</span>
             <span class="timeline-hint">悬浮查看</span>
             <div class="timeline-popover"><strong>可能使用</strong><span>线索解读、资料入口、观察清单。</span></div>
           </div>
           <div class="timeline-slot" tabindex="0" data-links="https://weibo.com/3608427684|https://weibo.com/mygroups?gid=4140006190600547|https://eq.10jqka.com.cn/frontend/thsTopRank/index.html#/|https://space.bilibili.com/43295527/dynamic">
             <span class="timeline-dot"></span>
-            <span class="timeline-label">即时观察</span>
+            <span class="timeline-label">实时跟进</span>
             <span class="timeline-hint">点击访问</span>
             <div class="timeline-popover">
               <strong>快速入口</strong>
               <div class="timeline-links">
-                <a href="https://weibo.com/3608427684" target="_blank">索道登云</a>
-                <a href="https://weibo.com/mygroups?gid=4140006190600547" target="_blank">微博特别关注</a>
-                <a href="https://eq.10jqka.com.cn/frontend/thsTopRank/index.html#/" target="_blank">同花顺热榜</a>
-                <a href="https://space.bilibili.com/43295527/dynamic" target="_blank">AxeHedgeFund</a>
+                <a href="https://weibo.com/3608427684" target="_blank">技术博客</a>
+                <a href="https://weibo.com/mygroups?gid=4140006190600547" target="_blank">关注列表</a>
+                <a href="https://eq.10jqka.com.cn/frontend/thsTopRank/index.html#/" target="_blank">社区热榜</a>
+                <a href="https://space.bilibili.com/43295527/dynamic" target="_blank">行业动态</a>
               </div>
             </div>
           </div>
           <div class="timeline-slot" tabindex="0" data-links="https://duanxianxia.com/lt|http://page.tdx.com.cn:7615/site/kggx/tk_yzlhb_yz.html|https://data.10jqka.com.cn/market/longhu/|https://data.10jqka.com.cn/financial/yjyg/|https://finance.sina.com.cn/stock/reportch/jinqilin.shtml|https://data.eastmoney.com/report/stock.jshtml">
             <span class="timeline-dot"></span>
-            <span class="timeline-label">收尾整理</span>
+            <span class="timeline-label">收尾同步</span>
             <span class="timeline-hint">点击访问</span>
             <div class="timeline-popover">
               <strong>快速入口</strong>
               <div class="timeline-links">
-                <a href="https://duanxianxia.com/lt" target="_blank">龙头高度</a>
-                <a href="http://page.tdx.com.cn:7615/site/kggx/tk_yzlhb_yz.html" target="_blank">tdx龙虎榜</a>
-                <a href="https://data.10jqka.com.cn/market/longhu/" target="_blank">ths龙虎榜</a>
-                <a href="https://data.10jqka.com.cn/financial/yjyg/" target="_blank">业绩预告</a>
-                <a href="https://finance.sina.com.cn/stock/reportch/jinqilin.shtml" target="_blank">金麒麟研报</a>
-                <a href="https://data.eastmoney.com/report/stock.jshtml" target="_blank">东财研报</a>
+                <a href="https://duanxianxia.com/lt" target="_blank">核心进度</a>
+                <a href="http://page.tdx.com.cn:7615/site/kggx/tk_yzlhb_yz.html" target="_blank">变更日志</a>
+                <a href="https://data.10jqka.com.cn/market/longhu/" target="_blank">合并记录</a>
+                <a href="https://data.10jqka.com.cn/financial/yjyg/" target="_blank">版本预告</a>
+                <a href="https://finance.sina.com.cn/stock/reportch/jinqilin.shtml" target="_blank">架构文档</a>
+                <a href="https://data.eastmoney.com/report/stock.jshtml" target="_blank">技术文档</a>
               </div>
             </div>
           </div>
@@ -1227,34 +1227,34 @@
     </section>
 
     <section class="panel">
-      <h3>情绪概览</h3>
-      <p>快速阅读短线情绪走势，保持外观为资讯页面的常态。</p>
-      <a class="tag" href="/qxlive.html" target="_blank">打开情绪面板</a>
+      <h3>运行指标</h3>
+      <p>快速查看运行指标走势，保持外观为工作台页面的常态。</p>
+      <a class="tag" href="/qxlive.html" target="_blank">查看指标面板</a>
     </section>
   </main>
 </div>
 
 <aside class="tool-panel" id="toolPanel">
-  <h4>辅助入口</h4>
+  <h4>工具集</h4>
   <ol class="menu">
-    <li class="menu-group-title">📊 资讯数据</li>
-    <li><a href="#/news.html" id="news"><span class="icon">📰</span>资讯</a></li>
-    <li><a href="/qxlive.html" target="_blank"><span class="icon">📈</span>情绪面板</a></li>
-    <li><a href="#jjlive" class="jjlive-link"><span class="icon">📉</span>隔夜单</a></li>
+    <li class="menu-group-title">📊 信息查询</li>
+    <li><a href="#/news.html" id="news"><span class="icon">📰</span>快讯</a></li>
+    <li><a href="/qxlive.html" target="_blank"><span class="icon">📊</span>指标面板</a></li>
+    <li><a href="#jjlive" class="jjlive-link"><span class="icon">📋</span>待处理项</a></li>
 
-    <li class="menu-group-title">🛠 分析工具</li>
+    <li class="menu-group-title">🛠 开发工具</li>
     <li>
       <a href="https://wenda.tdx.com.cn/site/wenda/stock_index.html?message=去除st,去除北交所,成交额前100,量比,实际换手率"
          target="_blank">
-        <span class="icon">🍜</span>问小达
+        <span class="icon">🔍</span>查询工具
       </a>
     </li>
-    <li><a href="https://wenda.tdx.com.cn/site/wenda/page-user-center.html" target="_blank"><span class="icon">📝</span>问句库</a></li>
-    <li><a href="#https://duanxianxia.cn/web/fupangu/" id="lianban"><span class="icon">📂</span>复盘古</a></li>
-    <li><a href="#https://duanxianxia.cn/web/fupan" id="fupan"><span class="icon">📅</span>涨停复盘</a></li>
+    <li><a href="https://wenda.tdx.com.cn/site/wenda/page-user-center.html" target="_blank"><span class="icon">📝</span>查询模板</a></li>
+    <li><a href="#https://duanxianxia.cn/web/fupangu/" id="lianban"><span class="icon">📂</span>历史记录</a></li>
+    <li><a href="#https://duanxianxia.cn/web/fupan" id="fupan"><span class="icon">📅</span>趋势总结</a></li>
 
-    <li class="menu-group-title">📑 财务数据</li>
-    <li><a href="https://data.10jqka.com.cn/financial/yjyg/" target="_blank"><span class="icon">📋</span>业绩报</a></li>
+    <li class="menu-group-title">📑 项目数据</li>
+    <li><a href="https://data.10jqka.com.cn/financial/yjyg/" target="_blank"><span class="icon">📋</span>项目周报</a></li>
   </ol>
 </aside>
 
@@ -1325,7 +1325,7 @@
       type: 1,
       title: '快捷键',
       area: ['320px', 'auto'],
-      content: '<div style="padding:16px;line-height:2;"><strong>常用快捷键：</strong><br>1 - 资讯<br>2 - 隔夜单统计<br>3 - 市场雷达<br>4 - 实时涨停播报<br>5 - 涨停复盘<br>t - 切换辅助入口<br>d - 数据中心<br>? - 显示此帮助<br><br><em>Ctrl+Shift+D - 切换深色模式</em></div>'
+      content: '<div style="padding:16px;line-height:2;"><strong>常用快捷键：</strong><br>1 - 快讯<br>2 - 待处理项统计<br>3 - 异常告警<br>4 - 实时状态广播<br>5 - 趋势总结<br>t - 切换工具集<br>d - 资料中心<br>? - 显示此帮助<br><br><em>Ctrl+Shift+D - 切换深色模式</em></div>'
     })
   }
 
@@ -1349,12 +1349,12 @@
     }
   })
 
-  // ========== 辅助入口面板 ==========
+  // ========== 工具集面板 ==========
   $('#toggleTools').on('click', function () {
     $('#toolPanel').toggleClass('is-open')
   })
 
-  // 点击外部关闭辅助入口
+  // 点击外部关闭工具集
   $('#toolPanel').on('click', function(e) {
     e.stopPropagation()
   })
@@ -1367,7 +1367,7 @@
   function setDataCenterOpen(open) {
     dataCenter.toggleClass('open', open)
     dataCenterTrigger.attr('aria-expanded', open ? 'true' : 'false')
-    dataCenterTrigger.text(open ? '数据中心 ▴' : '数据中心 ▾')
+    dataCenterTrigger.text(open ? '资料中心 ▴' : '资料中心 ▾')
   }
 
   function queueDataCenterClose(delay) {
@@ -1416,7 +1416,7 @@
 
   function setMonitorOpen(open) {
     monitorDropdown.toggleClass('open', open)
-    monitorTrigger.text(open ? '实时监控 ▴' : '实时监控 ▾')
+    monitorTrigger.text(open ? '在线状态 ▴' : '在线状态 ▾')
   }
 
   function queueMonitorClose(delay) {
@@ -1489,7 +1489,7 @@
       move: true,
       moveOut: true,
       area: ['100%', '100%'],
-      title: '隔夜单统计',
+      title: '待处理项统计',
       maxmin: true,
       offset: 'auto',
       shade: 0,
@@ -1505,7 +1505,7 @@
     layer.open({
       id: 'newsT',
       type: 2,
-      title: '资讯',
+      title: '快讯',
       move: true,
       moveOut: true,
       maxmin: true,
@@ -1521,7 +1521,7 @@
     layer.open({
       id: 'yidong_',
       type: 2,
-      title: '市场雷达',
+      title: '异常告警',
       skin: 'yidong-draggable-layer',
       move: '.layui-layer-title',
       moveType: 1,
@@ -1541,7 +1541,7 @@
     var index = layer.open({
       id: 'ztliveT',
       type: 2,
-      title: '实时涨停播报',
+      title: '实时状态广播',
       skin: 'ztlive-draggable-layer',
       move: '.layui-layer-title',
       moveType: 1,
@@ -1583,7 +1583,7 @@
       move: true,
       moveOut: true,
       area: ['60%', '100%'],
-      title: '昨日涨停',
+      title: '昨日变更',
       maxmin: true,
       offset: 'auto',
       shade: 0,
@@ -1599,7 +1599,7 @@
       move: true,
       moveOut: true,
       area: ['100%', '100%'],
-      title: '涨停复盘',
+      title: '趋势总结',
       maxmin: true,
       offset: 'lb',
       shade: 0,

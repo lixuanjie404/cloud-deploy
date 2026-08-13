@@ -5,7 +5,7 @@
 <head>
   <meta charset="UTF-8">
 
-  <title>板块强度</title>
+  <title>系统指标</title>
   <link rel="stylesheet" type="text/css" href="https://duanxianxia.cn/static/css/weui.css">
   <script src="https://duanxianxia.cn/static/js/jquery.min.js"></script>
   <link rel="stylesheet" href="https://duanxianxia.cn/static/css/bootstrap.min.css">
@@ -88,53 +88,53 @@
       <div id='zhibiao'>
           <div class="row">
             <div class="col-md-3 col-sm-3 col-xs-3">
-              <button class="btn btn-sm btn-warning chart" id="QX_btn" name="QX" style=''>情绪指标：<span id='QX'></span></button>
+              <button class="btn btn-sm btn-warning chart" id="QX_btn" name="QX" style=''>运行指标：<span id='QX'></span></button>
             </div>
             <div class="col-md-3 col-sm-3 col-xs-3">
-              <button class="btn btn-sm btn-danger chart" id="ZT_btn" name="ZT" style=''>涨停家数：<span id='ZT'></span></button>
+              <button class="btn btn-sm btn-danger chart" id="ZT_btn" name="ZT" style=''>活跃数：<span id='ZT'></span></button>
             </div>
             <div class="col-md-3 col-sm-3 col-xs-3">
-              <button class="btn btn-sm btn-success chart" id="DT_btn" name="DT" style=''>跌停家数：<span id='DT'></span></button>
+              <button class="btn btn-sm btn-success chart" id="DT_btn" name="DT" style=''>静默数：<span id='DT'></span></button>
             </div>
 
             <div class="col-md-3 col-sm-3 col-xs-3">
-              <button class="btn btn-sm btn-warning chart" id="KQXY_btn" style='background:green;' name="KQXY" style=''>亏钱效应：<span id='KQXY'></span></button>
+              <button class="btn btn-sm btn-warning chart" id="KQXY_btn" style='background:green;' name="KQXY" style=''>风险指数：<span id='KQXY'></span></button>
             </div>
           </div>
 
           <div class="row" style='margin-top:20px'>
             <div class="col-md-3 col-sm-3 col-xs-3">
-              <button class="btn btn-sm btn-default chart" id="HSLN_btn" name="HSLN" style=''>主力流入：<span id='HSLN'></span></button>
+              <button class="btn btn-sm btn-default chart" id="HSLN_btn" name="HSLN" style=''>数据流入：<span id='HSLN'></span></button>
             </div>
             <div class="col-md-3 col-sm-3 col-xs-3">
-              <button class="btn btn-sm btn-default chart" id="LBGD_btn" name="LBGD" style=''>连板高度：<span id='LBGD'></span></button>
-            </div>
-
-            <div class="col-md-3 col-sm-3 col-xs-3">
-              <button class="btn btn-sm btn-default chart" id="SZ_btn" name="SZ" style=''>上涨家数：<span id='SZ' style='color:red;'></span></button>
+              <button class="btn btn-sm btn-default chart" id="LBGD_btn" name="LBGD" style=''>连续度：<span id='LBGD'></span></button>
             </div>
 
             <div class="col-md-3 col-sm-3 col-xs-3">
-              <button class="btn btn-sm btn-default chart" id="XD_btn" name="XD" style=''>下跌家数：<span id='XD' style='color:green;'></span></button>
+              <button class="btn btn-sm btn-default chart" id="SZ_btn" name="SZ" style=''>增长数：<span id='SZ' style='color:red;'></span></button>
+            </div>
+
+            <div class="col-md-3 col-sm-3 col-xs-3">
+              <button class="btn btn-sm btn-default chart" id="XD_btn" name="XD" style=''>下降数：<span id='XD' style='color:green;'></span></button>
             </div>
           </div>
 
           <div class="row" style='margin-top:20px'>
             <div class="col-md-3 col-sm-3 col-xs-3">
-              <button class="btn btn-sm btn-default chart" id="PB_btn" name="PB" style=''>今日封板率：<span id='PB'></span></button>
+              <button class="btn btn-sm btn-default chart" id="PB_btn" name="PB" style=''>完成率：<span id='PB'></span></button>
             </div>
             <div class="col-md-3 col-sm-3 col-xs-3">
-              <button class="btn btn-sm btn-default chart" id="ZTBX_btn" name="ZTBX" style=''>昨涨停表现：<span id='ZTBX'></span></button>
+              <button class="btn btn-sm btn-default chart" id="ZTBX_btn" name="ZTBX" style=''>昨日活跃度：<span id='ZTBX'></span></button>
             </div>
             <div class="col-md-3 col-sm-3 col-xs-3">
-              <button class="btn btn-sm btn-default chart" id="LBBX_btn" name="LBBX" style=''>昨连板表现：<span id='LBBX'></span></button>
+              <button class="btn btn-sm btn-default chart" id="LBBX_btn" name="LBBX" style=''>昨日连续度：<span id='LBBX'></span></button>
             </div>
             <div class="col-md-3 col-sm-3 col-xs-3">
-              <button class="btn btn-sm btn-default chart" id="PBBX_btn" name="PBBX" style=''>沪深5分钟量能</button>
+              <button class="btn btn-sm btn-default chart" id="PBBX_btn" name="PBBX" style=''>5分钟吞吐量</button>
             </div>
           </div>
       </div>
-      <!-- 创/主涨停比：<span id='PBBX'></span> -->
+      <!-- 创/主极高比：<span id='PBBX'></span> -->
         <div class="row" style='margin-top:20px;'>
         <div class="col-md-3 col-sm-3 col-xs-3" style='padding-left:0px;height:275px;margin-top:8px;'>
           <div id="zf" style="width: 100%;height:275px;box-shadow: 0 1px 5px rgba(0, 0, 0, .1);"></div>
@@ -152,8 +152,8 @@
                 <div style='text-align:center;'>
                   <div class="btn-group" style='width:100%;border-radius:none;' id='platebtn'>
 
-                    <button type="button" class="btn btn-danger btn-xs platetype" style='width:50%;border-radius:0px;' name="strong">板块强度</button>
-                    <button type="button" class="btn btn-default btn-xs platetype" style='width:50%;border-radius:0px;' name="money">主力流入</button>
+                    <button type="button" class="btn btn-danger btn-xs platetype" style='width:50%;border-radius:0px;' name="strong">系统指标</button>
+                    <button type="button" class="btn btn-default btn-xs platetype" style='width:50%;border-radius:0px;' name="money">数据流入</button>
 
                   </div>
                 </div>
@@ -175,14 +175,14 @@
 
       <table class='table table-border' style='font-size:12px;text-align:center;table-layout:fixed;margin-bottom:0;'>
 
-<tr><th style='width:70px;text-align:center;'>代码</th><th style='width:110px;text-align:center;'>名称</th><th style='width:80px;text-align:center;cursor:pointer;text-indent:5px;' class='ksort' val="1">涨幅<span class='iconfont icon-sort' style='font-weight:normal;font-size:14px;color:#aaa;'></span></th><th style='text-align:center;width:80px;cursor:pointer;' val="6" class='ksort'>板数</th><th style='width:100px;text-align:center;cursor:pointer;text-indent:8px;' class='ksort' val="2">领涨次数<span class='iconfont icon-sort' style='font-weight:normal;font-size:14px;color:#aaa;'></span></th><th style='width:80px;text-align:center;cursor:pointer;text-indent:8px;' class='ksort' val="3">金额<span class='iconfont icon-sort' style='font-weight:normal;font-size:14px;color:#aaa;'></span></th><th style='text-align:center;width:120px;cursor:pointer;text-indent:10px;' val="4" class='ksort'>实际流通<span class='iconfont icon-sort' style='font-weight:normal;font-size:14px;color:#aaa;'></span></th><th style='text-align:center;cursor:pointer;text-indent:5px;'  class='ksort' val="5">人气<span class='iconfont icon-sort' style='font-weight:normal;font-size:14px;color:#aaa;'></span></th></tr>
+<tr><th style='width:70px;text-align:center;'>代码</th><th style='width:110px;text-align:center;'>名称</th><th style='width:80px;text-align:center;cursor:pointer;text-indent:5px;' class='ksort' val="1">变化<span class='iconfont icon-sort' style='font-weight:normal;font-size:14px;color:#aaa;'></span></th><th style='text-align:center;width:80px;cursor:pointer;' val="6" class='ksort'>板数</th><th style='width:100px;text-align:center;cursor:pointer;text-indent:8px;' class='ksort' val="2">领先次数<span class='iconfont icon-sort' style='font-weight:normal;font-size:14px;color:#aaa;'></span></th><th style='width:80px;text-align:center;cursor:pointer;text-indent:8px;' class='ksort' val="3">数值<span class='iconfont icon-sort' style='font-weight:normal;font-size:14px;color:#aaa;'></span></th><th style='text-align:center;width:120px;cursor:pointer;text-indent:10px;' val="4" class='ksort'>实际流转<span class='iconfont icon-sort' style='font-weight:normal;font-size:14px;color:#aaa;'></span></th><th style='text-align:center;cursor:pointer;text-indent:5px;'  class='ksort' val="5">活跃度<span class='iconfont icon-sort' style='font-weight:normal;font-size:14px;color:#aaa;'></span></th></tr>
       </table>
 
 <div style='height:160px;overflow:auto;' id='divstock'>
 
 <table class='table table-border' style='font-size:12px;text-align:center;' id='gp'>
 <thead id='thead'>
-<tr style='display:none;'><th>代码</th><th>名称</th><th class='kreal1'>涨幅</th><th>板数</th><th class='kreal2'>领涨次数</th><th class='kreal3'>金额</th><th class='kreal4'>实际流通</th><th class='kreal5'>人气</th></tr>
+<tr style='display:none;'><th>代码</th><th>名称</th><th class='kreal1'>变化</th><th>板数</th><th class='kreal2'>领先次数</th><th class='kreal3'>数值</th><th class='kreal4'>实际流转</th><th class='kreal5'>活跃度</th></tr>
 </thead>
 <tbody  id="stock" style=''></tbody>
 </table>
@@ -371,8 +371,8 @@
     axisTick: {
             show: false // 隐藏Y轴刻度线
         },
-    //data: ['跌停', '>5',  '1-5', '0-1', '平盘', '0-1', '1-5', '>5', '涨停']
-    data: ['跌停', '>7',  '5-7',  '2-5', '0-2', '平盘', '0-2', '2-5','5-7', '>7', '涨停']
+    //data: ['极低', '>5',  '1-5', '0-1', '基准', '0-1', '1-5', '>5', '极高']
+    data: ['极低', '>7',  '5-7',  '2-5', '0-2', '基准', '0-2', '2-5','5-7', '>7', '极高']
   },
   series: [
     {
@@ -624,7 +624,7 @@ function stopHeartbeat() {
 
       if (name == 'PBBX') {
         var series = [{
-        name: '今日5分钟量能',
+        name: '今日吞吐',
         type: 'bar',
         barWidth: 2,
         color: color,
@@ -657,7 +657,7 @@ function stopHeartbeat() {
 
 
         var series = [{
-            name: '情绪指标',
+            name: '运行指标',
             type: 'line',
             lineStyle: {
               width: 1 // 设置线条粗细为3
@@ -670,7 +670,7 @@ function stopHeartbeat() {
                     color: 'red',
                     opacity: 0.05
                   },
-                  name: '火爆',
+                  name: '高峰',
                   label: {
                     show: true,
                     offset: [252, 46],
@@ -687,7 +687,7 @@ function stopHeartbeat() {
                     color: 'green',
                     opacity: 0.05
                   },
-                  name: '冰点',
+                  name: '低谷',
                   label: {
                     show: true,
                     offset: [252, 46],
@@ -704,7 +704,7 @@ function stopHeartbeat() {
                     color: 'yellow',
                     opacity: 0.03
                   },
-                  name: '一般',
+                  name: '常规',
                   label: {
                     show: true,
                     offset: [252, 46],
@@ -721,7 +721,7 @@ function stopHeartbeat() {
                     color: 'orange',
                     opacity: 0.09
                   },
-                  name: '良好',
+                  name: '正常',
                   label: {
                     show: true,
                     offset: [252, 46],
@@ -749,7 +749,7 @@ function stopHeartbeat() {
             }
           },
           {
-            name: '亏钱效应',
+            name: '风险指数',
             type: 'bar',
             barWidth: '15%',
             color: 'green',
@@ -767,17 +767,17 @@ function stopHeartbeat() {
 
 
 
-      if(name=='QX')lastname='昨日情绪';
-      if(name=='ZT')lastname='昨日涨停';
-      if(name=='DT')lastname='昨日跌停';
-      if(name=='KQXY')lastname='昨日亏钱效应';
-      if(name=='HSLN')lastname='昨日主力流入';
-      if(name=='LBGD')lastname='昨日连板高度';
-      if(name=='SZ')lastname='昨日上涨';
-      if(name=='XD')lastname='昨日下跌';
-      if(name=='PB')lastname='昨日封板率';
-      if(name=='ZTBX')lastname='[昨日]昨涨停表现';
-      if(name=='LBBX')lastname='[昨日]昨连板表现';
+      if(name=='QX')lastname='昨日指标';
+      if(name=='ZT')lastname='昨日极高';
+      if(name=='DT')lastname='昨日极低';
+      if(name=='KQXY')lastname='昨日风险指数';
+      if(name=='HSLN')lastname='昨日数据流入';
+      if(name=='LBGD')lastname='昨日连续度';
+      if(name=='SZ')lastname='昨日增长';
+      if(name=='XD')lastname='昨日下降';
+      if(name=='PB')lastname='昨日完成率';
+      if(name=='ZTBX')lastname='[昨日]昨日活跃度';
+      if(name=='LBBX')lastname='[昨日]昨日连续度';
       if(name=='PBBX')lastname='';
 
 
@@ -798,7 +798,7 @@ function stopHeartbeat() {
 
       if(name=='PBBX'){
         var lastchart={
-        name:'创业板',
+        name:'子模块',
         type:'line',
         showSymbol: false,
 
@@ -813,7 +813,7 @@ function stopHeartbeat() {
 
       if(name=='PBBX'){
         var lastchart={
-        name:'昨日5分钟量能',
+        name:'昨日吞吐',
         type:'bar',
         color:'#555',
         showSymbol: false,
@@ -882,7 +882,7 @@ function stopHeartbeat() {
 
 
 
-    //板块强度图
+    //系统指标图
 
     var plateChart = echarts.init(document.getElementById('plate'));
     var platelist='';
@@ -923,8 +923,8 @@ function stopHeartbeat() {
                 pvalue=val.val>0?"<span style='color:red;'>"+pvalue+"</span>":"<span style='color:green;'>"+pvalue+"</span>"
               }
               var ztnum='';
-              if(val.ztcount)var ztnum="<span style='float:right;width:40px;text-align:center;color:red;border:1px solid red;;display:inline-block;transform: scale(0.7);'>"+val.ztcount+"涨停</span>";
-              else var ztnum="<span style='float:right;width:40px;text-align:center;color:red;border:1px solid red;;display:inline-block;transform: scale(0.8);'>"+"0涨停</span>";
+              if(val.ztcount)var ztnum="<span style='float:right;width:40px;text-align:center;color:red;border:1px solid red;;display:inline-block;transform: scale(0.7);'>"+val.ztcount+"极高</span>";
+              else var ztnum="<span style='float:right;width:40px;text-align:center;color:red;border:1px solid red;;display:inline-block;transform: scale(0.8);'>"+"0极高</span>";
               if(platetype=='money')var ztnum='';
               if(i==1 && type==1)getSubPlate(val.code)
               if($.inArray(val.code,data.checkplate)!=-1)platestr=platestr+"<tr style='font-size:12px;'><td style='text-align:left;padding-right:0;padding-left:3px;'><div class='checkbox'><input type='checkbox' style='margin-left:0;' value='"+val.code+"' name='plate' id='pt"+val.code+"' checked><span style='display:inline-block;margin-left:15px;cursor:pointer;' platecode='"+val.code+"' class='plate' >"+val.name+"("+pvalue+")</span>"+ztnum+"</div></td></div>";

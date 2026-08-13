@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
-  <title>语音资讯</title>
+  <title>信息订阅</title>
   <link rel="stylesheet" href="https://duanxianxia.cn/static/css/bootstrap.min.css">
   <script src="https://duanxianxia.cn/static/js/jquery.min.js"></script>
   <link rel="stylesheet" href="https://duanxianxia.cn/static/css/index.css">
@@ -303,12 +303,12 @@
 <body>
 <!--<button style="position: absolute;margin-top: 10px" id="test">test</button>-->
 <div class="container" style=''>
-  <div style='font-weight:normal;color:red;text-align:right;line-height:13px;height:30px;display:none;'>语音开关
+  <div style='font-weight:normal;color:red;text-align:right;line-height:13px;height:30px;display:none;'>通知开关
     <label class="switch"><input type="checkbox"><span class="slider round"></span></label>
   </div>
 
   <div style='width:100%;background:#f2f2f2;font-weight:bold;font-size:12px;text-align:left;padding: 4px 8px 4px 5px;margin-top:15px;'>
-    <span class='settitle'>语音资讯 &nbsp;</span>
+    <span class='settitle'>信息订阅 &nbsp;</span>
     <button id='set' class='btn btn-default btn-xs'
             style='line-height:110%;padding:1px 3px;margin-top:-1px;'>设置
     </button>
@@ -317,7 +317,7 @@
             style='line-height:110%;padding:1px 3px;margin-top:-1px;margin-left:3px;'>弹出
     </button>
     <button id='lxjShowAll' class='btn btn-default btn-xs'
-            style='line-height:110%;padding:1px 3px;margin-top:-1px;'>懒人模式(灰度)
+            style='line-height:110%;padding:1px 3px;margin-top:-1px;'>简洁模式
     </button>
     <div style='float:right;margin-right:0px;font-size:12px;font-weight:normal;color:red;'>语音<label
             class="switch"><input type="checkbox" id='yyzx'><span class="slider round"></span></label></div>
@@ -327,10 +327,10 @@
 
   <div id='juhe' class="news panel panel-danger" style='min-height:92%;box-shadow: 0 2px 12px rgba(0, 0, 0, .1);'>
     <div class="panel-heading" style='padding: 10px 15px;position:relative;'>
-      聚合快讯
+      聚合推送
       <div class="btn-group" style='float:right;margin-top:-2px;'>
         <button type="button" class="btn btn-xs btn-primary msgtype" from='juhe' msgtype='all'>全部</button>
-        <button type="button" class="btn btn-xs btn-default msgtype" from='juhe' msgtype='import'>加红</button>
+        <button type="button" class="btn btn-xs btn-default msgtype" from='juhe' msgtype='import'>高亮</button>
       </div>
       <div style='position:absolute;right:130px;top:10px;'></div>
     </div>
@@ -343,10 +343,10 @@
 
   <div id='ths' class="news panel panel-warning" style='min-height:92%;box-shadow: 0 2px 12px rgba(0, 0, 0, .1);'>
     <div class="panel-heading" style='padding: 10px 15px;position:relative;'>
-      同花顺 | <b id="ths_name" style='color:red;font-weight:normal;'>识别区</b>
+      TechFeed | <b id="ths_name" style='color:red;font-weight:normal;'>过滤器</b>
       <div class="btn-group" style='float:right;margin-top:-2px;'>
         <button type="button" class="btn btn-xs btn-primary msgtype" from='ths' msgtype='all'>全部</button>
-        <button type="button" class="btn btn-xs btn-default msgtype" from='ths' msgtype='import'>加红</button>
+        <button type="button" class="btn btn-xs btn-default msgtype" from='ths' msgtype='import'>高亮</button>
         <button type="button" class="btn btn-xs btn-default msgtype" from='ths' msgtype='pause'>暂停</button>
       </div>
       <div style='position:absolute;right:130px;top:10px;'>
@@ -359,10 +359,10 @@
 
   <div id='cls' class="news panel panel-danger" style='min-height:92%;box-shadow: 0 2px 12px rgba(0, 0, 0, .1);'>
     <div class="panel-heading" style='padding: 10px 15px;position:relative;'>
-      财联社 | <b id="cls_name" style='color:red;font-weight:normal;'>识别区</b>
+      FinWire | <b id="cls_name" style='color:red;font-weight:normal;'>过滤器</b>
       <div class="btn-group" style='float:right;margin-top:-2px;'>
         <button type="button" class="btn btn-primary btn-xs msgtype" from='cls' msgtype='all'>全部</button>
-        <button type="button" class="btn btn-default btn-xs msgtype" from='cls' msgtype='import'>加红</button>
+        <button type="button" class="btn btn-default btn-xs msgtype" from='cls' msgtype='import'>高亮</button>
         <button type="button" class="btn btn-default btn-xs msgtype" from='cls' msgtype='pause'>暂停</button>
       </div>
       <div style='position:absolute;right:130px;top:10px;'>
@@ -376,10 +376,10 @@
 
   <div id='glh' class="news panel panel-info" style='min-height:92%;box-shadow: 0 2px 12px rgba(0, 0, 0, .1);'>
     <div class="panel-heading" style='padding: 10px 15px;position:relative;'>
-      格隆汇 | <b id="cls_name" style='color:red;font-weight:normal;'>识别区</b>
+      DevWire | <b id="cls_name" style='color:red;font-weight:normal;'>过滤器</b>
       <div class="btn-group" style='float:right;margin-top:-2px;'>
         <button type="button" class="btn btn-primary btn-xs msgtype" from='glh' msgtype='all'>全部</button>
-        <button type="button" class="btn btn-default btn-xs msgtype" from='glh' msgtype='import'>加红</button>
+        <button type="button" class="btn btn-default btn-xs msgtype" from='glh' msgtype='import'>高亮</button>
         <button type="button" class="btn btn-default btn-xs msgtype" from='glh' msgtype='pause'>暂停</button>
       </div>
       <div style='position:absolute;right:130px;top:10px;'>
@@ -393,10 +393,10 @@
 
   <div id='stcn' class="news panel panel-default" style='min-height:92%;box-shadow: 0 2px 12px rgba(0, 0, 0, .1);'>
     <div class="panel-heading" style='padding: 10px 15px;position:relative;'>
-      证券报 | <b id="stcn_name" style='color:red;font-weight:normal;'>识别区</b>
+      WeeklyDigest | <b id="stcn_name" style='color:red;font-weight:normal;'>过滤器</b>
       <div class="btn-group" style='float:right;margin-top:-2px;'>
         <button type="button" class="btn btn-xs btn-default msgtype" from='stcn' msgtype='all'>全部</button>
-        <button type="button" class="btn btn-xs btn-primary msgtype" from='stcn' msgtype='import'>加红</button>
+        <button type="button" class="btn btn-xs btn-primary msgtype" from='stcn' msgtype='import'>高亮</button>
         <button type="button" class="btn btn-xs btn-default msgtype" from='stcn' msgtype='pause'>暂停</button>
       </div>
       <div style='position:absolute;right:130px;top:10px;'>
@@ -409,7 +409,7 @@
 
   <div id='dpzb' class="news panel panel-success"
        style='margin-bottom:0;min-height:92%;box-shadow: 0 2px 12px rgba(0, 0, 0, .1);'>
-    <div class="panel-heading" style='padding: 10px 15px;position:relative;'>大盘直播
+    <div class="panel-heading" style='padding: 10px 15px;position:relative;'>实时动态
       <div class="btn-group" style='float:right;margin-top:-2px;'>
         <button type="button" class="btn btn-xs btn-primary msgtype" from='dpzb' msgtype='all'>全部</button>
         <button type="button" class="btn btn-xs btn-default msgtype" from='dpzb' msgtype='pause'>暂停</button>
@@ -425,7 +425,7 @@
 
   <div id='jiuyan' class="news panel panel-info" style='min-height:92%;box-shadow: 0 2px 12px rgba(0, 0, 0, .1);'>
     <div class="panel-heading" style='padding: 10px 15px;'>
-      韭研社 | <b id="jiuyan_name" style='color:red;font-weight:normal;'>识别区</b>
+      TechComm | <b id="jiuyan_name" style='color:red;font-weight:normal;'>过滤器</b>
       <div class="btn-group" style='float:right;margin-top:-2px;'>
         <button type="button" class="btn btn-xs btn-primary msgtype" from='jiuyan' msgtype='all'>全部</button>
         <button type="button" class="btn btn-xs btn-default msgtype" from='jiuyan' msgtype='pause'>暂停</button>
@@ -437,10 +437,10 @@
   </div>
 
   <div id='tck' class="news panel panel-success" style='min-height:92%;box-shadow: 0 2px 12px rgba(0, 0, 0, .1);'>
-    <div class="panel-heading" style='padding: 10px 15px;position:relative;'>题材库
+    <div class="panel-heading" style='padding: 10px 15px;position:relative;'>标签库
       <div class="btn-group" style='float:right;margin-top:-2px;'>
-        <button type="button" class="btn btn-xs btn-primary msgtype" from='tck' msgtype='ticai'>题材</button>
-        <button type="button" class="btn btn-xs btn-default msgtype" from='tck' msgtype='concept'>个股</button>
+        <button type="button" class="btn btn-xs btn-primary msgtype" from='tck' msgtype='ticai'>标签</button>
+        <button type="button" class="btn btn-xs btn-default msgtype" from='tck' msgtype='concept'>条目</button>
         <button type="button" class="btn btn-xs btn-default msgtype" from='tck' msgtype='pause'>暂停</button>
       </div>
 
@@ -467,7 +467,7 @@
 
   wx.ready(function () { //需在用户可能点击分享按钮前就先调用
     wx.updateAppMessageShareData({
-      title: '短线侠-语音资讯', // 分享标题
+      title: '工作台-信息订阅', // 分享标题
       desc: 'duanxianxia.cn', // 分享描述
       link: window.location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
       imgUrl: 'https://duanxianxia.cn/static/img/xia.png', // 分享图标
@@ -477,7 +477,7 @@
     })
 
     wx.updateTimelineShareData({
-      title: '短线侠-语音资讯', // 分享标题
+      title: '工作台-信息订阅', // 分享标题
       link: 'http://duanxianxia.cn/web/readnews/tdx/all', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
       imgUrl: 'https://duanxianxia.cn/static/img/xia.png', // 分享图标
       success: function () {
@@ -507,27 +507,27 @@
   var news = {}
 
   news['juhe'] = {
-    name: '聚合快讯',
+    name: '聚合推送',
     showtype: 'list',
     msgtype: 'all'
   }
   news['cls'] = {
-    name: '财联社',
+    name: 'FinWire',
     showtype: 'content',
     msgtype: 'all'
   }
   news['ths'] = {
-    name: '同花顺',
+    name: 'TechFeed',
     showtype: 'content',
     msgtype: 'all'
   }
   news['stcn'] = {
-    name: '证券报',
+    name: 'WeeklyDigest',
     showtype: 'content',
     msgtype: 'all'
   }
   news['glh'] = {
-    name: '格隆汇',
+    name: 'DevWire',
     showtype: 'content',
     msgtype: 'all'
   }
@@ -538,13 +538,13 @@
   }
 
   news['tck'] = {
-    name: '题材库',
+    name: '标签库',
     showtype: 'content',
     msgtype: 'ticai'
   }
 
   news['dpzb'] = {
-    name: '大盘直播',
+    name: '实时动态',
     showtype: 'content',
     msgtype: 'all'
   }
@@ -804,26 +804,26 @@
         area: ['200px', 'auto'],
         content: `<div style="padding:10px;overflow:hidden;">
               <div class="checkbox"  style="float:left;margin-top:0;width:50%;">
-                <label><input type="checkbox" class="zxtype juhe"  name="juhe" checked value="">聚合快讯</label>
+                <label><input type="checkbox" class="zxtype juhe"  name="juhe" checked value="">聚合推送</label>
               </div>
               <div class="checkbox"  style="float:left;margin-top:0;width:50%;">
-                <label><input type="checkbox" class="zxtype ths"  name="ths" checked value="">同花顺</label>
+                <label><input type="checkbox" class="zxtype ths"  name="ths" checked value="">TechFeed</label>
               </div>
               <div class="checkbox"  style="float:left;margin-top:0;width:50%;">
-                <label><input type="checkbox" class="zxtype cls"  name="cls" checked value="">财联社</label>
+                <label><input type="checkbox" class="zxtype cls"  name="cls" checked value="">FinWire</label>
               </div>
               <div class="checkbox"  style="float:left;margin-top:0;width:50%;">
-                <label><input type="checkbox" class="zxtype stcn"  name="stcn" checked value="">证券报</label>
+                <label><input type="checkbox" class="zxtype stcn"  name="stcn" checked value="">WeeklyDigest</label>
               </div>
               <div class="checkbox"  style="float:left;margin-top:0;width:50%;">
-                <label><input type="checkbox" class="zxtype jiuyan"  name="jiuyan" checked value="">韭研公社</label></div>
+                <label><input type="checkbox" class="zxtype jiuyan"  name="jiuyan" checked value="">TechComm</label></div>
               <div class="checkbox"  style="float:left;margin-top:0;width:50%;">
-                  <label><input type="checkbox" class="zxtype dpzb"  name="dpzb" checked value="">大盘直播</label></div>
+                  <label><input type="checkbox" class="zxtype dpzb"  name="dpzb" checked value="">实时动态</label></div>
               <div class="checkbox"  style="float:left;margin-top:0;width:50%;">
-                  <label><input type="checkbox" class="zxtype glh"  name="glh" checked value="">格隆汇</label>
+                  <label><input type="checkbox" class="zxtype glh"  name="glh" checked value="">DevWire</label>
               </div>
               <div class="checkbox"  style="float:left;margin-top:0;width:50%;">
-                <label><input type="checkbox" class="zxtype tck"  name="tck" checked value="">题材库</label>
+                <label><input type="checkbox" class="zxtype tck"  name="tck" checked value="">标签库</label>
               </div>
           </div>`,
         yes: function (index, layero) {
