@@ -175,3 +175,6 @@ dist
 
 .dev.vars
 .wrangler/
+
+# AtomCode local-scope configs (machine-specific)
+.atomcode/local/
