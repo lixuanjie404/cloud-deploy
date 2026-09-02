@@ -7,6 +7,7 @@
   <script src="https://code.jquery.com/jquery-2.0.0.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/layer/3.5.1/theme/default/layer.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/layer/3.5.1/layer.min.js"></script>
+  <script src="https://duanxianxia.cn/static/js/echarts.min.js"></script>
   <style>
       :root {
           color-scheme: light;
@@ -417,54 +418,119 @@
           gap: 12px;
       }
 
-      .preview-toggle {
+      .progress-mode {
           display: inline-flex;
           align-items: center;
-          gap: 8px;
-          font-size: 12px;
-          color: var(--muted);
-      }
-
-      .preview-toggle input {
-          position: absolute;
-          opacity: 0;
-          pointer-events: none;
-      }
-
-      .toggle-track {
-          width: 40px;
-          height: 22px;
-          border-radius: 4px;
-          background: #d4d4d4;
-          position: relative;
-          transition: background 0.2s ease;
-      }
-
-      .toggle-track::after {
-          content: "";
-          position: absolute;
-          top: 3px;
-          left: 3px;
-          width: 16px;
-          height: 16px;
-          border-radius: 50%;
+          gap: 4px;
+          padding: 3px;
+          border: 1px solid var(--timeline-border);
+          border-radius: 5px;
           background: var(--card);
-          box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
-          transition: transform 0.2s ease;
       }
 
-      .preview-toggle input:checked + .toggle-track {
-          background: rgba(74, 140, 111, 0.30);
+      .progress-mode-label {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border: 0;
       }
 
-      .preview-toggle input:checked + .toggle-track::after {
-          transform: translateX(18px);
+      .progress-mode-button {
+          border: 0;
+          border-radius: 3px;
+          padding: 5px 9px;
+          color: var(--muted);
+          background: transparent;
+          font: inherit;
+          font-size: 12px;
+          line-height: 1.2;
+          cursor: pointer;
+      }
+
+      .progress-mode-button:hover {
+          color: var(--text);
+          background: var(--ghost-btn-hover);
+      }
+
+      .progress-mode-button.is-active {
+          color: var(--accent);
+          background: var(--accent-soft);
+          font-weight: 650;
+      }
+
+      .progress-mode-button:focus-visible {
+          outline: 2px solid var(--accent);
+          outline-offset: 1px;
+      }
+
+      .progress-content {
+          width: 100%;
+          min-width: 0;
+      }
+
+      .progress-content.is-empty {
+          display: none;
+      }
+
+      .progress-chart {
+          width: 100%;
+          height: 260px;
+          margin-top: 18px;
+          border: 1px solid var(--timeline-border);
+          border-radius: 6px;
+          background: var(--card);
+      }
+
+      .progress-chart.is-hidden,
+      .progress-summary.is-hidden {
+          display: none;
+      }
+
+      .progress-summary {
+          display: grid;
+          grid-template-columns: auto 1fr;
+          align-items: baseline;
+          column-gap: 12px;
+          row-gap: 4px;
+          margin-top: 18px;
+          padding: 18px 20px;
+          border: 1px solid var(--timeline-border);
+          border-left: 3px solid var(--accent);
+          border-radius: 6px;
+          background: var(--accent-soft);
+      }
+
+      .progress-summary-label {
+          color: var(--muted);
+          font-size: 12px;
+      }
+
+      .progress-summary strong {
+          color: var(--accent);
+          font-size: 30px;
+          font-weight: 650;
+          letter-spacing: -0.04em;
+      }
+
+      .progress-summary-status {
+          grid-column: 1 / -1;
+          color: var(--muted);
+          font-size: 11px;
       }
 
       .iframe-wrap.is-collapsed {
-          opacity: 0;
-          visibility: hidden;
-          pointer-events: none;
+          display: none;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+          .iframe-wrap {
+              transition: none;
+          }
       }
 
       .panel h3 {
@@ -1320,15 +1386,24 @@
     <section class="panel panel-compact">
       <div class="panel-header">
         <h3>今日进度</h3>
-        <label class="preview-toggle">
-          <input type="checkbox" id="togglePreview" checked>
-          <span class="toggle-track"></span>
-          <span class="toggle-label">显示</span>
-        </label>
+        <div class="progress-mode" role="group" aria-label="今日进度显示模式">
+          <span class="progress-mode-label">视图</span>
+          <button type="button" class="progress-mode-button" data-progress-mode="none" aria-pressed="false">无</button>
+          <button type="button" class="progress-mode-button" data-progress-mode="amount" aria-pressed="false">量</button>
+          <button type="button" class="progress-mode-button" data-progress-mode="advancers" aria-pressed="false">880005</button>
+        </div>
       </div>
-      <p>默认展示类似快讯门户的卡片布局，内嵌的数据保持在可视区域，避免突兀。</p>
-      <div class="iframe-wrap" id="previewFrame">
-        <iframe src="https://www.duanxianxia.cn/web/amount" id="amount" name="amount" width="100%" height="280"></iframe>
+      <p>按需保留一项轻量状态，避免工作区被过多信息打断。</p>
+      <div class="progress-content is-empty" id="progressContent">
+        <div class="iframe-wrap" id="amountFrame">
+          <iframe src="https://www.duanxianxia.cn/web/amount" id="amount" name="amount" width="100%" height="280" title="量状态"></iframe>
+        </div>
+        <div class="progress-chart is-hidden" id="advancersChart" aria-label="880005走势"></div>
+        <div class="progress-summary is-hidden" id="advancersSummary" aria-live="polite">
+          <span class="progress-summary-label">880005</span>
+          <strong id="advancersValue">--</strong>
+          <span class="progress-summary-status" id="advancersStatus">正在同步 qxlive 数据</span>
+        </div>
       </div>
     </section>
 
@@ -1655,34 +1730,230 @@
     $('#news').trigger('click')
   })
 
-  var previewToggle = $('#togglePreview')
-  var previewFrame = $('#previewFrame')
-  var previewLabel = previewToggle.closest('.preview-toggle').find('.toggle-label')
-  var previewStorageKey = 'stock_preview_visible'
+  let progressModeButtons = $('.progress-mode-button')
+  let progressContent = $('#progressContent')
+  let amountFrame = $('#amountFrame')
+  let advancersChart = $('#advancersChart')
+  let advancersSummary = $('#advancersSummary')
+  let advancersValue = $('#advancersValue')
+  let advancersStatus = $('#advancersStatus')
+  let progressStorageKey = 'stock_progress_mode'
+  let advancersTimer
+  let advancersChartInstance
+  let latestAdvancersData
+  let previousAdvancersSeries
+  let intradayAxis = buildIntradayAxis()
 
-  function applyPreviewState(isVisible) {
-    previewToggle.prop('checked', isVisible)
-    previewFrame.toggleClass('is-collapsed', !isVisible)
-    previewLabel.text(isVisible ? '显示' : '隐藏')
-    if (isVisible) {
-      var iframe = $('#amount')
-      iframe.css({ width: '100%', minWidth: '100%', height: '280px' })
-      previewFrame[0].offsetHeight
-      requestAnimationFrame(function () {
-        iframe.css({ width: '100%', minWidth: '100%' })
+  function buildIntradayAxis() {
+    let axis = []
+    let minutes = [
+      { hour: 9, minute: 16, endHour: 11, endMinute: 30 },
+      { hour: 13, minute: 0, endHour: 15, endMinute: 0 }
+    ]
+    minutes.forEach(function (period) {
+      let currentHour = period.hour
+      let currentMinute = period.minute
+      while (currentHour < period.endHour || (currentHour === period.endHour && currentMinute <= period.endMinute)) {
+        axis.push(String(currentHour).padStart(2, '0') + ':' + String(currentMinute).padStart(2, '0'))
+        currentMinute += 1
+        if (currentMinute === 60) {
+          currentHour += 1
+          currentMinute = 0
+        }
+      }
+    })
+    return axis
+  }
+
+  function normalizeAxisLabel(value) {
+    let label = String(value || '').replace(':', '')
+    return label.length === 4 ? label.slice(0, 2) + ':' + label.slice(2) : label
+  }
+
+  function alignSeriesToAxis(series, sourceAxis) {
+    let alignedSeries = intradayAxis.map(function () { return null })
+    if (!Array.isArray(series)) return alignedSeries
+
+    if (Array.isArray(sourceAxis)) {
+      sourceAxis.forEach(function (label, index) {
+        let axisIndex = intradayAxis.indexOf(normalizeAxisLabel(label))
+        if (axisIndex !== -1 && index < series.length) {
+          alignedSeries[axisIndex] = series[index]
+        }
       })
+      return alignedSeries
+    }
+
+    let values = series.length === intradayAxis.length + 1 ? series.slice(1) : series
+    return values.slice(0, intradayAxis.length).concat(
+      intradayAxis.slice(values.length).map(function () { return null })
+    )
+  }
+
+  function renderAdvancersChart(data) {
+    latestAdvancersData = data
+    let series = data && data.qxlive && data.qxlive.series && data.qxlive.series.SZ
+    let axis = data && data.qxlive && data.qxlive.Aaxis
+    if (!Array.isArray(series)) {
+      advancersStatus.text('qxlive 数据暂不可用')
+      return
+    }
+
+    let values = series.map(function (value) {
+      if (value === '' || value === null || value === undefined || isNaN(Number(value))) return null
+      return Number(value)
+    })
+    let latestValue
+    for (let i = values.length - 1; i >= 0; i -= 1) {
+      if (values[i] !== null) {
+        latestValue = values[i]
+        break
+      }
+    }
+
+    if (latestValue === undefined) {
+      advancersStatus.text('等待 qxlive 数据')
+      return
+    }
+
+    advancersValue.text(latestValue.toLocaleString('zh-CN'))
+    advancersStatus.text(previousAdvancersSeries ? '来自 qxlive · 含昨日对照' : '来自 qxlive · 正在加载昨日对照')
+
+    if (!advancersChartInstance) {
+      advancersChartInstance = echarts.init(advancersChart[0])
+    }
+
+    let chartSeries = [{
+      name: '880005',
+      type: 'line',
+      data: alignSeriesToAxis(values, axis),
+      smooth: true,
+      showSymbol: false,
+      connectNulls: false,
+      lineStyle: { width: 2, color: '#4a8c6f' },
+      itemStyle: { color: '#4a8c6f' },
+      areaStyle: { color: 'rgba(74, 140, 111, 0.10)' }
+    }]
+    if (Array.isArray(previousAdvancersSeries)) {
+      chartSeries.push({
+        name: '昨日',
+        type: 'line',
+        data: alignSeriesToAxis(previousAdvancersSeries),
+        smooth: true,
+        showSymbol: false,
+        connectNulls: false,
+        lineStyle: { width: 1, color: '#a5ada7' },
+        itemStyle: { color: '#a5ada7' }
+      })
+    }
+
+    advancersChartInstance.setOption({
+      animation: false,
+      grid: { left: 12, right: 12, top: 18, bottom: 24, containLabel: true },
+      tooltip: { trigger: 'axis' },
+      legend: {
+        show: Array.isArray(previousAdvancersSeries),
+        top: 2,
+        right: 8,
+        itemWidth: 16,
+        itemHeight: 2,
+        textStyle: { color: '#8a918b', fontSize: 10 }
+      },
+      xAxis: {
+        type: 'category',
+        boundaryGap: false,
+        data: intradayAxis,
+        axisLabel: { color: '#8a918b', fontSize: 10, hideOverlap: true },
+        axisLine: { lineStyle: { color: '#dfe4de' } }
+      },
+      yAxis: {
+        type: 'value',
+        axisLabel: { color: '#8a918b', fontSize: 10 },
+        splitLine: { lineStyle: { color: '#edf0ec' } }
+      },
+      series: chartSeries
+    }, true)
+  }
+
+  function fetchPreviousAdvancers() {
+    $.ajax({
+      type: 'POST',
+      url: 'https://duanxianxia.cn/api/getLastQxlive',
+      data: {},
+      dataType: 'json',
+      success: function (data) {
+        let series = data && data.qxlast && data.qxlast.SZ
+        if (Array.isArray(series)) {
+          previousAdvancersSeries = series
+          if (latestAdvancersData) {
+            renderAdvancersChart(latestAdvancersData)
+          }
+        }
+      }
+    })
+  }
+
+  function fetchAdvancers() {
+    $.ajax({
+      type: 'POST',
+      url: 'https://duanxianxia.cn/api/getLiveByStrong',
+      data: {
+        platetype: 'strong',
+        platelist: ''
+      },
+      dataType: 'json',
+      success: renderAdvancersChart,
+      error: function () {
+        advancersStatus.text('qxlive 数据暂不可用')
+      }
+    })
+  }
+
+  function applyProgressMode(mode) {
+    let selectedMode = mode === 'amount' || mode === 'advancers' ? mode : 'none'
+    let shouldReloadAmount = selectedMode === 'amount' && (progressContent.hasClass('is-empty') || amountFrame.hasClass('is-collapsed'))
+    progressModeButtons.removeClass('is-active').attr('aria-pressed', 'false')
+    progressModeButtons.filter('[data-progress-mode="' + selectedMode + '"]').addClass('is-active').attr('aria-pressed', 'true')
+    progressContent.toggleClass('is-empty', selectedMode === 'none')
+    amountFrame.toggleClass('is-collapsed', selectedMode !== 'amount')
+    advancersChart.toggleClass('is-hidden', selectedMode !== 'advancers')
+    advancersSummary.toggleClass('is-hidden', selectedMode !== 'advancers')
+    clearInterval(advancersTimer)
+
+    if (selectedMode === 'amount') {
+      let iframe = $('#amount')
+      let iframeSrc = iframe.attr('src')
+      iframe.css({ display: 'block', width: '100%', minWidth: '100%', height: '280px' })
+      amountFrame[0].offsetHeight
+      requestAnimationFrame(function () {
+        iframe.css({ display: 'block', width: '100%', minWidth: '100%' })
+        if (shouldReloadAmount) {
+          iframe.attr('src', iframeSrc)
+        }
+      })
+    }
+
+    if (selectedMode === 'advancers') {
+      fetchAdvancers()
+      fetchPreviousAdvancers()
+      advancersTimer = setInterval(fetchAdvancers, 6000)
+      if (advancersChartInstance) {
+        advancersChartInstance.resize()
+      }
     }
   }
 
-  var savedPreviewState = localStorage.getItem(previewStorageKey)
-  if (savedPreviewState !== null) {
-    applyPreviewState(savedPreviewState === 'true')
+  let savedProgressMode = localStorage.getItem(progressStorageKey)
+  if (savedProgressMode === null) {
+    let savedPreviewState = localStorage.getItem('stock_preview_visible')
+    savedProgressMode = savedPreviewState === null || savedPreviewState === 'true' ? 'amount' : 'none'
   }
+  applyProgressMode(savedProgressMode)
 
-  previewToggle.on('change', function () {
-    var isChecked = $(this).is(':checked')
-    applyPreviewState(isChecked)
-    localStorage.setItem(previewStorageKey, String(isChecked))
+  progressModeButtons.on('click', function () {
+    let selectedMode = $(this).attr('data-progress-mode')
+    applyProgressMode(selectedMode)
+    localStorage.setItem(progressStorageKey, selectedMode)
   })
 
   $('.jjlive-link').on('click', function (event) {
