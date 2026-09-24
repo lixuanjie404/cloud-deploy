@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0,viewport-fit=cover">
+  <title>语音资讯</title>
+  <link rel="stylesheet" href="https://duanxianxia.cn/static/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://duanxianxia.cn/static/js/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://duanxianxia.cn/static/css/index.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://duanxianxia.cn/static/css/common.css" rel="stylesheet">
+  <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
+  <link rel="stylesheet" href="https://duanxianxia.cn/static/js/layer/theme/default/layer.css" rel="stylesheet">
+  <script src="https://duanxianxia.cn/static/js/layer/layer.js"></script>
+  <style>
+    html,
+    body {
+      height: 100%;
+      font-size: 13px;
+      background: white;
+    }
+
+    .jytitle {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 555px;
+    }
+
+    .jytitle a {
+      color: #444;
+    }
+
+    #ths,
+    #glh,
+    #cls,
+    #jiuyan,
+    #tck,
+    #stcn {
+      display: none;
+    }
+
+    .msg-body {
+      height: 116px;
+    }
+
+    #ths_msg {
+      height: 133px;
+    }
+
+    .panel {
+      margin-bottom: 15px;
+    }
+
+    .nochoose {
+      color: #333;
+    }
+
+    .showtype {
+      cursor: pointer;
+    }
+
+    #black {
+      background-color: black;
+    }
+
+    #black .panel {
+      background: black;
+      color: #ddd;
+    }
+
+    #black .panel a {
+      color: #ddd;
+    }
+
+    #black .panel-heading {
+      background: black;
+      color: #EF783C;
+    }
+
+    #glh .panel-heading {
+      background: #C2D8FE;
+    }
+
+    #black #glh .panel-heading {
+      background: black;
+    }
+
+    .tctitle a {
+      color: #333;
+    }
+
+    #black .btn-group button {
+      background: none;
+    }
+
+    #black .btn-group button.btn-default {
+      color: #ddd;
+      border-color: #ddd;
+    }
+
+    #black .btn-group button.btn-primary {
+      color: yellow;
+      border-color: #ddd;
+    }
+
+    a.red {
+      color: red;
+    }
+
+    #black a.red {
+      color: yellow;
+    }
+
+
+    .msg_color1 {
+      color: red;
+    }
+
+    .msg_color2 {
+      color: black;
+    }
+
+    #black .panel a.msg_color1 {
+      color: yellow;
+    }
+
+    #black .panel a.msg_color2 {
+      color: #ddd;
+    }
+
+    .news {
+      display: none;
+    }
+
+    #dpzb .msg-body {
+      overflow: scroll !important;
+      height: 333px !important;
+      margin-bottom: 20px;
+    }
+
+
+    .layui-text p {
+      margin: 0;
+    }
+
+    .layui-timeline-title {
+      margin-bottom: 0;
+    }
+
+    .layui-timeline-axis {
+      position: absolute;
+      left: -3px;
+      top: 0;
+      z-index: 10;
+      width: 20px;
+      height: 20px;
+      line-height: 20px;
+      background-color: white;
+      color: black;
+      /*#d9534f*/
+      border-radius: 50%;
+      text-align: center;
+      cursor: pointer
+    }
+
+    .layui-timeline-item:before {
+      content: "";
+      position: absolute;
+      left: 6px;
+      top: 0;
+      z-index: 0;
+      width: 1px;
+      height: 100%
+    }
+
+    .layui-icon {
+      font-family: layui-icon !important;
+      font-size: 10px;
+      font-style: normal;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale
+    }
+
+    .layui-text h3 {
+      font-size: 14px;
+      line-height: 140%;
+      ;
+      font-weight: normal;
+      color: #151515;
+    }
+
+    .layui-timeline-content {
+
+      padding-left: 20px;
+    }
+
+    .newstitle {
+      margin-top: 2px;
+    }
+
+    .newscontent {
+      margin-top: 2px;
+    }
+
+    .layui-text {
+
+      line-height: 150%;
+      color: #999;
+      font-size: 13px;
+    }
+
+
+
+    .label-default {
+      background-color: #f5f5f5;
+      margin-right: 5px;
+      cursor: pointer;
+    }
+
+    .newscontent .label {
+      display: inline;
+      padding: .2em .5em .3em;
+      font-size: 90%;
+
+      font-weight: normal;
+      line-height: 1;
+      color: #999;
+      text-align: center;
+      white-space: nowrap;
+      vertical-align: baseline;
+      border-radius: .25em
+    }
+
+
+
+
+
+
+
+    /* 折叠文本容器样式 */
+    .news-container {
+      position: relative;
+      color: #34495e;
+    }
+
+    .digest {
+      max-height: 6em;
+      /* 3行高度 (1.6em * 3 = 4.8em, 加一些余量) */
+      overflow: hidden;
+      position: relative;
+      text-align: justify;
+    }
+
+    /* 文本末尾的渐变遮罩 */
+    .digest::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 100%;
+      height: 1.6em;
+
+    }
+
+    .excess .digest::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 100%;
+      height: 1.6em;
+      background: linear-gradient(to right, rgba(255, 255, 255, 0), white 92%);
+    }
+
+    /* 展开按钮样式 - 绝对定位在文本末尾 */
+    .expand-btn {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      z-index: 10;
+
+
+      cursor: pointer;
+      color: #ccc;
+      font-weight: normal;
+      text-decoration: none;
+      outline: none;
+      border: none;
+      padding-right: 0px;
+      margin-bottom: 3px;
+      ;
+      display: none;
+      border: 1px solid #ccc;
+      font-size: 12px;
+      line-height: 100%;
+      padding: 1px;
+      border-radius: 2px;
+    }
+
+    .news-container .expanded {
+      max-height: none !important;
+    }
+  </style>
+</head>
+
+<body id=''>
+  <div class="container" style=''>
+
+    <a href='/' style='' id='back'><button class='btn btn-warning btn-sm'
+        style='width:100%;margin-top:5px;'>返回首页</button></a>
+
+    <div style='font-weight:normal;color:red;text-align:right;line-height:13px;height:30px;display:none;'>语音开关
+      <label class="switch"><input type="checkbox"><span class="slider round"></span></label>
+    </div>
+
+    <div
+      style='width:100%;background:#f2f2f2;font-weight:bold;font-size:12px;text-align:left;padding: 4px 8px 4px 5px;margin-top:15px;'>
+      <span class='settitle'>语音资讯 &nbsp;</span><button id='set' class='btn btn-default btn-xs'
+        style='line-height:110%;padding:1px 3px;margin-top:-1px;'>设置</button><button id='open'
+        class='btn btn-default btn-xs'
+        style='line-height:110%;padding:1px 3px;margin-top:-1px;margin-left:3px;display:none;'>弹出</button>
+      <div style='float:right;margin-right:0px;font-size:12px;font-weight:normal;color:red;'>语音 <label
+          class="switch"><input type="checkbox" id='yyzx'><span class="slider round"></span></label></div>
+    </div>
+
+
+
+    <div style='height:15px;'></div>
+
+
+    <div id='juhe' class="news panel panel-danger" style='min-height:92%;box-shadow: 0 2px 12px rgba(0, 0, 0, .1);'>
+      <div class="panel-heading" style='padding: 10px 15px;position:relative;'>聚合快讯
+        <div class="btn-group" style='float:right;margin-top:-2px;'>
+          <button type="button" class="btn btn-xs btn-primary msgtype" from='juhe' msgtype='all'>全部</button>
+          <button type="button" class="btn btn-xs btn-default msgtype" from='juhe' msgtype='import'>加红</button>
+        </div>
+        <div style='position:absolute;right:130px;top:10px;'></div>
+      </div>
+      <div class="panel-body msg-body" id="juhe_msg"
+        style='overflow:auto;padding:5px 10px;font-size:12px;height:450px;'>
+        <ul class="layui-timeline">
+        </ul>
+      </div>
+    </div>
+
+
+
+    <div id='ths' class="news panel panel-warning" style='min-height:92%;box-shadow: 0 2px 12px rgba(0, 0, 0, .1);'>
+      <div class="panel-heading" style='padding: 10px 15px;position:relative;'>同花顺 | <b id="ths_name"
+          style='color:red;font-weight:normal;'>识别区</b>
+        <div class="btn-group" style='float:right;margin-top:-2px;'>
+          <button type="button" class="btn btn-xs btn-primary msgtype" from='ths' msgtype='all'>全部</button>
+          <button type="button" class="btn btn-xs btn-default msgtype" from='ths' msgtype='import'>加红</button>
+          <button type="button" class="btn btn-xs btn-default msgtype" from='ths' msgtype='pause'>暂停</button>
+        </div>
+        <div style='position:absolute;right:130px;top:10px;'><a href='###' class='showtype' name='ths'
+            type='content'>内容</a> | <a href='###' class='showtype nochoose' name='ths' type='list'>列表</a>
+        </div>
+      </div>
+      <div class="panel-body msg-body" id="ths_msg" style='overflow:auto;padding:5px 10px;'></div>
+    </div>
+
+    <div id='cls' class="news panel panel-danger" style='min-height:92%;box-shadow: 0 2px 12px rgba(0, 0, 0, .1);'>
+      <div class="panel-heading" style='padding: 10px 15px;position:relative;'>财联社 | <b id="cls_name"
+          style='color:red;font-weight:normal;'>识别区</b>
+        <div class="btn-group" style='float:right;margin-top:-2px;'>
+          <button type="button" class="btn btn-primary btn-xs msgtype" from='cls' msgtype='all'>全部</button>
+          <button type="button" class="btn btn-default btn-xs msgtype" from='cls' msgtype='import'>加红</button>
+          <button type="button" class="btn btn-default btn-xs msgtype" from='cls' msgtype='pause'>暂停</button>
+        </div>
+        <div style='position:absolute;right:130px;top:10px;'><a href='###' class='showtype' name='cls'
+            type='content'>内容</a> | <a href='###' class='showtype nochoose' name='cls' type='list'>列表</a>
+        </div>
+      </div>
+      <div class="panel-body msg-body" id="cls_msg" style='overflow:auto;padding:5px 10px;'></div>
+    </div>
+
+
+    <div id='glh' class="news panel panel-info" style='min-height:92%;box-shadow: 0 2px 12px rgba(0, 0, 0, .1);'>
+      <div class="panel-heading" style='padding: 10px 15px;position:relative;'>格隆汇 | <b id="cls_name"
+          style='color:red;font-weight:normal;'>识别区</b>
+        <div class="btn-group" style='float:right;margin-top:-2px;'>
+          <button type="button" class="btn btn-primary btn-xs msgtype" from='glh' msgtype='all'>全部</button>
+          <button type="button" class="btn btn-default btn-xs msgtype" from='glh' msgtype='import'>加红</button>
+          <button type="button" class="btn btn-default btn-xs msgtype" from='glh' msgtype='pause'>暂停</button>
+        </div>
+        <div style='position:absolute;right:130px;top:10px;'><a href='###' class='showtype' name='glh'
+            type='content'>内容</a> | <a href='###' class='showtype nochoose' name='glh' type='list'>列表</a>
+        </div>
+      </div>
+      <div class="panel-body msg-body" id="glh_msg" style='overflow:auto;padding:5px 10px;'></div>
+    </div>
+
+
+    <div id='stcn' class="news panel panel-default" style='min-height:92%;box-shadow: 0 2px 12px rgba(0, 0, 0, .1);'>
+      <div class="panel-heading" style='padding: 10px 15px;position:relative;'>证券报 | <b id="stcn_name"
+          style='color:red;font-weight:normal;'>识别区</b>
+        <div class="btn-group" style='float:right;margin-top:-2px;'>
+          <button type="button" class="btn btn-xs btn-default msgtype" from='stcn' msgtype='all'>全部</button>
+          <button type="button" class="btn btn-xs btn-primary msgtype" from='stcn' msgtype='import'>加红</button>
+          <button type="button" class="btn btn-xs btn-default msgtype" from='stcn' msgtype='pause'>暂停</button>
+        </div>
+        <div style='position:absolute;right:130px;top:10px;'><a href='###' class='showtype' name='stcn'
+            type='content'>内容</a> | <a href='###' class='showtype nochoose' name='stcn' type='list'>列表</a>
+        </div>
+      </div>
+      <div class="panel-body msg-body" id="stcn_msg" style='overflow:auto;padding:5px 10px;'></div>
+    </div>
+
+    <div id='dpzb' class="news panel panel-success"
+      style='margin-bottom:0;min-height:92%;box-shadow: 0 2px 12px rgba(0, 0, 0, .1);'>
+      <div class="panel-heading" style='padding: 10px 15px;position:relative;'>大盘直播
+        <div class="btn-group" style='float:right;margin-top:-2px;'>
+          <button type="button" class="btn btn-xs btn-primary msgtype" from='dpzb' msgtype='all'>全部</button>
+          <button type="button" class="btn btn-xs btn-default msgtype" from='dpzb' msgtype='pause'>暂停</button>
+        </div>
+        <div style='position:absolute;right:130px;top:10px;'>
+          <a href='###' class='showDetail' name='dpzb'>完全展开</a> |
+          <a href='###' class='showtype' name='dpzb' type='content'>内容</a> |
+          <a href='###' class='showtype nochoose' name='dpzb' type='list'>列表</a>
+        </div>
+
+      </div>
+      <div class="panel-body msg-body" id="dpzb_msg" style='overflow:auto;padding:5px 10px;'></div>
+    </div>
+
+    <div id='jiuyan' class="news panel panel-info" style='min-height:92%;box-shadow: 0 2px 12px rgba(0, 0, 0, .1);'>
+      <div class="panel-heading" style='padding: 10px 15px;'>韭研社 | <b id="jiuyan_name"
+          style='color:red;font-weight:normal;'>识别区</b>
+        <div class="btn-group" style='float:right;margin-top:-2px;'>
+
+          <button type="button" class="btn btn-xs btn-primary msgtype" from='jiuyan' msgtype='all'>全部</button>
+          <button type="button" class="btn btn-xs btn-default msgtype" from='jiuyan' msgtype='pause'>暂停</button>
+        </div>
+      </div>
+      <div class="panel-body msg-body" id="jiuyan_msg"
+        style='overflow:auto;font-size:13px;line-height:180%;font-size:12px;padding:5px 10px;'></div>
+    </div>
+
+    <div id='tck' class="news panel panel-success" style='min-height:92%;box-shadow: 0 2px 12px rgba(0, 0, 0, .1);'>
+      <div class="panel-heading" style='padding: 10px 15px;position:relative;'>题材库
+        <div class="btn-group" style='float:right;margin-top:-2px;'>
+          <button type="button" class="btn btn-xs btn-primary msgtype" from='tck' msgtype='ticai'>题材</button>
+          <button type="button" class="btn btn-xs btn-default msgtype" from='tck' msgtype='concept'>个股</button>
+          <button type="button" class="btn btn-xs btn-default msgtype" from='tck' msgtype='pause'>暂停</button>
+        </div>
+
+      </div>
+      <div class="panel-body msg-body" id="tck_msg" style='overflow:auto;padding:5px 10px;'></div>
+    </div>
+
+
+    <!--
+        <div class="container" style='margin-top:20px;'> -->
+    <audio src="" id="myaudio" controls="controls" autoplay="true" hidden="ture"></audio>
+
+
+</body>
+
+<!--<script type="text/javascript" src='http://duanxianxia.cn/static/js/juhenews.js?v6'/>-->
+<script type="text/javascript">
+  wx.config({
+    debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+    appId: 'wx34db2c23018bf294', // 必填，公众号的唯一标识
+    timestamp: 1748187989, // 必填，生成签名的时间戳
+    nonceStr: '374837d045da871e', // 必填，生成签名的随机串
+    signature: 'c58f5637dd116047bd5608deb783891b5a16dbaf', // 必填，签名
+    jsApiList: ['updateTimelineShareData', 'updateAppMessageShareData', 'onMenuShareAppMessage'] // 必填，需要使用的JS接口列表
+  });
+
+
+  wx.ready(function () { //需在用户可能点击分享按钮前就先调用
+    wx.updateAppMessageShareData({
+      title: '短线侠-语音资讯', // 分享标题
+      desc: 'duanxianxia.cn', // 分享描述
+      link: window.location.href, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+      imgUrl: 'https://duanxianxia.cn/static/img/xia.png', // 分享图标
+      success: function () {
+        // 设置成功
+      }
+    })
+
+
+    wx.updateTimelineShareData({
+      title: '短线侠-语音资讯', // 分享标题
+      link: 'http://duanxianxia.cn/web/readnews/tdx/all', // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+      imgUrl: 'https://duanxianxia.cn/static/img/xia.png', // 分享图标
+      success: function () {
+        // 设置成功
+      }
+    })
+
+
+  });
+
+
+
+
+  var from;
+  var cls_status = 'all';
+  var glh_status = 'all';
+  var ths_status = 'all';
+  var black = $("body").attr('id')
+  var stcn_status = 'all';
+  var jiuyan_status = 'all';
+  var tck_status = 'all';
+  var dpzb_status = 'all';
+  var newstype = 'tdx';
+  var newsfrom = 'all';
+
+  //  newsfrom=''
+  var ismobile = false;
+
+  var istdx = false;
+
+  var zxtype = ['juhe', 'ths', 'cls', 'jiuyan', 'stcn', 'dpzb', 'tck', 'glh']
+
+  var news = {}
+
+  news['juhe'] = {
+    name: '聚合快讯',
+    showtype: 'content',
+    msgtype: 'all'
+  }
+  news['cls'] = {
+    name: '财联社',
+    showtype: 'content',
+    msgtype: 'all'
+  }
+  news['ths'] = {
+    name: '同花顺',
+    showtype: 'content',
+    msgtype: 'all'
+  }
+  news['stcn'] = {
+    name: '证券报',
+    showtype: 'content',
+    msgtype: 'all'
+  }
+  news['glh'] = {
+    name: '格隆汇',
+    showtype: 'content',
+    msgtype: 'all'
+  }
+  news['jiuyan'] = {
+    name: '公社',
+    showtype: 'content',
+    msgtype: 'all'
+  }
+
+  news['tck'] = {
+    name: '题材库',
+    showtype: 'content',
+    msgtype: 'ticai'
+  }
+
+  news['dpzb'] = {
+    name: '大盘直播',
+    showtype: 'content',
+    msgtype: 'all'
+  }
+
+
+  if (newstype == 'iframe') {
+    $(".settitle").hide()
+    $("#open").show()
+  }
+  $("#open").click(function () {
+    window.open('/web/readnews/tdx', '_blank');
+  });
+  if (newstype != 'iframe' && !ismobile) {
+    $("#start").show()
+  } else {
+
+    $("#yyzx").prop("checked", true);
+  }
+
+  if (newstype != 'iframe') {
+    document.addEventListener("WeixinJSBridgeReady", function () {
+      document.getElementById('myaudio').load();
+    }, false);
+  }
+  // || newstype == 'tdx'
+  if (newstype == 'iframe' || istdx) $("#back").hide();
+
+  $("#start").click(function () {
+    $(this).hide();
+  });
+
+  /*
+  if (newsfrom == 'all') var permit = ['ths', 'cls', 'stcn', 'jiuyan','dpzb','tck'];
+  else var permit = newsfrom.split('_')
+
+
+  permit.forEach(function(v, i) {
+      $("#" + v).show()
+  });*/
+
+
+  var host = 'https://duanxianxia.cn';
+
+  $(function () {
+    var ticai_type = 'ticai';
+    $(".showtype").click(function () {
+      var type = $(this).attr('type');
+      if (!$(this).hasClass('nochoose') && type != 'list') return false;
+
+      $(this).siblings().addClass("nochoose");
+      $(this).removeClass("nochoose");
+      var name = $(this).attr('name');
+      var msgtype = $("#" + name).find(".btn-primary").attr('msgtype');
+
+      news[name].showtype = type
+
+      if (type != 'list') {
+        $("#" + name + "_msg").html('');
+        return false;
+      }
+      if (type == 'list') {
+        $.ajax({
+          type: 'POST',
+          url: host + '/api/getNewsByList',
+          data: {
+            name: name,
+            msgtype: msgtype
+          },
+          dataType: 'json',
+          success: function (data) {
+            $("#" + name + "_msg").html(data.html);
+          }
+        });
+      }
+    });
+
+    // 在外部定义originalWidths对象，确保它在多次点击间保持状态
+    var originalWidths = {};
+    $('.showDetail').click(function (e) {
+      e.preventDefault();
+      var $link = $(this);
+      var targetName = $link.attr('name');
+      var targetId = '#' + targetName + '_msg';
+      var $jytitles = $(targetId).find('.jytitle');
+
+      $jytitles.each(function () {
+        var $this = $(this);
+        // 生成唯一标识（使用元素ID或位置索引）
+        var uniqueId = targetName + '_' + ($this.attr('id') || $this.index());
+
+        if ($link.text() === '完全展开') {
+          // 完全展开状态：存储当前宽度并清空
+          originalWidths[uniqueId] = $this.css('width');
+          $this.css({
+            'white-space': 'normal',
+            'width': 'auto'  // 或者使用 originalWidths[uniqueId] 恢复原始值
+          });
+        } else {
+          // 收起状态：恢复nowrap并设置width为auto
+          $this.css({
+            'white-space': 'nowrap',
+            'width': ''  // 清空width
+          });
+        }
+      });
+
+      // 切换链接文本
+      $link.text($link.text() === '完全展开' ? '收起' : '完全展开');
+    });
+
+
+    if (newsfrom && newsfrom != 'all') {
+      $("#set").hide()
+    }
+
+    $.ajax({
+      type: 'POST',
+      url: host + '/api/getUserZxtype',
+      data: {
+      },
+      dataType: 'json',
+      success: function (data) {
+        if (data) zxtype = data
+
+        if (newsfrom && newsfrom != 'all') zxtype = newsfrom.split('_')
+
+        $(".news").each(function () {
+          if (zxtype.includes($(this).attr('id'))) {
+            $(this).show()
+          } else {
+            $(this).hide()
+          }
+        });
+
+      }
+    });
+
+    $(document).on("click", ".zxtype", function () {
+      zxtype = $('input.zxtype[type=checkbox]:checked').map(function () {
+        return this.name;
+      }).get();
+
+      var name = $(this).attr('name')
+
+      if ($(this).is(":checked")) {
+        $("#" + name).show()
+      } else {
+        $("#" + name).hide()
+      }
+      $.ajax({
+        type: 'POST',
+        url: host + '/api/setUserZxtype',
+        data: {
+          zxtype: zxtype
+        },
+        dataType: 'json',
+        success: function (data) {
+
+        }
+      });
+    });
+
+
+    $("#set").click(function () {
+      layer1 = layer.open({
+        type: 1,
+        title: false,
+        btn: false,
+        area: ['200px', 'auto'],
+        content: `<div style="padding:10px;overflow:hidden;">
+              <div class="checkbox"  style="float:left;margin-top:0;width:50%;">
+                <label><input type="checkbox" class="zxtype juhe"  name="juhe" checked value="">聚合快讯</label>
+              </div>
+              <div class="checkbox"  style="float:left;margin-top:0;width:50%;">
+                <label><input type="checkbox" class="zxtype ths"  name="ths" checked value="">同花顺</label>
+              </div>
+              <div class="checkbox"  style="float:left;margin-top:0;width:50%;">
+                <label><input type="checkbox" class="zxtype cls"  name="cls" checked value="">财联社</label>
+              </div>
+              <div class="checkbox"  style="float:left;margin-top:0;width:50%;">
+                <label><input type="checkbox" class="zxtype stcn"  name="stcn" checked value="">证券报</label>
+              </div>
+              <div class="checkbox"  style="float:left;margin-top:0;width:50%;">
+                <label><input type="checkbox" class="zxtype jiuyan"  name="jiuyan" checked value="">韭研公社</label></div>
+              <div class="checkbox"  style="float:left;margin-top:0;width:50%;">
+                  <label><input type="checkbox" class="zxtype dpzb"  name="dpzb" checked value="">大盘直播</label></div>
+              <div class="checkbox"  style="float:left;margin-top:0;width:50%;">
+                  <label><input type="checkbox" class="zxtype glh"  name="glh" checked value="">格隆汇</label>
+              </div>
+              <div class="checkbox"  style="float:left;margin-top:0;width:50%;">
+                <label><input type="checkbox" class="zxtype tck"  name="tck" checked value="">题材库</label>
+              </div>
+          </div>`,
+        yes: function (index, layero) {
+          $.ajax({
+            type: 'POST',
+            url: host + '/api/userAddConcept',
+            data: {
+              concept: $(document).find('.concept').val(),
+              pubtime: $(document).find('.pubtime').val(),
+              intro: $(document).find('.intro').val(),
+            },
+            dataType: 'json',
+            success: function (data) {
+              layer.closeAll()
+            }
+          });
+        }
+      });
+      $('input.zxtype[type=checkbox]').prop('checked', false)
+      $.each(zxtype, function (i, item) {
+        $(document).find("." + item).prop("checked", true);
+      });
+    });
+
+
+    $(".msgtype").click(function () {
+      $(this).siblings().removeClass("btn-primary").addClass("btn-default");
+      $(this).removeClass("btn-default").addClass("btn-primary");
+      var from = $(this).attr('from');
+
+      news[from].msgtype = $(this).attr('msgtype');
+      if ($(this).attr('msgtype') == 'pause') return false
+
+      if (news[from].showtype == 'list') {
+        $.ajax({
+          type: 'POST',
+          url: host + '/api/getNewsByList',
+          data: {
+            name: from,
+            msgtype: $(this).attr('msgtype')
+          },
+          dataType: 'json',
+          success: function (data) {
+            $("#" + from + "_msg").html(data.html);
+          }
+        });
+      }
+
+      if ($(this).attr('msgtype') == 'ticai' || $(this).attr('msgtype') == 'concept') {
+        ticai_type = $(this).attr('msgtype')
+        getTicaiNews($(this).attr('msgtype'))
+      }
+    });
+
+    getTicaiNews(ticai_type);
+
+    function getTicaiNews(type) {
+
+      $.ajax({
+        type: 'POST',
+        url: host + '/api/getTicaiNews',
+        data: {
+          type: type
+        },
+        dataType: 'json',
+        success: function (data) {
+
+          $("#tck_msg").html(data.html);
+          $("#tck_msg").find(".tctitle").eq(0).children('a').css('color', 'red');
+        }
+      });
+    }
+
+
+    getJiuyanNews();
+
+    function getJiuyanNews() {
+      $.ajax({
+        type: 'POST',
+        url: host + '/api/getJiuyanNews',
+        data: {},
+        dataType: 'json',
+        success: function (data) {
+          $("#jiuyan_msg").html(data.html);
+
+
+        }
+      });
+    }
+
+    getInfo();
+    function getInfo(from = 'dpzb', msgtype = 'all') {
+      $.ajax({
+        type: 'POST',
+        url: host + '/api/getNewsByList',
+        data: {
+          name: from,
+          msgtype: msgtype
+        },
+        dataType: 'json',
+        success: function (data) {
+          $("#" + from + "_msg").html(data.html);
+        }
+      });
+    }
+
+    getJiuyanNews('juhe');
+    function getJiuyanNews(from, msgtype = 'all') {
+      $.ajax({
+        type: 'POST',
+        url: host + '/api/getNewsByList',
+        data: {
+          name: from,
+          msgtype: msgtype
+        },
+        dataType: 'json',
+        success: function (data) {
+          $("#" + from + "_msg").html(data.html);
+        }
+      });
+    }
+
+    var times = 0;
+    function autoPlay(msg, audio = '') {
+      var readurl1 = "http://img.51christ.com/read/" + audio + '.mp3';
+      var readurl2 = host + "/static/upload/read/" + audio + '.mp3';
+      if (!$('#yyzx').is(":checked")) return;
+
+      if (newstype == 'iframe') {
+        window.parent.autoPlay(msg, readurl2);
+        return false;
+      }
+
+
+      var url = "https://tts.baidu.com/text2audio?cuid=baike&lan=ZH&ctp=3&pdt=301&vol=99&spd=6&rate=32&per=0&tex=" + msg;
+
+      $('#myaudio').attr("src", url);
+      var myAuto = $('#myaudio')[0];
+      myAuto.play().catch(error => {
+        setTimeout(function () {
+          times = 0;
+          if (audio) replay(readurl2)
+        }, 1000);
+      });
+    }
+
+
+    function replay(url) {
+      times++
+      if (times > 5) return false
+      console.log('重播' + times)
+      $('#myaudio').attr("src", url);
+      var myAuto = $('#myaudio')[0];
+      myAuto.play().catch(error => {
+        setTimeout(function () {
+          replay(url)
+        }, 1000);
+      });
+    }
+
+    var ws = null; // WebSocket 对象
+    var heartbeatTimer = null; // 心跳定时器
+    var isReconnect = true; // 是否自动重连
+
+
+    function createWebSocket() {
+
+      ws = new WebSocket("wss://duanxianxia.cn/wss1");
+
+      ws.onopen = function () {
+        console.log("WebSocket 已连接");
+        startHeartbeat();
+      }
+
+      ws.onmessage = function (e) {
+
+
+        if (e.data.match("stocklive")) {
+          var info = JSON.parse(e.data);
+          if (!zxtype.includes(info.from)) return false;
+
+
+
+          //if ($.inArray(info.from, permit) == -1) return false;
+          if (news[info.from].msgtype == 'pause') return false;
+          if (news[info.from].msgtype == 'import' && info.import == 0) return false;
+
+
+          if (info.type == 'ticaiku') {
+          }
+
+
+
+          var word = news[info.from].name
+          if (info.from != 'tck' && info.from != 'dpzb') autoPlay(word + "," + info.msg, info.readurl);
+          if (info.from == 'tck' && info.type == ticai_type && info.digest.indexOf('概念') == -1) autoPlay(info.msg + "," + info.digest + '概念', info.readurl);
+          if (info.from == 'tck' && info.type == ticai_type && info.digest.indexOf('概念') != -1) autoPlay(info.msg + "," + info.digest, info.readurl);
+
+          if (info.from == 'dpzb') {
+            autoPlay(info.msg, info.readurl);
+            info.msg = ''
+          }
+
+
+
+          var url = '###'
+          if (newstype == 'tdx') url = "http://www.treeid/CODE_" + info.code
+          if (info.name != '') $("#" + info.from + "_name").html("<a style='color:red;' href='" + url + "'>" + info.name + "</a>");
+          else $("#" + info.from + "_name").html("无");
+
+          if (info.from == 'jiuyan') {
+            $("#jiuyan_msg").find(".jytitle").eq(0).children('a').css('color', '#444');
+            $("#jiuyan_msg").html(info.html + $("#jiuyan_msg").html());
+            $("#jiuyan_msg").find(".jytitle").eq(0).children('a').css('color', 'red');
+
+          } else if (info.from == 'tck') {
+            getTicaiNews(ticai_type);
+
+          } else {
+            if (black == 'black') var tcolor = 'white'
+            else var tcolor = 'black'
+            if (news[info.from].showtype == 'content') {
+              if (info.msg) info.msg = "【" + info.msg + "】";
+              if (newstype == 'tdx') {
+                if (info.import > 0) $("#" + info.from + "_msg").html("<a  class='msg_color1' style='text-decoration:none;' href='" + url + "'><b style='font-weight:bold;'>【" + info.msg + "】</b><span style='font-size:13px;'>" + info.digest + "</span></a>");
+                else $("#" + info.from + "_msg").html("<a  class='msg_color2' style='text-decoration:none;' href='" + url + "'><b style='font-weight:bold;'>" + info.msg + "</b><span style='font-size:13px;'>" + info.digest + "</span></a>");
+              } else {
+                if (info.import > 0) $("#" + info.from + "_msg").html("<span class='msg_color1' style='text-decoration:none;' ><b style='font-weight:bold;'>" + info.msg + "</b><span style='font-size:13px;'>" + info.digest + "</span></span>");
+                else $("#" + info.from + "_msg").html("<span  class='msg_color2' style='text-decoration:none;' ><b style='font-weight:bold;'>" + info.msg + "</b><span style='font-size:13px;'>" + info.digest + "</span></span>");
+              }
+            } else {
+              $("#" + info.from + "_msg").html(info.html + $("#" + info.from + "_msg").html());
+            }
+          }
+        }
+      }
+
+      ws.onclose = function (e) {
+        console.log("WebSocket 已关闭");
+        stopHeartbeat();
+        setTimeout(function () {
+          console.log("WebSocket 尝试重新连接");
+          createWebSocket();
+        }, 5 * 1000);
+      }
+
+      ws.onerror = function (e) {
+        console.log('WebSocket错误:', e);
+      }
+    }
+
+    // 开始心跳定时器
+    function startHeartbeat(interval) {
+      interval = interval || 30;
+      heartbeatTimer = setInterval(function () {
+        ws.send('ping')
+      }, interval * 1000);
+    }
+
+    // 停止心跳定时器
+    function stopHeartbeat() {
+      clearInterval(heartbeatTimer);
+    }
+
+    // 启动 WebSocket 连接
+    createWebSocket();
+
+  });
+</script>
+
+</html>
+<script>
+  var _hmt = _hmt || [];
+  (function () {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?423edf2a3e642c55a0df7f5063f8f22c";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
+</script>

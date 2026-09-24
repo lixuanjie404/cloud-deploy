@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name='referrer' content='never'>
+  <title>状态广播</title>
+  <script src="https://duanxianxia.cn/static/js/jquery.min.js"></script>
+  <script src="https://duanxianxia.cn/static/js/jquery.tablesort.min.js"></script>
+  <link rel="stylesheet" href="https://duanxianxia.cn/static/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://duanxianxia.cn/static/css/common.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://duanxianxia.cn/static/js/layer/theme/default/layer.css" rel="stylesheet">
+  <script src="https://duanxianxia.cn/static/js/layer/layer.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+
+    .ztactive {
+      background: #eee;
+    }
+
+    .kline {
+      cursor: pointer;
+    }
+
+
+    .table>tbody>tr>td,
+    .table>tbody>tr>th,
+    .table>tfoot>tr>td,
+    .table>tfoot>tr>th,
+    .table>thead>tr>td,
+    .table>thead>tr>th {
+      padding: 5px 3px;
+    }
+  </style>
+</head>
+
+<body>
+
+
+  <div class="panel panel-default"
+    style='border:none;margin-top:0px;box-shadow: 0 1px 6px rgba(0, 0, 0, .1);background:#fcfcfc;margin-bottom:0;'>
+    <div class="panel-heading"
+      style='position:fixed;left:0;top:0;width:100%;background:#f2f2f2;font-weight:bold;font-size:12px;text-align:left;padding: 5px 8px 1px 10px;'>
+      变更通知 &nbsp;<button id='set' class='btn btn-default btn-xs' style='line-height:100%;padding:1px 1px;'>设置</button>
+      <div style='float:right;margin-right:20px;font-size:12px;font-weight:normal;color:red;'>语音 <label
+          class="switch"><input type="checkbox" id='ydbb'><span class="slider round"></span></label></div>
+    </div>
+    <div class="panel-body" style='padding-top:0px;overflow:auto;width:100%;margin-top:28px;'>
+      <div class='row' style='margin-top:-2px;font-size:12px;'>
+        <table class="table table-bordered" style='text-align:center;font-size:12px;margin-bottom:0'>
+
+          <tbody id='yidong'></tbody>
+        </table>
+
+      </div>
+
+
+    </div>
+  </div>
+
+
+</body>
+
+<script type="text/javascript" src='/js/ydbb.js'>
+
+</script>
+
+</html>
