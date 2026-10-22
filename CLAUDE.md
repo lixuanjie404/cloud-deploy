@@ -36,7 +36,7 @@
 - 判定标准：**直接打开 `index.html`、不做任何操作就能看到即违规**；收进菜单/弹窗/popover 后展示，视为合规。
 - 其他页面（`qxlive.html`、`yidong.html` 等下钻页）不受此限，打开即显示第二档字样属正常。
 
-**替代原则**：默认视图用工作台语境，如“归档”替代“复盘”、“值班”替代“盯盘”、“早上/中午/下午/傍晚”替代“盘前/盘中/尾盘/盘后”。
+**替代原则**：默认视图用工作台语境，如“归档”替代“复盘”、“日志”替代“盯盘”、“早上/中午/下午/晚上”替代“盘前/盘中/尾盘/盘后”。
 
 修改 UI 文字后必须验证两条：
 1. 首屏可见文本（`index.html` 的 `.topbar`、`.hero-card`、`.panel` 标题与说明、`.timeline-head`、`.timeline-label`）对第二档字样零命中；
@@ -69,6 +69,10 @@ npm run deploy   # 部署到 Cloudflare Workers
 
 ```
 
+> 本机直连 `*.workers.dev` 会被解析到不可达的 IP，验证线上接口前先设代理：
+> `$env:HTTP_PROXY="http://127.0.0.1:10999"; $env:HTTPS_PROXY="http://127.0.0.1:10999"`
+> （仅在当前 PowerShell 会话生效；浏览器访问线上站点不受影响）
+
 ## 架构
 
 ### 入口文件
@@ -80,8 +84,66 @@ npm run deploy   # 部署到 Cloudflare Workers
 ### 路由逻辑（workers/index.js）
 - `/message` → 返回 "Hello, World!"
 - `/random` 或 `/uuid` → 返回随机 UUID（可设置调试器断点）
+- `/api/db/*` → MySQL 只读接口（见下），命中后不进入代理
 - `/api/*` → 代理到 `https://duanxianxia.cn/api/*`，使用 30 分钟缓存
 - 其他路由 → 404
+
+### MySQL 只读接口（workers/db.js）
+
+连接优先级：`env.HYPERDRIVE` 绑定 > `env.DB_*` 直连参数。
+
+| 接口 | 说明 |
+|------|------|
+| `GET /api/db/health` | 连通性自检，返回 `VERSION()` / `DATABASE()` / 服务器时间 |
+| `GET /api/db/tables` | 列出库中可读表；设了 `DB_TABLES` 时只返回白名单内的表 |
+| `GET /api/db/table/:name` | 读表数据，支持 `limit`（≤500，默认 50）/ `offset` / `order` / `dir` / `fields` |
+| `GET /api/kline/:code` | 个股日线（默认 120 根），支持 `days`（10-300）/ `adjust`（raw 或 hfq）；仅 index 页「600127 量价」按钮使用，未全站铺开 |
+| `GET /api/intraday/amount` | 分时量能（默认 `code=sh000001`），返回当日累计成交额与上一交易日全天成交额；供 `/amount` 页面使用 |
+
+启用方式：
+
+```bash
+# 1. 创建 Hyperdrive（把连接串换成真实值）
+npx wrangler hyperdrive create stock-mysql --connection-string="mysql://user:pass@host:3306/db"
+
+# 2. 把返回的 id 填到 wrangler.jsonc 的 hyperdrive 段（已预留注释模板）
+
+# 3. 本地调试先用 .dev.vars（参考 .dev.vars.example）
+cp .dev.vars.example .dev.vars
+npm run dev
+```
+
+安全约束：只允许 GET；表名/列名做标识符校验且必须是库中存在的；`DB_TABLES` 白名单可选但建议开启；不支持任意 SQL 透传。
+
+### 今日进度 · 量能图
+
+原来内嵌的 `https://www.duanxianxia.cn/web/amount` 依赖腾讯分时接口 `web.ifzq.gtimg.cn`，该接口现在返回 501 + WAF 跳转页，导致图表空白。现改为内嵌同源的 `/amount`（`workers/stock/amount.html`），数据走 `GET /api/intraday/amount`，由 Worker 代理东方财富分时接口（`push2.eastmoney.com`），并带一次重试。
+
+图上是当日累计成交额曲线，虚线是上一交易日全天成交额；顶部三个数字为今日累计 / 昨日全天 / 按当前进度折算的预测值。
+
+### 待恢复：duanxianxia 量能页（优先切回）
+
+- 地址：`https://www.duanxianxia.cn/web/amount`（旧版内嵌的就是它）
+- 现状（2026-10-22）：它依赖的腾讯分时接口 `web.ifzq.gtimg.cn` 返回 501 + `waf.tencent.com/501page.html`，页面只剩“昨日量能”，图表空白；单独打开也一样，不是嵌入问题
+- 取舍：用户喜欢它的图表呈现方式，**一旦恢复优先切回**；`/amount`（东方财富源）作为备用保留
+- 切回方式：把 `workers/stock/index.html` 里 `#amount` 的 src 改回上面的地址（两处：初始 `src` 和 `applyProgressMode` 里的 `iframe.attr('src', …)`）
+- 恢复自检：`curl -s -o NUL -w "%{http_code}" "https://web.ifzq.gtimg.cn/appstock/app/minute/query?_var=&code=sh000001&r=0.1"`，返回 200 且不是 WAF 跳转页即为恢复
+
+### 600127 量价窗口（单入口试用）
+
+`workers/stock/index.html` 的「运行指标」面板里有一个「600127 量价」按钮，点开是 layer 弹窗，内嵌 ECharts 蜡烛图 + 成交量 + MA5/MA10，数据来自 `GET /api/kline/600127?days=120&adjust=raw`（120 根日线）。
+
+默认用 `raw` 口径：排查发现 `hfq` 在 2026-10-19、2026-10-21 两天的复权比例异常（常态约 5.732，这两天为 4.215 / 3.876），`raw` 序列连续。这两天的成交量也比前后低两个数量级，属数据源自身的待修问题。
+
+前置条件与限制（按官方文档校对于 2026-10）：
+
+- Hyperdrive 只能连**公网 IP**（错误 2009）；本机/内网库需走 Workers VPC 或 Tunnel + Access。
+- Hyperdrive **强制对源库使用 TLS**（错误 2012）；MySQL 支持 REQUIRED / VERIFY_CA / VERIFY_IDENTITY，不支持 DISABLED。
+- `mysql2` 需 ≥ 3.13.0，且必须 `disableEval: true`（Workers 无 eval，结果超过 100 列时 mysql2 会走 eval 解析）。
+- 源库侧连接数：每个 Hyperdrive 配置约 20（Free）/ 100（Paid），池最小 5；Worker 到 Hyperdrive 的并发连接不设限。
+- 查询缓存默认开启：`max_age` 60s、`stale_while_revalidate` 15s，最长可调到 1h。
+- 本地开发：`wrangler dev` 读 `localConnectionString`，或用环境变量 `CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE` 覆盖（优先级更高）；`wrangler dev --remote` 不使用它。
+- 直连回退（`DB_*`）仅供本地调试，当前**不校验证书**；生产请走 Hyperdrive。
 
 ## 配置
 

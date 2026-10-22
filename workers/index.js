@@ -8,7 +8,12 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 
+import { handleDbRequest } from './db.js'
+import { handleKlineRequest } from './kline.js'
+import { handleIntradayRequest } from './intraday.js'
+
 const dxxHost = 'https://duanxianxia.cn'
+
 // 更新路由定义
 const routes = [
   { path: '/api/', target: dxxHost },
@@ -17,6 +22,22 @@ const routes = [
 export default {
   async fetch (request, env, ctx) {
     const url = new URL(request.url)
+
+    // MySQL 只读接口独立处理，不进入下面的代理逻辑
+    if (url.pathname.startsWith('/api/db/')) {
+      return handleDbRequest(request, env, url)
+    }
+
+    // 个股 K 线（仅 index 页面的单入口使用）
+    if (url.pathname.startsWith('/api/kline/')) {
+      return handleKlineRequest(request, env, url)
+    }
+
+    // 分时量能（今日进度 · 量）
+    if (url.pathname.startsWith('/api/intraday/')) {
+      return handleIntradayRequest(request, env, url)
+    }
+
     switch (url.pathname) {
       case '/message':
         return new Response('Hello, World!')

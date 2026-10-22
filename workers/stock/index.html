@@ -622,6 +622,19 @@
           font-weight: 600;
       }
 
+      .panel .metric-actions {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: center;
+          gap: 8px;
+      }
+
+      .panel button.tag {
+          font-family: inherit;
+          border: 0;
+          cursor: pointer;
+      }
+
       .focus-timeline {
           margin-top: 16px;
           display: grid;
@@ -1471,7 +1484,9 @@
       <p>按需保留一项轻量状态，避免工作区被过多信息打断。</p>
       <div class="progress-content is-empty" id="progressContent">
         <div class="iframe-wrap" id="amountFrame">
-          <iframe src="https://www.duanxianxia.cn/web/amount" id="amount" name="amount" width="100%" height="280" title="量状态"></iframe>
+          <!-- 原内嵌 https://www.duanxianxia.cn/web/amount（上游腾讯接口 501+WAF，图表空白）；
+               用户偏好它的呈现方式，恢复后优先切回，详见 CLAUDE.md“待恢复：duanxianxia 量能页” -->
+          <iframe src="/amount" id="amount" name="amount" width="100%" height="280" title="量能图表"></iframe>
         </div>
         <div class="progress-chart is-hidden" id="advancersChart" aria-label="880005走势"></div>
         <div class="progress-summary is-hidden" id="advancersSummary" aria-live="polite">
@@ -1495,20 +1510,35 @@
         </div>
         <div class="timeline-row">
           <div class="timeline-role">
-            <strong>值班</strong>
+            <strong>日志</strong>
             <small>观察 / 决策</small>
           </div>
-          <div class="timeline-slot" tabindex="0">
+          <div class="timeline-slot" tabindex="0" data-links="https://www.jin10.com/activities/2026/02/pizza_index/index.html|https://data.eastmoney.com/rzrq/total.html">
             <span class="timeline-dot"></span>
-            <span class="timeline-label">晨间扫描</span>
-            <span class="timeline-hint">悬浮查看</span>
-            <div class="timeline-popover"><strong>可能使用</strong><span>AI 辅助、资讯中心、晨间状态检查。</span></div>
+            <span class="timeline-label">每日信息</span>
+            <span class="timeline-hint">点击访问</span>
+            <div class="timeline-popover">
+              <strong>快速入口</strong>
+              <div class="timeline-links">
+                <a href="https://www.jin10.com/activities/2026/02/pizza_index/index.html" target="_blank">金十数据</a>
+                <a href="https://data.eastmoney.com/rzrq/total.html" target="_blank">资金流向</a>
+              </div>
+            </div>
           </div>
-          <div class="timeline-slot" tabindex="0">
+          <div class="timeline-slot" tabindex="0" data-links="https://weibo.com/3608427684|https://weibo.com/mygroups?gid=4140006190600547|https://eq.10jqka.com.cn/frontend/thsTopRank/index.html#/|https://space.bilibili.com/43295527/dynamic|https://www.tgb.cn/user/blog/moreTopic?userID=12533004">
             <span class="timeline-dot"></span>
             <span class="timeline-label">实时筛选</span>
-            <span class="timeline-hint">悬浮查看</span>
-            <div class="timeline-popover"><strong>可能使用</strong><span>资讯中心、7×24快讯、涨幅排行。</span></div>
+            <span class="timeline-hint">点击访问</span>
+            <div class="timeline-popover">
+              <strong>快速入口</strong>
+              <div class="timeline-links">
+                <a href="https://weibo.com/3608427684" target="_blank">微博</a>
+                <a href="https://weibo.com/mygroups?gid=4140006190600547" target="_blank">微博关注</a>
+                <a href="https://eq.10jqka.com.cn/frontend/thsTopRank/index.html#/" target="_blank">热榜排行</a>
+                <a href="https://space.bilibili.com/43295527/dynamic" target="_blank">B站动态</a>
+                <a href="https://www.tgb.cn/user/blog/moreTopic?userID=12533004" target="_blank">胖橘</a>
+              </div>
+            </div>
           </div>
           <div class="timeline-slot" tabindex="0">
             <span class="timeline-dot"></span>
@@ -1528,15 +1558,16 @@
             <strong>支线</strong>
             <small>浏览 / 归档</small>
           </div>
-          <div class="timeline-slot" tabindex="0" data-links="https://www.jin10.com/activities/2026/02/pizza_index/index.html|https://data.eastmoney.com/rzrq/total.html">
+          <div class="timeline-slot" tabindex="0" data-links="https://wenda.tdx.com.cn/site/wenda/stock_index.html?message=去除st,去除北交所,成交额前100,量比,实际换手率|https://wenda.tdx.com.cn/site/wenda/page-user-center.html">
             <span class="timeline-dot"></span>
-            <span class="timeline-label">早间快讯</span>
+            <span class="timeline-label">早间工具</span>
             <span class="timeline-hint">点击访问</span>
             <div class="timeline-popover">
               <strong>快速入口</strong>
               <div class="timeline-links">
-                <a href="https://www.jin10.com/activities/2026/02/pizza_index/index.html" target="_blank">金十数据</a>
-                <a href="https://data.eastmoney.com/rzrq/total.html" target="_blank">资金流向</a>
+                <a href="https://wenda.tdx.com.cn/site/wenda/stock_index.html?message=去除st,去除北交所,成交额前100,量比,实际换手率" target="_blank">问小达</a>
+                <a href="https://wenda.tdx.com.cn/site/wenda/page-user-center.html" target="_blank">问小达模板</a>
+                <a href="https://duanxianxia.cn/web/jjlive" class="jjlive-link">竞价数据</a>
               </div>
             </div>
           </div>
@@ -1546,20 +1577,11 @@
             <span class="timeline-hint">悬浮查看</span>
             <div class="timeline-popover"><strong>可能使用</strong><span>线索解读、资讯入口、观察清单。</span></div>
           </div>
-          <div class="timeline-slot" tabindex="0" data-links="https://weibo.com/3608427684|https://weibo.com/mygroups?gid=4140006190600547|https://eq.10jqka.com.cn/frontend/thsTopRank/index.html#/|https://space.bilibili.com/43295527/dynamic|https://www.tgb.cn/user/blog/moreTopic?userID=12533004">
+          <div class="timeline-slot" tabindex="0">
             <span class="timeline-dot"></span>
             <span class="timeline-label">热点跟进</span>
-            <span class="timeline-hint">点击访问</span>
-            <div class="timeline-popover">
-              <strong>快速入口</strong>
-              <div class="timeline-links">
-                <a href="https://weibo.com/3608427684" target="_blank">微博</a>
-                <a href="https://weibo.com/mygroups?gid=4140006190600547" target="_blank">微博关注</a>
-                <a href="https://eq.10jqka.com.cn/frontend/thsTopRank/index.html#/" target="_blank">热榜排行</a>
-                <a href="https://space.bilibili.com/43295527/dynamic" target="_blank">B站动态</a>
-                <a href="https://www.tgb.cn/user/blog/moreTopic?userID=12533004" target="_blank">胖橘</a>
-              </div>
-            </div>
+            <span class="timeline-hint">悬浮查看</span>
+            <div class="timeline-popover"><strong>可能使用</strong><span>线索解读、观察清单。</span></div>
           </div>
           <div class="timeline-slot" tabindex="0" data-links="https://duanxianxia.com/lt|http://page.tdx.com.cn:7615/site/kggx/tk_yzlhb_yz.html|https://data.10jqka.com.cn/market/longhu/|https://data.10jqka.com.cn/financial/yjyg/|https://finance.sina.com.cn/stock/reportch/jinqilin.shtml|https://data.eastmoney.com/report/stock.jshtml">
             <span class="timeline-dot"></span>
@@ -1584,7 +1606,10 @@
     <section class="panel">
       <h3>运行指标</h3>
       <p>快速查看运行指标走势，保持外观为工作台页面的常态。</p>
-      <a class="tag" href="/qxlive.html" target="_blank">查看指标面板</a>
+      <div class="metric-actions">
+        <a class="tag" href="/qxlive.html" target="_blank">查看指标面板</a>
+        <button class="tag" type="button" id="klineBtn">600127 量价</button>
+      </div>
     </section>
   </main>
 </div>
@@ -1595,7 +1620,6 @@
     <li class="menu-group-title">📊 行情资讯</li>
     <li><a href="#/news.html" id="news"><span class="icon">📰</span>快讯</a></li>
     <li><a href="/qxlive.html" target="_blank"><span class="icon">📊</span>指标面板</a></li>
-    <li><a href="#jjlive" class="jjlive-link"><span class="icon">📋</span>竞价数据</a></li>
 
     <li class="menu-group-title">🗂 数据查询</li>
     <li>
@@ -2010,7 +2034,6 @@
 
   function applyProgressMode(mode) {
     let selectedMode = mode === 'amount' || mode === 'advancers' ? mode : 'none'
-    let shouldReloadAmount = selectedMode === 'amount' && (progressContent.hasClass('is-empty') || amountFrame.hasClass('is-collapsed'))
     progressModeButtons.removeClass('is-active').attr('aria-pressed', 'false')
     progressModeButtons.filter('[data-progress-mode="' + selectedMode + '"]').addClass('is-active').attr('aria-pressed', 'true')
     progressContent.toggleClass('is-empty', selectedMode === 'none')
@@ -2021,14 +2044,13 @@
 
     if (selectedMode === 'amount') {
       let iframe = $('#amount')
-      let iframeSrc = iframe.attr('src')
+      let theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
+      // 内嵌同源的 /amount.html，带上主题参数，避免第三方页面白屏与 Cookie 限制
+      iframe.attr('src', '/amount?theme=' + theme + '&t=' + Date.now())
       iframe.css({ display: 'block', width: '100%', minWidth: '100%', height: '280px' })
       amountFrame[0].offsetHeight
       requestAnimationFrame(function () {
         iframe.css({ display: 'block', width: '100%', minWidth: '100%' })
-        if (shouldReloadAmount) {
-          iframe.attr('src', iframeSrc)
-        }
       })
     }
 
@@ -2189,6 +2211,158 @@
   // $(window).on('resize.ztlive_' + index, function () {
   //   try { layer.iframeAuto(index) } catch (e) {}
   // })
+
+  // ========== 600127 量价日线（仅本页入口，未全站铺开）==========
+  const KLINE_CODE = '600127'
+  const KLINE_DAYS = 120
+
+  function formatAmount (v) {
+    if (v >= 1e8) return (v / 1e8).toFixed(2) + ' 亿'
+    if (v >= 1e4) return (v / 1e4).toFixed(1) + ' 万'
+    return String(v)
+  }
+
+  function movingAverage (bars, n) {
+    return bars.map(function (_, i) {
+      if (i < n - 1) return '-'
+      let sum = 0
+      for (let k = 0; k < n; k++) sum += bars[i - k].close
+      return Number((sum / n).toFixed(2))
+    })
+  }
+
+  function renderKline (el, data) {
+    const dark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const axisColor = dark ? '#4a4a4a' : '#d8dcd6'
+    const textColor = dark ? '#c9c9c9' : '#5c6660'
+    const up = '#e0503f'
+    const down = '#2f9e6e'
+    const bars = data.bars
+    const dates = bars.map(function (b) { return b.date })
+    const candles = bars.map(function (b) { return [b.open, b.close, b.low, b.high] })
+    const volumes = bars.map(function (b) {
+      return { value: b.volume, itemStyle: { color: b.close >= b.open ? up : down } }
+    })
+
+    const chart = echarts.init(el)
+    chart.setOption({
+      animation: false,
+      backgroundColor: 'transparent',
+      textStyle: { color: textColor, fontSize: 11 },
+      tooltip: {
+        trigger: 'axis',
+        confine: true,
+        axisPointer: { type: 'cross', label: { backgroundColor: dark ? '#3a3a3a' : '#8b948e' } },
+        formatter: function (params) {
+          const i = params[0].dataIndex
+          const b = bars[i]
+          const prev = i > 0 ? bars[i - 1].close : b.open
+          const pct = (((b.close - prev) / prev) * 100).toFixed(2)
+          return [
+            b.date,
+            '开 ' + b.open.toFixed(2) + '　收 ' + b.close.toFixed(2),
+            '高 ' + b.high.toFixed(2) + '　低 ' + b.low.toFixed(2),
+            '涨跌 ' + (pct > 0 ? '+' : '') + pct + '%',
+            '量 ' + formatAmount(b.volume) + '　额 ' + formatAmount(b.amount),
+          ].join('<br>')
+        },
+      },
+      axisPointer: { link: [{ xAxisIndex: 'all' }] },
+      grid: [
+        { left: 2, right: 46, top: 4, height: '58%' },
+        { left: 2, right: 46, top: '68%', height: '18%' },
+      ],
+      xAxis: [
+        {
+          type: 'category', data: dates, gridIndex: 0, boundaryGap: false,
+          axisLine: { lineStyle: { color: axisColor } }, axisTick: { show: false },
+          axisLabel: { show: false }, splitLine: { show: false },
+        },
+        {
+          type: 'category', data: dates, gridIndex: 1, boundaryGap: false,
+          axisLine: { lineStyle: { color: axisColor } }, axisTick: { show: false },
+          axisLabel: { color: textColor, fontSize: 9, margin: 2, formatter: function (v) { return v.slice(5) } },
+          splitLine: { show: false },
+        },
+      ],
+      yAxis: [
+        {
+          scale: true, gridIndex: 0, position: 'right',
+          axisLine: { show: false }, axisTick: { show: false },
+          splitLine: { lineStyle: { color: dark ? '#333' : '#eef0ec' } },
+          axisLabel: { color: textColor, fontSize: 9, formatter: function (v) { return v.toFixed(1) } },
+        },
+        {
+          gridIndex: 1, position: 'right',
+          axisLine: { show: false }, axisTick: { show: false }, splitLine: { show: false },
+          axisLabel: { show: false },
+        },
+      ],
+      dataZoom: [
+        { type: 'inside', xAxisIndex: [0, 1], start: 55, end: 100 },
+      ],
+      series: [
+        {
+          name: 'K线', type: 'candlestick', data: candles,
+          itemStyle: { color: up, color0: down, borderColor: up, borderColor0: down },
+        },
+        { name: 'MA5', type: 'line', data: movingAverage(bars, 5), smooth: true, showSymbol: false, lineStyle: { width: 1, color: '#d9a441' } },
+        { name: '成交量', type: 'bar', xAxisIndex: 1, yAxisIndex: 1, data: volumes, barWidth: '58%' },
+      ],
+    })
+    return chart
+  }
+
+  function ensureEcharts () {
+    return new Promise(function (resolve, reject) {
+      if (window.echarts) return resolve()
+      const s = document.createElement('script')
+      s.src = 'https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js'
+      s.onload = function () {
+        if (window.echarts) resolve()
+        else reject(new Error('图表库未就绪'))
+      }
+      s.onerror = function () { reject(new Error('图表库加载失败')) }
+      document.head.appendChild(s)
+    })
+  }
+
+  $('#klineBtn').on('click', function () {
+    layer.open({
+      type: 1,
+      title: '600127 量价日线',
+      area: ['380px', '324px'],
+      maxmin: true,
+      moveOut: true,
+      shade: 0.2,
+      content: '<div style="box-sizing:border-box;padding:6px 8px 4px;">' +
+        '<div id="klineMeta" style="font-size:11px;color:#7b857f;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">加载中…</div>' +
+        '<div id="klineChart" style="height:238px;"></div>' +
+        '</div>',
+      success: function () {
+        ensureEcharts()
+          .then(function () {
+            return fetch('/api/kline/' + KLINE_CODE + '?days=' + KLINE_DAYS)
+          })
+          .then(function (r) { return r.json() })
+          .then(function (res) {
+            if (!res.ok) throw new Error(res.error || '接口返回异常')
+            const last = res.latest
+            const sign = last.changePct > 0 ? '+' : ''
+            $('#klineMeta').text(
+              res.count + ' 根 · 收 ' +
+              last.close.toFixed(2) + '（' + sign + last.changePct + '%）'
+            )
+            const chart = renderKline(document.getElementById('klineChart'), res)
+            // 弹窗有出现动画，布局稳定后再量一次尺寸，避免底部日期被裁
+            setTimeout(function () { chart.resize() }, 150)
+          })
+          .catch(function (err) {
+            $('#klineMeta').text('加载失败：' + err.message)
+          })
+      },
+    })
+  })
 </script>
 
 </body>
