@@ -76,12 +76,6 @@
 
 <body>
 
-  <!-- 首次交互门：打开页面不做任何操作时，只展示中性载入层，避免指标文案直接曝光 -->
-  <div id="panelGate" style="position:fixed;top:0;right:0;bottom:0;left:0;z-index:99999;background:#f9f9f9;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;cursor:pointer;">
-    <div style="font-size:15px;font-weight:600;color:#333;">点击载入指标面板</div>
-    <div style="font-size:12px;color:#999;">点击任意位置开始渲染</div>
-  </div>
-
   <div class="container" style='width:100%;'>
     <div class='row'>
 
@@ -211,25 +205,6 @@
 
 
 </body>
-
-<script>
-  // 首次交互门：任何一次点击/按键/滚轮/触摸后揭开，只揭一次
-  (function () {
-    var gate = document.getElementById('panelGate')
-    if (!gate) return
-    var opened = false
-    function reveal() {
-      if (opened) return
-      opened = true
-      gate.style.transition = 'opacity .18s ease'
-      gate.style.opacity = '0'
-      setTimeout(function () { gate.style.display = 'none' }, 200)
-      events.forEach(function (t) { window.removeEventListener(t, reveal) })
-    }
-    var events = ['pointerdown', 'touchstart', 'wheel', 'keydown']
-    events.forEach(function (t) { window.addEventListener(t, reveal, { passive: true }) })
-  })()
-</script>
 
 <script>
   $(function() {
