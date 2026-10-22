@@ -100,7 +100,7 @@
       .nav-links {
           display: flex;
           gap: 20px;
-          font-size: 14px;
+          font-size: 12px;
           color: var(--muted);
       }
 
@@ -773,6 +773,10 @@
 
       .timeline-head span:not(:first-child) {
           text-align: center;
+          font-size: 12px;
+          white-space: nowrap;
+          letter-spacing: 0;
+          font-variant-numeric: tabular-nums;
       }
 
       .timeline-role {
@@ -1482,12 +1486,12 @@
       <h3>工作流程</h3>
       <p>以工作流程方式整理常用入口，默认只呈现轻量节奏视图；点击节点可查看该阶段适合打开的工具。</p>
       <div class="focus-timeline" aria-label="双角色横向时间轴">
-        <div class="timeline-head" aria-hidden="true">
+        <div class="timeline-head">
           <span></span>
-          <span>晨间</span>
-          <span>执行</span>
-          <span>收尾</span>
-          <span>归档</span>
+          <span>早上 9:15-11:30</span>
+          <span>中午 11:30-13:00</span>
+          <span>下午 13:00-15:00</span>
+          <span>傍晚 15:00-17:00</span>
         </div>
         <div class="timeline-row">
           <div class="timeline-role">
@@ -1521,7 +1525,7 @@
         </div>
         <div class="timeline-row">
           <div class="timeline-role">
-            <strong>总结</strong>
+            <strong>支线</strong>
             <small>浏览 / 归档</small>
           </div>
           <div class="timeline-slot" tabindex="0" data-links="https://www.jin10.com/activities/2026/02/pizza_index/index.html|https://data.eastmoney.com/rzrq/total.html">
@@ -1588,24 +1592,24 @@
 <aside class="tool-panel" id="toolPanel">
   <h4>工具集</h4>
   <ol class="menu">
-    <li class="menu-group-title">📊 信息查询</li>
+    <li class="menu-group-title">📊 行情资讯</li>
     <li><a href="#/news.html" id="news"><span class="icon">📰</span>快讯</a></li>
     <li><a href="/qxlive.html" target="_blank"><span class="icon">📊</span>指标面板</a></li>
-    <li><a href="#jjlive" class="jjlive-link"><span class="icon">📋</span>待处理项</a></li>
+    <li><a href="#jjlive" class="jjlive-link"><span class="icon">📋</span>竞价数据</a></li>
 
-    <li class="menu-group-title">🛠 开发工具</li>
+    <li class="menu-group-title">🗂 数据查询</li>
     <li>
       <a href="https://wenda.tdx.com.cn/site/wenda/stock_index.html?message=去除st,去除北交所,成交额前100,量比,实际换手率"
          target="_blank">
-        <span class="icon">🔍</span>查询工具
+        <span class="icon">🔍</span>问小达
       </a>
     </li>
-    <li><a href="https://wenda.tdx.com.cn/site/wenda/page-user-center.html" target="_blank"><span class="icon">📝</span>查询模板</a></li>
-    <li><a href="#https://duanxianxia.cn/web/fupangu/" id="lianban"><span class="icon">📂</span>历史记录</a></li>
-    <li><a href="#https://duanxianxia.cn/web/fupan" id="fupan"><span class="icon">📅</span>趋势总结</a></li>
+    <li><a href="https://wenda.tdx.com.cn/site/wenda/page-user-center.html" target="_blank"><span class="icon">📝</span>问小达模板</a></li>
+    <li><a href="#https://duanxianxia.cn/web/fupangu/" id="lianban"><span class="icon">📂</span>复盘</a></li>
+    <li><a href="#https://duanxianxia.cn/web/fupan" id="fupan"><span class="icon">📅</span>涨停分析</a></li>
 
-    <li class="menu-group-title">📑 项目数据</li>
-    <li><a href="https://data.10jqka.com.cn/financial/yjyg/" target="_blank"><span class="icon">📋</span>财报预告</a></li>
+    <li class="menu-group-title">📑 财报业绩</li>
+    <li><a href="https://data.10jqka.com.cn/financial/yjyg/" target="_blank"><span class="icon">📋</span>业绩预告</a></li>
   </ol>
 </aside>
 
@@ -1676,7 +1680,7 @@
       type: 1,
       title: '快捷键',
       area: ['320px', 'auto'],
-      content: '<div style="padding:16px;line-height:2;"><strong>常用快捷键：</strong><br>1 - 快讯<br>2 - 待处理项统计<br>3 - 异动监控<br>4 - 实时监控<br>5 - 趋势总结<br>t - 切换工具集<br>d - 资讯中心<br>? - 显示此帮助<br><br><em>Ctrl+Shift+D - 切换深色模式</em></div>'
+      content: '<div style="padding:16px;line-height:2;"><strong>常用快捷键：</strong><br>1 - 快讯<br>2 - 竞价数据<br>3 - 异动监控<br>4 - 实时监控<br>5 - 涨停分析<br>t - 切换工具集<br>d - 资讯中心<br>? - 显示此帮助<br><br><em>Ctrl+Shift+D - 切换深色模式</em></div>'
     })
   }
 
@@ -2062,7 +2066,7 @@
       move: true,
       moveOut: true,
       area: ['100%', '100%'],
-      title: '待处理项统计',
+      title: '竞价数据',
       maxmin: true,
       offset: 'auto',
       shade: 0,
@@ -2172,7 +2176,7 @@
       move: true,
       moveOut: true,
       area: ['100%', '100%'],
-      title: '趋势总结',
+      title: '涨停分析',
       maxmin: true,
       offset: 'lb',
       shade: 0,
