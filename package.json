@@ -2,7 +2,23 @@
   "name": "node-http",
   "version": "1.0.0",
   "type": "module",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "start": "wrangler dev",
+    "cf-typegen": "wrangler types"
+  },
   "dependencies": {
-    "node-fetch": "^3.3.2"
+    "compression": "^1.8.0",
+    "express": "^5.1.0",
+    "http-proxy-middleware": "^3.0.5",
+    "node-fetch": "^3.3.2",
+    "path-to-regexp": "^8.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.13.0",
+    "@types/service-worker-mock": "^2.0.4",
+    "helmet": "^8.1.0",
+    "wrangler": "^4.20.5"
   }
 }
