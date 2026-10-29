@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>项目工作台</title>
+  <title>工作台</title>
   <script src="https://code.jquery.com/jquery-2.0.0.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/layer/3.5.1/theme/default/layer.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/layer/3.5.1/layer.min.js"></script>
@@ -635,6 +635,20 @@
           cursor: pointer;
       }
 
+      /* 低打扰外链：平时几乎隐形，悬停才浮现下划线 */
+      .panel a.quiet-link {
+          font-size: 11px;
+          color: var(--muted);
+          opacity: 0.35;
+          text-decoration: none;
+          margin-left: 2px;
+      }
+
+      .panel a.quiet-link:hover {
+          opacity: 0.85;
+          text-decoration: underline;
+      }
+
       .focus-timeline {
           margin-top: 16px;
           display: grid;
@@ -867,7 +881,7 @@
           position: absolute;
           left: 50%;
           bottom: calc(100% + 10px);
-          z-index: 20;
+          z-index: 500;
           width: min(230px, 78vw);
           padding: 12px;
           border-radius: 6px;
@@ -949,6 +963,24 @@
           visibility: visible;
           transform: translate(-50%, 0);
           pointer-events: auto;
+      }
+
+      /* 激活时抬高整个槽位，避免弹层被相邻面板（如运行指标）压住 */
+      .timeline-slot.active {
+          z-index: 30;
+      }
+
+      /* 最右侧一列：弹层改右对齐，避免探出面板右缘 */
+      .timeline-row .timeline-slot:nth-child(5) .timeline-popover {
+          left: auto;
+          right: 0;
+          transform: none;
+      }
+
+      .timeline-row .timeline-slot:nth-child(5):hover .timeline-popover,
+      .timeline-row .timeline-slot:nth-child(5):focus-within .timeline-popover,
+      .timeline-row .timeline-slot:nth-child(5).active .timeline-popover {
+          transform: none;
       }
 
       .iframe-wrap {
@@ -1488,9 +1520,8 @@
       <p>按需保留一项轻量状态，避免工作区被过多信息打断。</p>
       <div class="progress-content is-empty" id="progressContent">
         <div class="iframe-wrap" id="amountFrame">
-          <!-- 原内嵌 https://www.duanxianxia.cn/web/amount（上游腾讯接口 501+WAF，图表空白）；
-               用户偏好它的呈现方式，恢复后优先切回，详见 CLAUDE.md“待恢复：duanxianxia 量能页” -->
-          <iframe src="/amount" id="amount" name="amount" width="100%" height="280" title="量能图表"></iframe>
+          <!-- 已切回 duanxianxia 原版（2026-10-29，腾讯接口恢复 200）；/amount（东方财富源）留作备用，见 CLAUDE.md -->
+          <iframe src="https://www.duanxianxia.cn/web/amount" id="amount" name="amount" width="100%" height="280" title="量能图表"></iframe>
         </div>
         <div class="progress-chart is-hidden" id="advancersChart" aria-label="880005走势"></div>
         <div class="progress-summary is-hidden" id="advancersSummary" aria-live="polite">
@@ -1594,7 +1625,7 @@
             <div class="timeline-popover">
               <strong>快速入口</strong>
               <div class="timeline-links">
-                <a href="https://duanxianxia.com/lt" target="_blank">社区论谈</a>
+                <a href="https://duanxianxia.com/lt" target="_blank">龙头高度</a>
                 <a href="http://page.tdx.com.cn:7615/site/kggx/tk_yzlhb_yz.html" target="_blank">连板统计</a>
                 <a href="https://data.10jqka.com.cn/market/longhu/" target="_blank">异动明细</a>
                 <a href="https://data.10jqka.com.cn/financial/yjyg/" target="_blank">财报预告</a>
@@ -1613,6 +1644,7 @@
       <div class="metric-actions">
         <a class="tag" href="/qxlive.html" target="_blank">查看指标面板</a>
         <button class="tag" type="button" id="klineBtn">600127 量价</button>
+        <a class="quiet-link" href="https://www.duanxianxia.cn" target="_blank" rel="noopener noreferrer" title="duanxianxia.cn">数据源</a>
       </div>
     </section>
   </main>
@@ -1626,12 +1658,6 @@
     <li><a href="/qxlive.html" target="_blank"><span class="icon">📊</span>指标面板</a></li>
 
     <li class="menu-group-title">🗂 数据查询</li>
-    <li>
-      <a href="https://wenda.tdx.com.cn/site/wenda/stock_index.html?message=去除st,去除北交所,成交额前100,量比,实际换手率"
-         target="_blank">
-        <span class="icon">🔍</span>问小达
-      </a>
-    </li>
     <li><a href="https://wenda.tdx.com.cn/site/wenda/page-user-center.html" target="_blank"><span class="icon">📝</span>问小达模板</a></li>
     <li><a href="#https://duanxianxia.cn/web/fupangu/" id="lianban"><span class="icon">📂</span>复盘</a></li>
     <li><a href="#https://duanxianxia.cn/web/fupan" id="fupan"><span class="icon">📅</span>涨停分析</a></li>
@@ -2038,6 +2064,7 @@
 
   function applyProgressMode(mode) {
     let selectedMode = mode === 'amount' || mode === 'advancers' ? mode : 'none'
+    let shouldReloadAmount = selectedMode === 'amount' && (progressContent.hasClass('is-empty') || amountFrame.hasClass('is-collapsed'))
     progressModeButtons.removeClass('is-active').attr('aria-pressed', 'false')
     progressModeButtons.filter('[data-progress-mode="' + selectedMode + '"]').addClass('is-active').attr('aria-pressed', 'true')
     progressContent.toggleClass('is-empty', selectedMode === 'none')
@@ -2048,13 +2075,14 @@
 
     if (selectedMode === 'amount') {
       let iframe = $('#amount')
-      let theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
-      // 内嵌同源的 /amount.html，带上主题参数，避免第三方页面白屏与 Cookie 限制
-      iframe.attr('src', '/amount?theme=' + theme + '&t=' + Date.now())
+      let iframeSrc = iframe.attr('src')
       iframe.css({ display: 'block', width: '100%', minWidth: '100%', height: '280px' })
       amountFrame[0].offsetHeight
       requestAnimationFrame(function () {
         iframe.css({ display: 'block', width: '100%', minWidth: '100%' })
+        if (shouldReloadAmount) {
+          iframe.attr('src', iframeSrc)
+        }
       })
     }
 

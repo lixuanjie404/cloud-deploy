@@ -119,15 +119,15 @@ npm run dev
 
 原来内嵌的 `https://www.duanxianxia.cn/web/amount` 依赖腾讯分时接口 `web.ifzq.gtimg.cn`，该接口现在返回 501 + WAF 跳转页，导致图表空白。现改为内嵌同源的 `/amount`（`workers/stock/amount.html`），数据走 `GET /api/intraday/amount`，由 Worker 代理东方财富分时接口（`push2.eastmoney.com`），并带一次重试。
 
-图上是当日累计成交额曲线，虚线是上一交易日全天成交额；顶部三个数字为今日累计 / 昨日全天 / 按当前进度折算的预测值。
+**口径：沪深两市合计**（`1.000001` 上证 + `0.399001` 深证，按分钟对齐求和）。单市口径会少掉一半左右（上证 2026-10-27 全天仅 6427 亿，而两市合计 14609 亿），曾因此被用户指出数据不对。
 
-### 待恢复：duanxianxia 量能页（优先切回）
+图上是两市当日累计成交额曲线，虚线是上一交易日全天成交额（两市之和）；顶部三个数字为今日累计 / 昨日全天 / 按当前进度折算的预测值。
 
-- 地址：`https://www.duanxianxia.cn/web/amount`（旧版内嵌的就是它）
-- 现状（2026-10-22）：它依赖的腾讯分时接口 `web.ifzq.gtimg.cn` 返回 501 + `waf.tencent.com/501page.html`，页面只剩“昨日量能”，图表空白；单独打开也一样，不是嵌入问题
-- 取舍：用户喜欢它的图表呈现方式，**一旦恢复优先切回**；`/amount`（东方财富源）作为备用保留
-- 切回方式：把 `workers/stock/index.html` 里 `#amount` 的 src 改回上面的地址（两处：初始 `src` 和 `applyProgressMode` 里的 `iframe.attr('src', …)`）
-- 恢复自检：`curl -s -o NUL -w "%{http_code}" "https://web.ifzq.gtimg.cn/appstock/app/minute/query?_var=&code=sh000001&r=0.1"`，返回 200 且不是 WAF 跳转页即为恢复
+### 已切回：duanxianxia 量能页（2026-10-29）
+
+- `https://www.duanxianxia.cn/web/amount` 依赖的腾讯分时接口（`web.ifzq.gtimg.cn`）在 2026-10-22 曾返回 501 + WAF 跳转页，导致图表空白；2026-10-29 复测已恢复 200，**已把 iframe 切回原版**。
+- 它的优点：今日量能 / 预测量能 / 昨日量能对照（用户偏好其呈现方式）。
+- 备用方案保留：`/amount`（`workers/stock/amount.html`，东方财富源）与 `GET /api/intraday/amount` 未删除；再遇 WAF 拦截时把 iframe src 改回 `/amount?theme=<dark|light>` 即可。恢复自检：`curl -s -o NUL -w "%{http_code}" "https://web.ifzq.gtimg.cn/appstock/app/minute/query?_var=&code=sh000001&r=0.1"`，200 即可用。
 
 ### 600127 量价窗口（单入口试用）
 

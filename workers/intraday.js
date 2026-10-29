@@ -1,19 +1,22 @@
 /**
  * 分时量能接口（Cloudflare Workers）
  *
- *   GET /api/intraday/amount?code=sh000001&days=2
+ *   GET /api/intraday/amount
  *
- * 背景：原「今日进度 · 量」内嵌的 duanxianxia 页面依赖 web.ifzq.gtimg.cn（腾讯分时），
- * 该域名现在返回 501 + WAF 跳转页，导致图表空白。这里改用东方财富分时接口，
- * 由 Worker 侧转发（顺带避开浏览器跨域与第三方 Cookie 限制）。
+ * 返回「沪深两市合计」的分时成交额（口径与原 duanxianxia 量能页一致：
+ * 昨日量能 14421 亿 = 上证 6427.52 + 深证 7993.x）。单市数据不足以代表
+ * 「量」，所以这里固定合并两个市场，不再支持单代码查询。
+ *
+ * 数据源：东方财富分时接口（Worker 侧转发，带 UA/Referer 与一次重试）；
+ * 上一交易日全天成交额取自东方财富日线接口。
  */
 
 const EM = 'https://push2.eastmoney.com/api/qt/stock/trends2/get'
-const CODES = {
-  sh000001: { secid: '1.000001', name: '上证指数' },
-  sz399001: { secid: '0.399001', name: '深证成指' },
-  sz399006: { secid: '0.399006', name: '创业板指' },
-}
+const EM_DAILY = 'https://push2his.eastmoney.com/api/qt/stock/kline/get'
+const MARKETS = [
+  { secid: '1.000001', name: '上证指数' },
+  { secid: '0.399001', name: '深证成指' },
+]
 const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36'
 
 function json(body, status = 200, cache = 'no-store') {
@@ -74,93 +77,115 @@ function parseTrends (rows) {
   return days
 }
 
+async function fetchMarketIntraday (secid) {
+  const target = EM +
+    '?secid=' + encodeURIComponent(secid) +
+    '&fields1=f1,f2,f3,f4,f5,f6,f7,f8' +
+    '&fields2=f51,f52,f53,f54,f55,f56,f57,f58' +
+    '&ndays=1&iscr=0'
+
+  const res = await fetchWithRetry(target, {
+    headers: {
+      'User-Agent': UA,
+      Referer: 'https://quote.eastmoney.com/',
+      Accept: 'application/json,text/plain,*/*',
+    },
+    cf: { cacheTtl: 20, cacheEverything: true },
+  })
+  if (!res.ok) throw new Error(`上游返回 ${res.status}`)
+
+  const payload = await res.json()
+  const rows = payload && payload.data && payload.data.trends
+  if (!Array.isArray(rows) || !rows.length) throw new Error('上游无分时数据')
+  return parseTrends(rows)
+}
+
+/** 上一交易日的全天成交额（亿） */
+async function fetchPrevDayTotal (secid, todayDate) {
+  const target = EM_DAILY +
+    '?secid=' + encodeURIComponent(secid) +
+    '&fields1=f1,f2,f3,f4,f5,f6' +
+    '&fields2=f51,f52,f53,f54,f55,f56,f57' +
+    '&klt=101&fqt=0&lmt=2&end=20500101'
+
+  const res = await fetchWithRetry(target, {
+    headers: { 'User-Agent': UA, Referer: 'https://quote.eastmoney.com/' },
+    cf: { cacheTtl: 300, cacheEverything: true },
+  })
+  if (!res.ok) return null
+
+  const daily = await res.json()
+  const list = (daily && daily.data && daily.data.klines) || []
+  const prior = list.filter((row) => String(row).slice(0, 10) !== todayDate)
+  const pick = prior.length ? prior[prior.length - 1] : null
+  if (!pick) return null
+
+  const cols = String(pick).split(',')
+  const amt = Number(cols[6])
+  if (!Number.isFinite(amt) || cols[0] === todayDate) return null
+  return { date: cols[0], total: Number((amt / 1e8).toFixed(2)) }
+}
+
 export async function handleIntradayRequest (request, env, url) {
   if (request.method !== 'GET') return json({ ok: false, error: '仅支持 GET' }, 405)
   if (!url.pathname.startsWith('/api/intraday/amount')) {
-    return json({ ok: false, error: '用法：/api/intraday/amount?code=sh000001&days=2' }, 404)
+    return json({ ok: false, error: '用法：/api/intraday/amount' }, 404)
   }
 
-  const code = url.searchParams.get('code') || 'sh000001'
-  const meta = CODES[code]
-  if (!meta) return json({ ok: false, error: `不支持的代码：${code}` }, 400)
-
-  const daysNum = Number(url.searchParams.get('days') || 2)
-  const ndays = Number.isInteger(daysNum) && daysNum >= 1 && daysNum <= 5 ? daysNum : 2
-
-  const target = EM +
-    '?secid=' + encodeURIComponent(meta.secid) +
-    '&fields1=f1,f2,f3,f4,f5,f6,f7,f8' +
-    '&fields2=f51,f52,f53,f54,f55,f56,f57,f58' +
-    '&ndays=' + ndays + '&iscr=0'
-
-  let upstream
+  let marketDays
   try {
-    upstream = await fetchWithRetry(target, {
-      headers: {
-        'User-Agent': UA,
-        Referer: 'https://quote.eastmoney.com/',
-        Accept: 'application/json,text/plain,*/*',
-      },
-      cf: { cacheTtl: 20, cacheEverything: true },
-    })
+    marketDays = await Promise.all(MARKETS.map((m) => fetchMarketIntraday(m.secid)))
   } catch (err) {
     return json({ ok: false, error: `上游请求失败：${err.message}` }, 502)
   }
 
-  if (!upstream.ok) return json({ ok: false, error: `上游返回 ${upstream.status}` }, 502)
+  // 基准 = 两个市场里最新的日期（正常情况下两者相同）
+  const latestDate = marketDays
+    .map((d) => (d.length ? d[d.length - 1].date : ''))
+    .sort()
+    .pop()
 
-  let payload
-  try {
-    payload = await upstream.json()
-  } catch {
-    return json({ ok: false, error: '上游返回非 JSON' }, 502)
-  }
+  // 按时间对齐后逐分钟求和
+  const buckets = new Map()
+  marketDays.forEach((days) => {
+    const day = days.find((d) => d.date === latestDate)
+    if (!day) return
+    day.times.forEach((time, i) => {
+      if (!buckets.has(time)) buckets.set(time, 0)
+      buckets.set(time, buckets.get(time) + day.minutes[i])
+    })
+  })
 
-  const rows = payload && payload.data && payload.data.trends
-  if (!Array.isArray(rows) || !rows.length) return json({ ok: false, error: '上游无分时数据' }, 404)
+  const times = [...buckets.keys()].sort()
+  let sum = 0
+  const minutes = times.map((t) => {
+    sum += buckets.get(t)
+    return Number(sum.toFixed(2))
+  })
+  const cumulative = minutes.map((v) => Number(v.toFixed(2)))
 
-  const days = parseTrends(rows)
-
-  // 分时接口只给当天，上一交易日的全天成交额另取日线
   let prevTotal = null
   let prevDate = null
   try {
-    const dailyRes = await fetchWithRetry(
-      'https://push2his.eastmoney.com/api/qt/stock/kline/get' +
-        '?secid=' + encodeURIComponent(meta.secid) +
-        '&fields1=f1,f2,f3,f4,f5,f6' +
-        '&fields2=f51,f52,f53,f54,f55,f56,f57' +
-        '&klt=101&fqt=0&lmt=2&end=20500101',
-      { headers: { 'User-Agent': UA, Referer: 'https://quote.eastmoney.com/' }, cf: { cacheTtl: 300, cacheEverything: true } },
-    )
-    if (dailyRes.ok) {
-      const daily = await dailyRes.json()
-      const list = (daily && daily.data && daily.data.klines) || []
-      const today = days.length ? days[days.length - 1].date.replace(/-/g, '') : ''
-      const prior = list.filter((row) => String(row).slice(0, 10) !== (days.length ? days[days.length - 1].date : ''))
-      const pick = prior.length ? prior[prior.length - 1] : list.length ? list[list.length - 1] : null
-      if (pick) {
-        const cols = String(pick).split(',')
-        const dayStr = cols[0]
-        const amt = Number(cols[6])
-        if (Number.isFinite(amt) && (!today || dayStr !== today)) {
-          prevTotal = Number((amt / 1e8).toFixed(2))
-          prevDate = dayStr
-        }
-      }
+    const prevs = await Promise.all(MARKETS.map((m) => fetchPrevDayTotal(m.secid, latestDate)))
+    const valid = prevs.filter((p) => p && p.total != null)
+    if (valid.length === MARKETS.length) {
+      prevDate = valid[0].date
+      prevTotal = Number(valid.reduce((s, p) => s + p.total, 0).toFixed(2))
     }
   } catch {
     // 参照值取不到不影响主图
   }
+
   return json(
     {
       ok: true,
-      code,
-      name: meta.name,
+      code: 'sh000001+sz399001',
+      name: '沪深两市',
       updatedAt: new Date().toISOString(),
       prevTotal,
       prevDate,
-      days,
+      days: [{ date: latestDate, times, minutes, cumulative }],
     },
     200,
     'public, max-age=20, s-maxage=30',
