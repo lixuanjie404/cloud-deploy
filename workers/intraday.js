@@ -2,6 +2,7 @@
  * 分时量能接口（Cloudflare Workers）
  *
  *   GET /api/intraday/amount
+ *   GET /api/intraday/stock/:code   个股分时（现价/均价/昨收/分钟量）
  *
  * 返回「沪深两市合计」的分时成交额（口径与原 duanxianxia 量能页一致：
  * 昨日量能 14421 亿 = 上证 6427.52 + 深证 7993.x）。单市数据不足以代表
@@ -10,6 +11,9 @@
  * 数据源：东方财富分时接口（Worker 侧转发，带 UA/Referer 与一次重试）；
  * 上一交易日全天成交额取自东方财富日线接口。
  */
+
+import { createConnection } from 'mysql2/promise'
+import { connectionOptions } from './kline.js'
 
 const EM = 'https://push2.eastmoney.com/api/qt/stock/trends2/get'
 const EM_DAILY = 'https://push2his.eastmoney.com/api/qt/stock/kline/get'
@@ -126,10 +130,112 @@ async function fetchPrevDayTotal (secid, todayDate) {
   return { date: cols[0], total: Number((amt / 1e8).toFixed(2)) }
 }
 
+async function withMysql (env, fn) {
+  const opts = connectionOptions(env)
+  if (!opts) throw new Error('未配置数据库')
+  const conn = await createConnection(opts)
+  try { return await fn(conn) } finally { try { await conn.end() } catch {} }
+}
+
+function secidFor (code) {
+  // 沪市 6 开头走市场 1；深市 0/3、北交所 4/8/92 开头走市场 0
+  if (/^6\d{5}$/.test(code)) return '1.' + code
+  return '0.' + code
+}
+
+/**
+ * 指定代码的分时走势（含集合竞价）
+ *
+ * 东方财富 trends2 加 iscr=1 才会把 09:15-09:25 的竞价虚拟撮合价一并返回：
+ *   09:15-09:25  11 个点，成交量为 0，均价锚在昨收
+ *   09:26        带 9:25 的撮合成交量（上游把它记在这一分钟）
+ *   09:27-09:30  无成交的占位点，价格恒定
+ *   09:31 起     连续竞价
+ * 前端据此用 auction 标记画出竞价区，并在竞价段断开均价线。
+ */
+async function stockIntraday (env, code) {
+  if (!/^\d{6}$/.test(code)) return json({ ok: false, error: '代码需为 6 位数字' }, 400)
+
+  const secid = secidFor(code)
+  const target = EM +
+    '?secid=' + encodeURIComponent(secid) +
+    '&fields1=f1,f2,f3,f4,f5,f6,f7,f8' +
+    '&fields2=f51,f52,f53,f54,f55,f56,f57,f58' +
+    '&ndays=1&iscr=1'
+
+  let res
+  try {
+    res = await fetchWithRetry(target, {
+      headers: {
+        'User-Agent': UA,
+        Referer: 'https://quote.eastmoney.com/',
+        Accept: 'application/json,text/plain,*/*',
+      },
+      cf: { cacheTtl: 20, cacheEverything: true },
+    })
+  } catch (err) {
+    return json({ ok: false, error: `上游请求失败：${err.message}` }, 502)
+  }
+  if (!res.ok) return json({ ok: false, error: `上游返回 ${res.status}` }, 502)
+
+  let payload
+  try { payload = await res.json() } catch { return json({ ok: false, error: '上游返回非 JSON' }, 502) }
+
+  const rows = payload && payload.data && payload.data.trends
+  if (!Array.isArray(rows) || !rows.length) return json({ ok: false, error: `未找到 ${code} 的分时数据` }, 404)
+
+  const preClose = payload.data.preClose != null ? Number(payload.data.preClose) : null
+
+  // 按时间判定竞价段，不写死下标，上游某天缺点也不会错位
+  let auctionEnd = -1
+  const points = rows.map(function (row, i) {
+    const parts = String(row).split(',')
+    const stamp = parts[0].trim()
+    const space = stamp.indexOf(' ')
+    const time = space >= 0 ? stamp.slice(space + 1, space + 6) : stamp
+    const auction = time >= '09:15' && time <= '09:25'
+    if (auction) auctionEnd = i
+    return {
+      time,
+      price: Number(parts[2]),
+      avg: Number(parts[7]),
+      volume: Number(parts[5]),
+      auction,
+    }
+  })
+
+  // 中文名优先从本地 MySQL stock_list 回查；查不到不影响主图
+  let name = null
+  try {
+    name = await withMysql(env, async (conn) => {
+      const [rows2] = await conn.query('SELECT name FROM stock_list WHERE code = ?', [code])
+      return rows2.length ? rows2[0].name : null
+    })
+  } catch { name = null }
+
+  return json(
+    {
+      ok: true,
+      code,
+      name,
+      preClose,
+      auctionEnd,
+      updatedAt: new Date().toISOString(),
+      points,
+    },
+    200,
+    'public, max-age=20, s-maxage=30',
+  )
+}
+
 export async function handleIntradayRequest (request, env, url) {
   if (request.method !== 'GET') return json({ ok: false, error: '仅支持 GET' }, 405)
+
+  const stockMatch = url.pathname.match(/^\/api\/intraday\/stock\/([^/]+)$/)
+  if (stockMatch) return stockIntraday(env, decodeURIComponent(stockMatch[1]))
+
   if (!url.pathname.startsWith('/api/intraday/amount')) {
-    return json({ ok: false, error: '用法：/api/intraday/amount' }, 404)
+    return json({ ok: false, error: '用法：/api/intraday/amount、/api/intraday/stock/:code' }, 404)
   }
 
   let marketDays

@@ -21,10 +21,12 @@
 	 * MySQL（Hyperdrive 绑定）
 	 *
 	 * id 已指向已创建的 Hyperdrive 配置；源库需公网可达并支持 TLS。
-	 * 本地 `npm run dev` 要连库时，再补 "localConnectionString" 指向本地库，
-	 * 或设环境变量 CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE。
-	 * 不启用 Hyperdrive 时，也可用 DB_HOST / DB_PORT / DB_USER / DB_PASSWORD /
-	 * DB_NAME / DB_SSL 直连（见 .dev.vars.example）。
+	 * 本地 wrangler dev 强制要求 localConnectionString 或环境变量
+	 * WRANGLER_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE，否则启动即报错。
+	 * 不要在这里写明文连接串（本文件受版本控制）；`npm run dev` 会由
+	 * scripts/wrangler-dev.mjs 从 .dev.vars / .env 的 MYSQL_* 或 DB_* 自动拼好后
+	 * 注入进程环境。报错文案里的 "Postgres" 是通用模板，本项目用 MySQL 即可。
+	 * 直接跑 `npx wrangler dev` 时需自行设置该环境变量；`--remote` 不需要。
 	 */
 	"hyperdrive": [
 		{

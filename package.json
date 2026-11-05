@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {
     "deploy": "wrangler deploy",
-    "dev": "wrangler dev",
-    "start": "wrangler dev",
+    "dev": "node scripts/wrangler-dev.mjs",
+    "start": "node scripts/wrangler-dev.mjs",
     "cf-typegen": "wrangler types"
   },
   "dependencies": {

@@ -99,6 +99,7 @@ npm run deploy   # 部署到 Cloudflare Workers
 | `GET /api/db/table/:name` | 读表数据，支持 `limit`（≤500，默认 50）/ `offset` / `order` / `dir` / `fields` |
 | `GET /api/kline/:code` | 个股日线（默认 120 根），支持 `days`（10-300）/ `adjust`（raw 或 hfq）；仅 index 页「600127 量价」按钮使用，未全站铺开 |
 | `GET /api/intraday/amount` | 分时量能（默认 `code=sh000001`），返回当日累计成交额与上一交易日全天成交额；供 `/amount` 页面使用 |
+| `GET /api/intraday/stock/:code` | 指定代码的分时走势，含 09:15-09:25 集合竞价虚拟撮合点；供首页「运行指标」弹窗使用 |
 
 启用方式：
 
@@ -129,9 +130,12 @@ npm run dev
 - 它的优点：今日量能 / 预测量能 / 昨日量能对照（用户偏好其呈现方式）。
 - 备用方案保留：`/amount`（`workers/stock/amount.html`，东方财富源）与 `GET /api/intraday/amount` 未删除；再遇 WAF 拦截时把 iframe src 改回 `/amount?theme=<dark|light>` 即可。恢复自检：`curl -s -o NUL -w "%{http_code}" "https://web.ifzq.gtimg.cn/appstock/app/minute/query?_var=&code=sh000001&r=0.1"`，200 即可用。
 
-### 600127 量价窗口（单入口试用）
+### 分时 / 日线窗口（含集合竞价）
 
-`workers/stock/index.html` 的「运行指标」面板里有一个「600127 量价」按钮，点开是 layer 弹窗，内嵌 ECharts 蜡烛图 + 成交量 + MA5/MA10，数据来自 `GET /api/kline/600127?days=120&adjust=raw`（120 根日线）。
+`workers/stock/index.html` 的「运行指标」面板里有一个「分时走势」按钮，点开是 layer 弹窗：可输入 6 位代码（默认 `002242`，用 localStorage 记住上次代码与视图），在「分时·竞价」和「日线」两个 tab 间切换，交易时段每 30 秒刷新一次。第二档字样只放在弹窗内，首屏按钮与标题不得出现。
+
+- **分时**：`GET /api/intraday/stock/:code`，上游是东方财富 `trends2/get`，**必须带 `iscr=1`**，否则只有 09:30 之后的连续竞价。带上后 09:15-09:25 共 11 个竞价虚拟撮合点（成交量为 0、均价锚在昨收），09:26 那一点带 9:25 的撮合成交量，09:27-09:30 是无成交占位点，09:31 起进入连续竞价。接口按时间给点打 `auction` 标记并返回 `auctionEnd`，前端据此画竞价区背景、在竞价段断开均价线，竞价点的 tooltip 不显示成交量。
+- **日线**：`GET /api/kline/:code?days=120&adjust=raw`，ECharts 蜡烛图 + 成交量 + MA5/MA10；MySQL 无该代码时回退东方财富日线，回退响应同样带 `latest`。
 
 默认用 `raw` 口径：排查发现 `hfq` 在 2026-10-19、2026-10-21 两天的复权比例异常（常态约 5.732，这两天为 4.215 / 3.876），`raw` 序列连续。这两天的成交量也比前后低两个数量级，属数据源自身的待修问题。
 
@@ -142,7 +146,7 @@ npm run dev
 - `mysql2` 需 ≥ 3.13.0，且必须 `disableEval: true`（Workers 无 eval，结果超过 100 列时 mysql2 会走 eval 解析）。
 - 源库侧连接数：每个 Hyperdrive 配置约 20（Free）/ 100（Paid），池最小 5；Worker 到 Hyperdrive 的并发连接不设限。
 - 查询缓存默认开启：`max_age` 60s、`stale_while_revalidate` 15s，最长可调到 1h。
-- 本地开发：`wrangler dev` 读 `localConnectionString`，或用环境变量 `CLOUDFLARE_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE` 覆盖（优先级更高）；`wrangler dev --remote` 不使用它。
+- 本地开发：实测 wrangler 4.20.5 在未配 `localConnectionString` 时 `wrangler dev` 会直接报错退出；需设环境变量 `WRANGLER_HYPERDRIVE_LOCAL_CONNECTION_STRING_HYPERDRIVE`（旧文档写的 `CLOUDFLARE_` 前缀在本版本不生效），或在 `wrangler.jsonc` 的 hyperdrive 段补 `localConnectionString`。报错文案写 "Postgres" 是 wrangler 的通用模板，本项目用 `mysql://` 即可（miniflare 同时支持 postgres 与 mysql），不必装 Postgres。该变量由 wrangler 进程从 shell / `.env` 读取，写进 `.dev.vars` 无效。`npm run dev` / `npm start` 已改为 `scripts/wrangler-dev.mjs`，它从 `.dev.vars` 的 `MYSQL_*`（或 `DB_*`）自动拼连接串注入，无需手工设置、也不会把口令写进受版本控制的文件；直接跑 `npx wrangler dev` 仍需自己设变量。本机 `curl 127.0.0.1:8787` 需加 `--noproxy '*'`，否则请求会被系统代理拦走。`wrangler dev --remote` 不使用它。
 - 直连回退（`DB_*`）仅供本地调试，当前**不校验证书**；生产请走 Hyperdrive。
 
 ## 配置

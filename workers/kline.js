@@ -29,7 +29,7 @@ function json(body, status = 200, cache = 'no-store') {
   })
 }
 
-function connectionOptions(env) {
+export function connectionOptions(env) {
   if (env.HYPERDRIVE && env.HYPERDRIVE.host) {
     // Hyperdrive 绑定字段本身就是 mysql2 的连接参数，直接展开即可
     const opts = {
@@ -67,6 +67,49 @@ function connectionOptions(env) {
     disableEval: true,
     dateStrings: true,
     connectTimeout: 10000,
+  }
+}
+
+/** MySQL 未同步的代码回退到东方财富日线（fqt=0 与 daily_bar 的 raw 口径一致） */
+async function fetchEastmoneyDaily (code, days) {
+  const secid = /^6\d{5}$/.test(code) ? '1.' + code : '0.' + code
+  const target =
+    'https://push2his.eastmoney.com/api/qt/stock/kline/get' +
+    '?secid=' + encodeURIComponent(secid) +
+    '&fields1=f1,f2,f3,f4,f5,f6' +
+    '&fields2=f51,f52,f53,f54,f55,f56,f57' +
+    '&klt=101&fqt=0&lmt=' + Math.min(days, 300) + '&end=20500101'
+
+  let res
+  try {
+    res = await fetch(target, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36',
+        Referer: 'https://quote.eastmoney.com/',
+      },
+      cf: { cacheTtl: 60, cacheEverything: true },
+    })
+    if (!res.ok) { console.log('[kline-fallback] 上游', res.status); return null }
+    const body = await res.text()
+    console.log('[kline-fallback] body:', body.slice(0, 150))
+    const payload = JSON.parse(body)
+    const rows = (payload && payload.data && payload.data.klines) || []
+    console.log('[kline-fallback] rc', payload.rc, 'rows', rows.length)
+    const bars = rows.map(function (row) {
+      const cols = String(row).split(',')
+      return {
+        date: cols[0],
+        open: Number(cols[1]),
+        high: Number(cols[3]),
+        low: Number(cols[4]),
+        close: Number(cols[2]),
+        volume: Number(cols[5]),
+        amount: Number(cols[6]),
+      }
+    }).filter(function (b) { return b.close > 0 })
+    return bars.length ? bars : null
+  } catch {
+    return null
   }
 }
 
@@ -114,7 +157,33 @@ export async function handleKlineRequest(request, env, url) {
       [code, adjust, days],
     )
 
-    if (!rows.length) return json({ ok: false, error: `未找到 ${code} 的 ${adjust} 日线数据` }, 404)
+    if (!rows.length) {
+      // MySQL 未同步该代码时，回退到东方财富日线接口，保证任意代码可用
+      const fallback = await fetchEastmoneyDaily(code, days)
+      if (fallback) {
+        // 回退路径也要给 latest，前端弹窗的日线 tab 会读它
+        const lastBar = fallback[fallback.length - 1]
+        const prevBar = fallback.length > 1 ? fallback[fallback.length - 2] : null
+        const changePct = prevBar
+          ? Number((((lastBar.close - prevBar.close) / prevBar.close) * 100).toFixed(2))
+          : null
+        return json(
+          {
+            ok: true,
+            code,
+            adjust,
+            count: fallback.length,
+            range: { from: fallback[0].date, to: lastBar.date },
+            latest: { date: lastBar.date, close: lastBar.close, changePct, volume: lastBar.volume },
+            source: 'eastmoney',
+            bars: fallback,
+          },
+          200,
+          'public, max-age=60, s-maxage=120',
+        )
+      }
+      return json({ ok: false, error: `未找到 ${code} 的 ${adjust} 日线数据` }, 404)
+    }
 
     const bars = rows
       .slice()
