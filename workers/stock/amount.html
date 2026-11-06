@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>沪深量能</title>
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; background: transparent; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    color: #5c6660;
+  }
+  body.dark { color: #9aa3a0; }
+  #wrap { height: 100%; box-sizing: border-box; padding: 6px 8px 2px; display: flex; flex-direction: column; }
+  #sum { display: flex; gap: 14px; font-size: 12px; white-space: nowrap; overflow: hidden; }
+  #sum b { font-weight: 600; color: #d2453a; font-variant-numeric: tabular-nums; }
+  body.dark #sum b { color: #ff7a63; }
+  #chart { flex: 1; min-height: 0; }
+  #err { font-size: 12px; color: #d2453a; padding-top: 6px; display: none; }
+  body.dark #err { color: #ff9a86; }
+</style>
+</head>
+<body>
+  <div id="wrap">
+    <div id="sum">
+      <span>今日累计 <b id="today">--</b> 亿</span>
+      <span>昨日全天 <b id="prev">--</b> 亿</span>
+      <span>预测 <b id="forecast">--</b> 亿</span>
+    </div>
+    <div id="chart"></div>
+    <div id="err"></div>
+  </div>
+
+<script>
+(function () {
+  var dark = new URLSearchParams(location.search).get('theme') === 'dark'
+  if (dark) document.body.classList.add('dark')
+
+  var chart = null
+  var timer = null
+
+  function fmt(v) {
+    return v == null || !isFinite(v) ? '--' : Number(v).toFixed(1)
+  }
+
+  function showError(msg) {
+    var box = document.getElementById('err')
+    box.textContent = msg
+    box.style.display = 'block'
+  }
+
+  function clearError() {
+    document.getElementById('err').style.display = 'none'
+  }
+
+  function render(data) {
+    var days = (data && data.days) || []
+    var today = days[days.length - 1]
+    if (!today || !today.cumulative || !today.cumulative.length) throw new Error('上游暂无分时数据')
+
+    var prev = null
+    var cum = today.cumulative
+    var n = cum.length
+    var lastCum = cum[n - 1]
+    var prevTotal = data.prevTotal != null ? Number(data.prevTotal) : null
+    var ratio = Math.min(1, n / 240)
+    var forecast = ratio > 0.05 ? lastCum / ratio : null
+
+    document.getElementById('today').textContent = fmt(lastCum)
+    document.getElementById('prev').textContent = fmt(prevTotal)
+    document.getElementById('forecast').textContent = fmt(forecast)
+
+    var axis = today.times
+
+    var textColor = dark ? '#9aa3a0' : '#7b857f'
+    var axisColor = dark ? '#343a36' : '#e6e9e4'
+
+    chart = chart || echarts.init(document.getElementById('chart'))
+    chart.setOption({
+      animation: false,
+      backgroundColor: 'transparent',
+      grid: { left: 6, right: 40, top: 10, bottom: 4, containLabel: true },
+      tooltip: {
+        trigger: 'axis',
+        confine: true,
+        valueFormatter: function (v) { return v == null ? '-' : v + ' 亿' }
+      },
+      xAxis: {
+        type: 'category',
+        data: axis,
+        boundaryGap: false,
+        axisLine: { lineStyle: { color: axisColor } },
+        axisTick: { show: false },
+        axisLabel: { color: textColor, fontSize: 9, interval: Math.max(1, Math.floor(axis.length / 4)) },
+        splitLine: { show: false }
+      },
+      yAxis: {
+        type: 'value',
+        scale: true,
+        position: 'right',
+        axisLine: { show: false },
+        axisTick: { show: false },
+        splitLine: { lineStyle: { color: axisColor } },
+        axisLabel: { color: textColor, fontSize: 9 }
+      },
+      series: [
+        {
+          name: '今日累计',
+          type: 'line',
+          data: cum,
+          showSymbol: false,
+          lineStyle: { width: 1.5, color: '#d2453a' },
+          areaStyle: { color: dark ? 'rgba(255,122,99,0.10)' : 'rgba(210,69,58,0.08)' },
+          markLine: prevTotal == null ? { data: [] } : {
+            symbol: 'none',
+            silent: true,
+            lineStyle: { type: 'dashed', width: 1, color: dark ? '#68716c' : '#b9c2bc' },
+            label: { formatter: '昨日全天 ' + fmt(prevTotal) + ' 亿', fontSize: 9, color: textColor, position: 'insideEndTop' },
+            data: [{ yAxis: prevTotal }]
+          }
+        }
+      ]
+    }, true)
+    chart.resize()
+    clearError()
+  }
+
+  function load() {
+    fetch('/api/intraday/amount?code=sh000001&days=2', { cache: 'no-store' })
+      .then(function (r) { return r.json() })
+      .then(function (res) {
+        if (!res.ok) throw new Error(res.error || '接口返回异常')
+        render(res)
+      })
+      .catch(function (err) { showError('量能加载失败：' + err.message) })
+  }
+
+  function start() {
+    load()
+    clearInterval(timer)
+    timer = setInterval(load, 60000)
+    window.addEventListener('resize', function () { if (chart) chart.resize() })
+  }
+
+  if (window.echarts) {
+    start()
+  } else {
+    var s = document.createElement('script')
+    s.src = 'https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js'
+    s.onload = start
+    s.onerror = function () {
+      var t = document.createElement('script')
+      t.src = 'https://duanxianxia.cn/static/js/echarts.min.js'
+      t.onload = start
+      t.onerror = function () { showError('图表库加载失败，请检查网络') }
+      document.head.appendChild(t)
+    }
+    document.head.appendChild(s)
+  }
+})()
+</script>
+</body>
+</html>
