@@ -338,13 +338,18 @@
           text-decoration: none;
           box-shadow: 0 12px 26px rgba(15, 23, 42, 0.06);
           backdrop-filter: blur(10px);
-          transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+          transition: transform 0.18s var(--ease-out), border-color 0.18s var(--ease-out), box-shadow 0.18s var(--ease-out);
       }
 
       .ai-tool-card:hover {
           transform: translateY(-2px);
           border-color: rgba(74, 140, 111, 0.22);
           box-shadow: 0 16px 32px rgba(74, 140, 111, 0.11);
+      }
+
+      .ai-tool-card:focus-visible {
+          outline: 2px solid var(--accent);
+          outline-offset: 2px;
       }
 
       .ai-tool-icon {
@@ -530,6 +535,12 @@
       @media (prefers-reduced-motion: reduce) {
           .iframe-wrap {
               transition: none;
+          }
+
+          .ai-tool-card,
+          .ai-tool-card:hover {
+              transition: none;
+              transform: none;
           }
       }
 
@@ -1370,6 +1381,10 @@
             <span class="ai-tool-icon">鲸</span>
             <span><span class="ai-tool-name">LingoWhale</span><span class="ai-tool-desc">信息深潜</span></span>
           </a>
+          <a class="ai-tool-card" href="https://ai-stock.onrender.com" target="_blank" rel="noopener noreferrer" title="ai-stock.onrender.com · 新窗口打开">
+            <span class="ai-tool-icon">云</span>
+            <span><span class="ai-tool-name">云端服务</span><span class="ai-tool-desc">按需访问</span></span>
+          </a>
         </div>
       </div>
     </section>
@@ -1434,7 +1449,7 @@
             <div class="timeline-popover">
               <strong>快速入口</strong>
               <div class="timeline-links">
-                <a href="https://weibo.com/3608427684" target="_blank">微博</a>
+                <a href="https://weibo.com/3608427684" target="_blank">微博-索道登云</a>
                 <a href="https://weibo.com/mygroups?gid=4140006190600547" target="_blank">微博关注</a>
                 <a href="https://eq.10jqka.com.cn/frontend/thsTopRank/index.html#/" target="_blank">热榜排行</a>
                 <a href="https://space.bilibili.com/43295527/dynamic" target="_blank">B站动态</a>
