@@ -2136,7 +2136,7 @@
 
   function scheduleRefresh () {
     clearTimeout(stockTimer)
-    if (!isTradingTime()) return
+    if (!isTradingTime() || !document.getElementById('klineChart')) return
     stockTimer = setTimeout(loadStock, 30000)
   }
 
@@ -2152,7 +2152,11 @@
   }
 
   function getChart (el) {
-    stockChart = stockChart || echarts.init(el)
+    // 弹窗每次打开都会重建 #klineChart、关闭时销毁旧 DOM；
+    // 旧实例若还挂在已脱离文档的节点上，必须先 dispose 再重建，否则重开弹窗后图不显示
+    if (stockChart && !stockChart.isDisposed() && stockChart.getDom() === el) return stockChart
+    if (stockChart && !stockChart.isDisposed()) stockChart.dispose()
+    stockChart = echarts.init(el)
     return stockChart
   }
 
@@ -2251,8 +2255,8 @@
       return { value: b.volume, itemStyle: { color: b.close >= b.open ? up : down } }
     })
 
-    stockChart = stockChart || echarts.init(el)
-    stockChart.setOption({
+    const chart = getChart(el)
+    chart.setOption({
       animation: false,
       backgroundColor: 'transparent',
       textStyle: { color: textColor, fontSize: 11 },
@@ -2361,6 +2365,13 @@
         document.getElementById('tabKline').onclick = function () { setView('kline') }
         setView(stockView)
       },
+      end: function () {
+        // 关闭弹窗：停掉 30 秒轮询，并释放挂在已销毁 DOM 上的图表实例
+        clearTimeout(stockTimer)
+        stockTimer = null
+        if (stockChart && !stockChart.isDisposed()) stockChart.dispose()
+        stockChart = null
+      },
     })
   })
 
@@ -2384,6 +2395,7 @@
   }
 
   function loadStock () {
+    if (!document.getElementById('klineChart')) return
     const seq = ++loadSeq
     const code = stockCode
     document.getElementById('klineMeta').textContent = '加载中…'
@@ -2411,12 +2423,13 @@
           document.getElementById('klineMeta').textContent =
             res.count + ' 根 · 收 ' + last.close.toFixed(2) + '（' + sign + last.changePct + '%）'
         }
-        setTimeout(function () { if (stockChart) stockChart.resize() }, 150)
+        setTimeout(function () { if (stockChart && !stockChart.isDisposed()) stockChart.resize() }, 150)
         scheduleRefresh()
       })
       .catch(function (err) {
         if (seq !== loadSeq) return
-        document.getElementById('klineMeta').textContent = '加载失败：' + err.message
+        const meta = document.getElementById('klineMeta')
+        if (meta) meta.textContent = '加载失败：' + err.message
         scheduleRefresh()
       })
   }
