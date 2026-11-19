@@ -52,6 +52,29 @@
     document.getElementById('err').style.display = 'none'
   }
 
+  // 与个股分时同规则：时间轴固定全天，盘中尾部补空，不把半天数据拉满全图
+  function padSessionAxis(times) {
+    var axis = times.slice()
+    if (!axis.length) return axis
+    function toMin(t) {
+      var p = String(t).split(':')
+      return Number(p[0]) * 60 + Number(p[1])
+    }
+    function fmt(v) {
+      return String(Math.floor(v / 60)).padStart(2, '0') + ':' + String(v % 60).padStart(2, '0')
+    }
+    var MORNING_END = 11 * 60 + 30
+    var AFTERNOON_START = 13 * 60 + 1
+    var CLOSE = 15 * 60
+    var cur = toMin(axis[axis.length - 1])
+    if (cur >= CLOSE) return axis
+    if (cur < MORNING_END) {
+      for (var t = cur + 1; t <= MORNING_END; t += 1) axis.push(fmt(t))
+    }
+    for (var t2 = Math.max(AFTERNOON_START, cur + 1); t2 <= CLOSE; t2 += 1) axis.push(fmt(t2))
+    return axis
+  }
+
   function render(data) {
     var days = (data && data.days) || []
     var today = days[days.length - 1]
@@ -69,7 +92,8 @@
     document.getElementById('prev').textContent = fmt(prevTotal)
     document.getElementById('forecast').textContent = fmt(forecast)
 
-    var axis = today.times
+    var axis = padSessionAxis(today.times)
+    var cumPadded = cum.concat(new Array(Math.max(0, axis.length - cum.length)).fill(null))
 
     var textColor = dark ? '#9aa3a0' : '#7b857f'
     var axisColor = dark ? '#343a36' : '#e6e9e4'
@@ -90,7 +114,9 @@
         boundaryGap: false,
         axisLine: { lineStyle: { color: axisColor } },
         axisTick: { show: false },
-        axisLabel: { color: textColor, fontSize: 9, interval: Math.max(1, Math.floor(axis.length / 4)) },
+        axisLabel: { color: textColor, fontSize: 9, interval: function (index, value) {
+          return ['09:30', '10:30', '11:30', '13:30', '14:30', '15:00'].indexOf(value) !== -1
+        } },
         splitLine: { show: false }
       },
       yAxis: {
@@ -106,7 +132,7 @@
         {
           name: '今日累计',
           type: 'line',
-          data: cum,
+          data: cumPadded,
           showSymbol: false,
           lineStyle: { width: 1.5, color: '#d2453a' },
           areaStyle: { color: dark ? 'rgba(255,122,99,0.10)' : 'rgba(210,69,58,0.08)' },

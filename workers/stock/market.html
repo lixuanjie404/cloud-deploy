@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>今日市场</title>
+  <link rel="icon" href="/favicon.ico">
+  <script src="https://code.jquery.com/jquery-2.0.0.min.js"></script>
+  <style>
+      :root {
+          color-scheme: light;
+          --bg: #f5f5f0;
+          --card: #ffffff;
+          --text: #2c2c2c;
+          --muted: #6b7280;
+          --accent: #4a8c6f;
+          --accent-soft: rgba(74, 140, 111, 0.10);
+          --border: #e5e7e3;
+          --up: #e05a5f;
+          --down: #3f9e6e;
+      }
+
+      [data-theme="dark"] {
+          color-scheme: dark;
+          --bg: #1a1a1a;
+          --card: #252525;
+          --text: #d4d4d4;
+          --muted: #858585;
+          --accent: #5fb98a;
+          --accent-soft: rgba(95, 185, 138, 0.14);
+          --border: #333333;
+          --up: #f2555a;
+          --down: #4cb782;
+      }
+
+      * {
+          box-sizing: border-box;
+      }
+
+      body {
+          margin: 0;
+          background: var(--bg);
+          color: var(--text);
+          font-family: "SF Mono", "Cascadia Code", "Fira Code", "Consolas", "PingFang SC", monospace;
+          font-size: 14px;
+      }
+
+      .wrap {
+          max-width: 1400px;
+          margin: 0 auto;
+          padding: 18px 14px 46px;
+      }
+
+      .top {
+          display: flex;
+          align-items: flex-end;
+          justify-content: space-between;
+          gap: 12px;
+          margin-bottom: 14px;
+      }
+
+      .top h1 {
+          margin: 0;
+          font-size: 20px;
+          letter-spacing: 1px;
+      }
+
+      .top .sub {
+          font-size: 11px;
+          color: var(--muted);
+          margin-top: 4px;
+      }
+
+      .top-actions {
+          text-align: right;
+          font-size: 11px;
+          color: var(--muted);
+      }
+
+      .top-actions button {
+          margin-left: 8px;
+          border: 1px solid var(--border);
+          background: var(--card);
+          color: var(--text);
+          border-radius: 5px;
+          padding: 5px 12px;
+          font: inherit;
+          font-size: 12px;
+          cursor: pointer;
+      }
+
+      .top-actions button:hover {
+          border-color: var(--accent);
+          color: var(--accent);
+      }
+
+      .kp-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+          gap: 10px;
+      }
+
+      .kp {
+          background: var(--card);
+          border: 1px solid var(--border);
+          border-radius: 7px;
+          padding: 9px 12px;
+      }
+
+      .kp .label {
+          display: block;
+          font-size: 11px;
+          color: var(--muted);
+          margin-bottom: 4px;
+      }
+
+      .kp b {
+          font-size: 19px;
+          font-weight: 650;
+      }
+
+      .kp.err b {
+          color: var(--muted);
+          font-size: 13px;
+          font-weight: normal;
+      }
+
+      .panel {
+          margin-top: 16px;
+          background: var(--card);
+          border: 1px solid var(--border);
+          border-radius: 8px;
+          padding: 14px;
+      }
+
+      /* 左右结构：左板块强度（主列表）/ 右选中板块的标的明细 */
+      .main-grid {
+          display: grid;
+          grid-template-columns: 400px minmax(0, 1fr);
+          gap: 14px;
+          align-items: start;
+          margin-top: 16px;
+      }
+
+      .main-grid .panel {
+          margin-top: 0;
+      }
+
+      /* 标的强度可隐藏：收起后板块列表占满整行 */
+      .main-grid.hide-right {
+          grid-template-columns: 1fr;
+      }
+
+      .main-grid.hide-right .panel-right {
+          display: none;
+      }
+
+      .panel-left {
+          position: sticky;
+          top: 10px;
+      }
+
+      .plate-scroll {
+          max-height: calc(100vh - 250px);
+          min-height: 280px;
+          overflow: auto;
+      }
+
+      .plate-scroll thead th {
+          position: sticky;
+          top: 0;
+          background: var(--card);
+          z-index: 1;
+      }
+
+      .stock-scroll {
+          max-height: calc(100vh - 250px);
+          overflow: auto;
+      }
+
+      .stock-scroll thead th {
+          position: sticky;
+          top: 0;
+          background: var(--card);
+          z-index: 1;
+      }
+
+      @media (max-width: 1024px) {
+          .main-grid {
+              grid-template-columns: 1fr;
+          }
+
+          .panel-left {
+              position: static;
+          }
+
+          .plate-scroll {
+              max-height: 46vh;
+          }
+
+          .stock-scroll {
+              max-height: none;
+          }
+      }
+
+      .panel-head {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 10px;
+      }
+
+      .panel-head h3 {
+          margin: 0;
+          font-size: 15px;
+      }
+
+      .toggle button {
+          border: 1px solid var(--border);
+          background: transparent;
+          color: var(--muted);
+          border-radius: 5px;
+          padding: 4px 10px;
+          font: inherit;
+          font-size: 12px;
+          cursor: pointer;
+      }
+
+      .toggle button.is-active {
+          color: var(--accent);
+          border-color: var(--accent);
+          background: var(--accent-soft);
+      }
+
+      table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 13px;
+      }
+
+      th {
+          text-align: left;
+          color: var(--muted);
+          font-weight: normal;
+          font-size: 11px;
+          padding: 5px 6px;
+          border-bottom: 1px solid var(--border);
+      }
+
+      td {
+          padding: 6px;
+          border-bottom: 1px solid var(--border);
+      }
+
+      .plate-row {
+          cursor: pointer;
+      }
+
+      .plate-row:hover {
+          background: var(--accent-soft);
+      }
+
+      .plate-row.is-active {
+          color: var(--accent);
+          background: var(--accent-soft);
+      }
+
+      .zt-badge {
+          display: inline-block;
+          color: var(--up);
+          border: 1px solid var(--up);
+          border-radius: 3px;
+          font-size: 10px;
+          padding: 0 5px;
+          transform: scale(0.85);
+      }
+
+      .detail h4 {
+          margin: 0 0 8px;
+          font-size: 13px;
+          color: var(--muted);
+          font-weight: normal;
+      }
+
+      #subplate {
+          /* 子板块按钮由接口注入且带 float:left，不清除会把下方标的表挤到右侧 */
+          display: flow-root;
+          margin-bottom: 10px;
+          line-height: 2;
+      }
+
+      #subplate button,
+      #subplate .btn {
+          display: inline-block;
+          margin: 2px 6px 2px 0;
+          padding: 3px 10px;
+          font: inherit;
+          font-size: 12px;
+          border-radius: 4px;
+          border: 1px solid var(--border);
+          background: transparent;
+          color: var(--text);
+          cursor: pointer;
+      }
+
+      #subplate .btn-danger,
+      #subplate button.btn-danger {
+          color: var(--up);
+          border-color: var(--up);
+      }
+
+      .stocks td {
+          font-size: 12px;
+      }
+
+      footer {
+          margin-top: 14px;
+          font-size: 11px;
+          color: var(--muted);
+      }
+
+      footer a {
+          color: var(--muted);
+      }
+
+      .state {
+          color: var(--muted);
+          font-size: 12px;
+          padding: 10px 0;
+      }
+
+      /* 分时浮窗：无遮罩、可拖动、记忆位置，不挡页面其它内容 */
+      .stocks tbody tr {
+          cursor: pointer;
+      }
+
+      /* 绝对定位：坐标相对文档，拖动/记忆都按 pageX/pageY 计算，滚动时随页面走 */
+      .trend-dialog {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: min(640px, 92vw);
+          background: var(--card);
+          border: 1px solid var(--border);
+          border-radius: 10px;
+          box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
+          display: none;
+          z-index: 51;
+      }
+
+      .trend-dialog.show {
+          display: block;
+      }
+
+      .trend-head {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+          padding: 10px 14px;
+          border-bottom: 1px solid var(--border);
+          cursor: move;
+          user-select: none;
+      }
+
+      .trend-head h3 {
+          margin: 0;
+          font-size: 14px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+      }
+
+      .trend-head .meta {
+          margin-left: 8px;
+          font-size: 11px;
+          color: var(--muted);
+          font-weight: normal;
+      }
+
+      .trend-close {
+          border: none;
+          background: transparent;
+          color: var(--muted);
+          font-size: 15px;
+          cursor: pointer;
+          padding: 2px 6px;
+          border-radius: 4px;
+      }
+
+      .trend-close:hover {
+          color: var(--up);
+      }
+
+      #trendChart {
+          height: 320px;
+          padding: 4px 6px 0;
+      }
+
+      .trend-foot {
+          padding: 2px 14px 10px;
+          font-size: 11px;
+          color: var(--muted);
+      }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header class="top">
+      <div>
+        <h1>今日市场</h1>
+        <div class="sub">市场概况 · 爆发板块 · 数据源 duanxianxia.cn</div>
+      </div>
+      <div class="top-actions">
+        <span id="updated"></span>
+        <button id="detailToggle" type="button">隐藏标的强度</button>
+        <button id="refreshBtn" type="button">刷新</button>
+      </div>
+    </header>
+
+    <section class="kp-grid" id="kpGrid">
+      <div class="kp"><span class="label">情绪指标</span><b id="mQX">--</b></div>
+      <div class="kp"><span class="label">亏钱效应</span><b id="mKQXY">--</b></div>
+      <div class="kp"><span class="label">涨停家数</span><b id="mZT">--</b></div>
+      <div class="kp"><span class="label">跌停家数</span><b id="mDT">--</b></div>
+      <div class="kp"><span class="label">连板高度</span><b id="mLBGD">--</b></div>
+      <div class="kp"><span class="label">封板率</span><b id="mPB">--</b></div>
+      <div class="kp"><span class="label">昨涨停表现</span><b id="mZTBX">--</b></div>
+      <div class="kp"><span class="label">昨连板表现</span><b id="mLBBX">--</b></div>
+      <div class="kp"><span class="label">上涨</span><b id="mSZ">--</b></div>
+      <div class="kp"><span class="label">下跌</span><b id="mXD">--</b></div>
+      <div class="kp"><span class="label">主力流入</span><b id="mHSLN">--</b></div>
+    </section>
+
+    <div class="main-grid">
+      <section class="panel panel-left">
+        <div class="panel-head">
+          <h3>爆发板块</h3>
+          <div class="toggle">
+            <button type="button" data-pt="strong" class="is-active">板块强度</button>
+            <button type="button" data-pt="money">主力流入</button>
+          </div>
+        </div>
+        <div class="plate-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:36px;">#</th>
+                <th>板块</th>
+                <th style="width:110px;">数值</th>
+                <th style="width:80px;">涨停数</th>
+              </tr>
+            </thead>
+            <tbody id="plateRows">
+              <tr><td colspan="4" class="state">加载中…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel panel-right">
+        <div class="panel-head">
+          <h3 id="detailTitle">标的强度 · --</h3>
+        </div>
+        <div class="detail">
+          <h4>子板块与标的明细（点击左侧板块切换）</h4>
+          <div id="subplate"></div>
+          <div class="stock-scroll">
+            <table class="stocks">
+              <thead>
+                <tr>
+                  <th>代码</th>
+                  <th>名称</th>
+                  <th>涨幅</th>
+                  <th>板数</th>
+                  <th>领涨次数</th>
+                  <th>金额</th>
+                  <th>实际流通</th>
+                  <th>人气</th>
+                </tr>
+              </thead>
+              <tbody id="stockBody">
+                <tr><td colspan="8" class="state">--</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      数据源 <a href="https://duanxianxia.cn" target="_blank" rel="noopener noreferrer">duanxianxia.cn</a> · 每 60 秒自动刷新 · 主题跟随首页设置
+    </footer>
+  </div>
+
+  <div class="trend-dialog" id="trendDialog" role="dialog" aria-modal="false">
+    <div class="trend-head" id="trendHead">
+      <h3>分时 · <span id="trendTitle">--</span><span class="meta" id="trendMeta"></span></h3>
+      <button class="trend-close" id="trendClose" type="button" title="关闭">✕</button>
+    </div>
+    <div id="trendChart"></div>
+    <div class="trend-foot">数据源 东方财富分时 · 打开期间每 30 秒刷新 · 拖动标题栏可移动 · ✕ / Esc 关闭</div>
+  </div>
+
+  <script>
+    $(function () {
+      const API = 'https://duanxianxia.cn/api'
+
+      // 主题跟随首页（site_theme: dark / light，未设置时跟随系统）
+      const savedTheme = localStorage.getItem('site_theme')
+      if (savedTheme === 'dark' || savedTheme === 'light') {
+        document.documentElement.setAttribute('data-theme', savedTheme)
+      } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.setAttribute('data-theme', 'dark')
+      }
+      window.addEventListener('storage', function (e) {
+        if (e.key === 'site_theme' && (e.newValue === 'dark' || e.newValue === 'light')) {
+          document.documentElement.setAttribute('data-theme', e.newValue)
+        }
+      })
+
+      let platetype = 'strong'
+      let lastPlateCode = ''
+      let hideDetail = localStorage.getItem('market_hide_detail') === '1'
+
+      function applyDetailVisibility() {
+        $('.main-grid').toggleClass('hide-right', hideDetail)
+        $('#detailToggle').text(hideDetail ? '显示标的强度' : '隐藏标的强度')
+      }
+
+      $('#detailToggle').on('click', function () {
+        hideDetail = !hideDetail
+        localStorage.setItem('market_hide_detail', hideDetail ? '1' : '0')
+        applyDetailVisibility()
+      })
+
+      function lastOf(arr) {
+        return arr && arr.length ? arr[arr.length - 1] : null
+      }
+
+      function setKp(id, html, isError) {
+        const el = $(id)
+        el.html(html)
+        el.closest('.kp').toggleClass('err', !!isError)
+      }
+
+      function renderKp(qxl) {
+        const s = (qxl && qxl.series) || {}
+        const n = (qxl && qxl.Aaxis ? qxl.Aaxis : []).length
+        const last = (name) => lastOf(s[name])
+        const num = (v) => (v === null || v === undefined || isNaN(Number(v))) ? '--' : Number(v)
+
+        setKp('#mQX', num(last('QX')))
+        setKp('#mKQXY', num(last('KQXY')))
+        setKp('#mZT', num(last('ZT')))
+        setKp('#mDT', num(last('DT')))
+        setKp('#mLBGD', num(last('LBGD')))
+        setKp('#mSZ', num(last('SZ')))
+        setKp('#mXD', num(last('XD')))
+
+        const pb = num(last('PB'))
+        const pbHtml = isNaN(pb) ? '--' : pb.toFixed(1) + '%'
+        const pbCls = !isNaN(pb) && pb > 75 ? 'up' : (!isNaN(pb) && pb < 60 ? 'down' : '')
+        setKp('#mPB', '<span class="' + pbCls + '">' + pbHtml + '</span>')
+
+        const pct = (v) => {
+          const x = num(v)
+          if (isNaN(x)) return '--'
+          const cls = x > 0 ? 'up' : (x < 0 ? 'down' : '')
+          return '<span class="' + cls + '">' + x + '%</span>'
+        }
+        setKp('#mZTBX', pct(last('ZTBX')))
+        setKp('#mLBBX', pct(last('LBBX')))
+
+        const h = num(last('HSLN'))
+        const hHtml = isNaN(h) ? '--' : '<span class="' + (h > 0 ? 'up' : (h < 0 ? 'down' : '')) + '">' + (h > 0 ? '+' : '') + h + '</span> 亿'
+        setKp('#mHSLN', hHtml)
+      }
+
+      function kpFail() {
+        $('#kpGrid .kp').each(function () {
+          $(this).addClass('err')
+          $(this).find('b').text('暂不可用')
+        })
+      }
+
+      function fmtMoney(val) {
+        const v = Number(val)
+        if (isNaN(v)) return '--'
+        const html = Math.abs(v) > 10000
+          ? (v / 10000).toFixed(1) + '亿'
+          : v + '万'
+        const cls = v > 0 ? 'up' : (v < 0 ? 'down' : '')
+        return '<span class="' + cls + '">' + html + '</span>'
+      }
+
+      function renderPlates(plates) {
+        const keys = Object.keys(plates || {}).sort(function (a, b) { return Number(a) - Number(b) })
+        if (!keys.length) {
+          $('#plateRows').html('<tr><td colspan="4" class="state">暂无数据</td></tr>')
+          return
+        }
+        const rows = keys.map(function (k, idx) {
+          const i = Number(k) - 1
+          const val = plates[k]
+          const pvalue = platetype === 'strong'
+            ? val.val
+            : fmtMoney(val.val)
+          const zt = '<span class="zt-badge">' + (val.ztcount || 0) + ' 涨停</span>'
+          return '<tr class="plate-row" data-code="' + val.code + '">' +
+            '<td style="color:var(--muted);">' + (i + 1) + '</td>' +
+            '<td>' + val.name + '</td>' +
+            '<td>' + pvalue + '</td>' +
+            '<td>' + zt + '</td>' +
+            '</tr>'
+        })
+        $('#plateRows').html(rows.join(''))
+      }
+
+      // 点击子板块「过滤」：仅在前端按 data-code 隐藏/显示已加载的行，
+      // 不再替用户决定看哪一只，也不改数据口径——子板块按钮上有 plateCode，
+      // 但个股行本身不带子板块归属，所以用「重新按子板块 code 拉明细」的方式过滤。
+      let activeSubCode = ''        // 当前选中的子板块 code，''=全部
+      let subplateCache = {}        // plateCode -> { html, ts }，55 秒 TTL（短于 60 秒刷新周期）
+
+      function renderStockRows(html) {
+        $('#stockBody').html(html || '<tr><td colspan="8" class="state">该板块暂无个股</td></tr>')
+      }
+
+      // 按 code 拉个股明细并渲染；code 为空时回退到父板块全部。
+      // force=true 忽略缓存（自动刷新用），命中缓存且未过期则直接用。
+      function fetchStockRows(code, force) {
+        const target = code || lastPlateCode
+        renderStockRows('<tr><td colspan="8" class="state">标的加载中…</td></tr>')
+        const hit = subplateCache[target]
+        if (!force && hit && Date.now() - hit.ts < 55000) {
+          renderStockRows(hit.html)
+          return
+        }
+        $.ajax({
+          type: 'POST',
+          url: API + '/getWebKaipanStock',
+          data: { plateCode: target },
+          dataType: 'json',
+          success: function (d2) {
+            const html = d2.result || ''
+            subplateCache[target] = { html: html, ts: Date.now() }
+            // 仅当结果仍是当前要看的板块时才渲染，避免快切板块时旧请求覆盖新视图
+            if (target === (activeSubCode || lastPlateCode)) renderStockRows(html)
+          },
+          error: function () {
+            if (target === (activeSubCode || lastPlateCode)) {
+              renderStockRows('<tr><td colspan="8" class="state">标的暂不可用</td></tr>')
+            }
+          }
+        })
+      }
+
+      function loadDetail(code) {
+        const sameBoard = (code === lastPlateCode)  // 同板块=自动刷新，保留子板块过滤
+        lastPlateCode = code
+        if (!sameBoard) activeSubCode = ''
+        const plateName = $('#plateRows .plate-row[data-code="' + code + '"] td').eq(1).text()
+        $('#detailTitle').text(plateName ? '标的强度 · ' + plateName : '标的强度')
+        $('#subplate').html('<span class="state">子板块加载中…</span>')
+        $('#stockBody').html('<tr><td colspan="8" class="state">标的加载中…</td></tr>')
+        $.ajax({
+          type: 'POST',
+          url: API + '/getWebKaipanPlate',
+          data: { plateCode: code },
+          dataType: 'json',
+          success: function (data) {
+            const html = data.result || ''
+            $('#subplate').html(
+              '<button type="button" class="btn btn-default btn-xs subplate is-active" ' +
+              'plateCode="' + code + '" plateName="全部">全部</button>' + html)
+            if (activeSubCode) {
+              // 刷新后恢复原来的子板块选中态
+              const sub = $('#subplate .subplate').filter(function () {
+                const c = (($(this).attr('platecode') || $(this).attr('plateCode') || '') + '').trim()
+                return c === activeSubCode
+              })
+              if (sub.length) {
+                $('#subplate .subplate').removeClass('is-active')
+                sub.addClass('is-active')
+                const sn = (($(sub).attr('platename') || $(sub).attr('plateName') || '') + '').trim()
+                  || $(sub).text().trim()
+                $('#detailTitle').text('标的强度 · ' + (plateName ? plateName + ' / ' : '') + sn)
+              } else {
+                activeSubCode = ''  // 子板块已消失，回退全部
+              }
+            }
+            fetchStockRows(activeSubCode, true)
+          },
+          error: function () {
+            $('#subplate').html('<span class="state">子板块暂不可用</span>')
+            fetchStockRows(activeSubCode, true)
+          }
+        })
+      }
+
+      function markActiveRow(code) {
+        $('#plateRows .plate-row').removeClass('is-active')
+        $('#plateRows .plate-row[data-code="' + code + '"]').addClass('is-active')
+      }
+
+      function load() {
+        // 60 秒自动刷新会重写 tbody：先记下板块列表的滚动位置，渲染完再还原
+        const pane = document.querySelector('.plate-scroll')
+        const keepTop = pane ? pane.scrollTop : 0
+        $('#plateRows').html('<tr><td colspan="4" class="state">加载中…</td></tr>')
+        $.ajax({
+          type: 'POST',
+          url: API + '/getLiveByStrong',
+          data: { platetype: platetype, platelist: '' },
+          dataType: 'json',
+          success: function (data) {
+            if (data.result !== 'success') {
+              $('#plateRows').html('<tr><td colspan="4" class="state">接口返回异常</td></tr>')
+              return
+            }
+            $('#updated').text('更新于 ' + new Date().toTimeString().slice(0, 8))
+            renderKp(data.qxlive || {})
+            renderPlates(data.plates || {})
+            if (pane) pane.scrollTop = keepTop
+            const firstRow = $('#plateRows .plate-row').first().attr('data-code')
+            const code = lastPlateCode || firstRow
+            if (code) {
+              markActiveRow(code)
+              loadDetail(code)
+            }
+          },
+          error: function () {
+            kpFail()
+            $('#plateRows').html('<tr><td colspan="4" class="state">数据源暂不可用（跨域或网络）</td></tr>')
+          }
+        })
+      }
+
+      $('#plateRows').on('click', '.plate-row', function () {
+        // 点板块行即表示要看标的，收起的右栏自动展开
+        if (hideDetail) {
+          hideDetail = false
+          localStorage.setItem('market_hide_detail', '0')
+          applyDetailVisibility()
+        }
+        markActiveRow($(this).attr('data-code'))
+        loadDetail($(this).attr('data-code'))
+      })
+
+      $('.toggle button').on('click', function () {
+        $('.toggle button').removeClass('is-active')
+        $(this).addClass('is-active')
+        platetype = $(this).attr('data-pt')
+        load()
+      })
+
+      // ========== 标的点击 -> 分时弹窗（全天固定时间轴，盘中只画到最新一分钟） ==========
+      let trendChart = null
+      let trendTimer = null
+      let trendCode = ''
+
+      function trendTheme() {
+        const dark = document.documentElement.getAttribute('data-theme') === 'dark'
+        return {
+          dark: dark,
+          axisColor: dark ? '#3a3f3c' : '#e5e7e3',
+          textColor: dark ? '#9aa3a0' : '#6b7280',
+          up: dark ? '#f2555a' : '#e05a5f',
+          down: dark ? '#4cb782' : '#3f9e6e',
+        }
+      }
+
+      function padIntradayAxis(times) {
+        const axis = times.slice()
+        if (!axis.length) return axis
+        const toMin = function (t) {
+          const p = String(t).split(':')
+          return Number(p[0]) * 60 + Number(p[1])
+        }
+        const fmt = function (v) {
+          return String(Math.floor(v / 60)).padStart(2, '0') + ':' + String(v % 60).padStart(2, '0')
+        }
+        const MORNING_END = 11 * 60 + 30
+        const AFTERNOON_START = 13 * 60 + 1
+        const CLOSE = 15 * 60
+        const cur = toMin(axis[axis.length - 1])
+        if (cur >= CLOSE) return axis
+        if (cur < MORNING_END) {
+          for (let t = cur + 1; t <= MORNING_END; t += 1) axis.push(fmt(t))
+        }
+        for (let t = Math.max(AFTERNOON_START, cur + 1); t <= CLOSE; t += 1) axis.push(fmt(t))
+        return axis
+      }
+
+      function ensureEcharts() {
+        return new Promise(function (resolve, reject) {
+          if (window.echarts) return resolve()
+          const s = document.createElement('script')
+          s.src = 'https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js'
+          s.onload = function () { window.echarts ? resolve() : reject(new Error('图表库未就绪')) }
+          s.onerror = function () {
+            const f = document.createElement('script')
+            f.src = 'https://duanxianxia.cn/static/js/echarts.min.js'
+            f.onload = function () { window.echarts ? resolve() : reject(new Error('图表库未就绪')) }
+            f.onerror = function () { reject(new Error('图表库加载失败')) }
+            document.head.appendChild(f)
+          }
+          document.head.appendChild(s)
+        })
+      }
+
+      function formatVol(v) {
+        const n = Number(v)
+        if (!isFinite(n)) return '--'
+        if (n >= 1e8) return (n / 1e8).toFixed(2) + '亿'
+        if (n >= 1e4) return (n / 1e4).toFixed(1) + '万'
+        return String(Math.round(n))
+      }
+
+      function renderTrend(data) {
+        const theme = trendTheme()
+        const bars = (data && data.points) || []
+        if (!bars.length) throw new Error('暂无分时数据')
+        const pre = Number(data.preClose)
+        const last = bars[bars.length - 1]
+        const pct = ((last.price - pre) / pre * 100)
+        $('#trendMeta').text(
+          '现 ' + last.price.toFixed(2) + '（' + (pct > 0 ? '+' : '') + pct.toFixed(2) + '%）· 更新 ' +
+          new Date().toTimeString().slice(0, 8))
+
+        const dates = bars.map(function (b) { return b.time })
+        const axis = padIntradayAxis(dates)
+        const padTail = function (arr) {
+          return arr.concat(new Array(Math.max(0, axis.length - arr.length)).fill(null))
+        }
+        const prices = padTail(bars.map(function (b) { return b.price }))
+        const avgs = padTail(bars.map(function (b) { return b.auction ? null : b.avg }))
+        const volumes = padTail(bars.map(function (b) {
+          return { value: b.volume, itemStyle: { color: b.price >= pre ? theme.up : theme.down, opacity: 0.55 } }
+        }))
+        const auctionEnd = typeof data.auctionEnd === 'number' ? data.auctionEnd : -1
+        const auctionArea = auctionEnd > 0 ? {
+          silent: true,
+          itemStyle: { color: theme.dark ? 'rgba(120,130,125,0.14)' : 'rgba(140,152,144,0.12)' },
+          label: { show: true, formatter: '竞价', position: 'insideTop', color: theme.textColor, fontSize: 9 },
+          data: [[{ xAxis: dates[0] }, { xAxis: dates[auctionEnd] }]],
+        } : undefined
+
+        const el = document.getElementById('trendChart')
+        if (!trendChart) trendChart = echarts.init(el)
+        trendChart.setOption({
+          animation: false,
+          backgroundColor: 'transparent',
+          textStyle: { color: theme.textColor, fontSize: 11 },
+          tooltip: {
+            trigger: 'axis',
+            confine: true,
+            axisPointer: { type: 'cross', label: { backgroundColor: theme.dark ? '#3a3a3a' : '#8b948e' } },
+            formatter: function (params) {
+              const b = bars[params[0].dataIndex]
+              if (!b) return ''
+              const priceLine = '价 ' + b.price.toFixed(2) + (b.auction ? '' : '　均 ' + b.avg.toFixed(2))
+              const volLine = b.auction
+                ? '竞价虚拟撮合（9:25 成交量计入开盘首分钟）'
+                : '量 ' + formatVol(b.volume)
+              return [
+                b.time + (b.auction ? '　竞价' : ''),
+                priceLine,
+                '涨跌 ' + (b.price >= pre ? '+' : '') + (((b.price - pre) / pre) * 100).toFixed(2) + '%',
+                volLine,
+              ].join('<br>')
+            },
+          },
+          grid: { left: 6, right: 46, top: 10, bottom: 20, containLabel: false },
+          xAxis: {
+            type: 'category', data: axis, boundaryGap: false,
+            axisLine: { lineStyle: { color: theme.axisColor } }, axisTick: { show: false },
+            axisLabel: {
+              color: theme.textColor, fontSize: 9, margin: 2,
+              interval: function (index, value) {
+                return ['09:30', '10:30', '11:30', '13:30', '14:30', '15:00'].indexOf(value) !== -1
+              },
+            },
+            splitLine: { show: false },
+          },
+          yAxis: [
+            {
+              // 纵轴按涨跌幅标注：上 +10% / 下 -10%，中间 0% 即昨收。
+              // 仍用价格做量纲，刻度标签换算成涨跌百分比，分时线与昨收基准线无需改数据。
+              position: 'right',
+              min: pre > 0 ? Number((pre * 0.9).toFixed(3)) : undefined,
+              max: pre > 0 ? Number((pre * 1.1).toFixed(3)) : undefined,
+              splitNumber: 4,
+              axisLine: { show: false }, axisTick: { show: false },
+              splitLine: { lineStyle: { color: theme.dark ? '#333' : '#eef0ec' } },
+              axisLabel: {
+                color: theme.textColor, fontSize: 9,
+                formatter: function (v) {
+                  if (!(pre > 0)) return v.toFixed(1)
+                  const pct = Math.round((v - pre) / pre * 100)
+                  return (pct > 0 ? '+' : '') + pct + '%'
+                },
+              },
+            },
+            {
+              position: 'right', show: false,
+              axisLine: { show: false }, axisTick: { show: false }, splitLine: { show: false }, axisLabel: { show: false },
+            },
+          ],
+          dataZoom: [{ type: 'inside', start: 0, end: 100 }],
+          series: [
+            {
+              name: '分钟量', type: 'bar', yAxisIndex: 1, data: volumes, barWidth: '58%',
+            },
+            {
+              name: '分时', type: 'line', data: prices, showSymbol: false,
+              lineStyle: { width: 1.5, color: theme.up },
+              markArea: auctionArea,
+              markLine: {
+                symbol: 'none', silent: true,
+                lineStyle: { type: 'dashed', width: 1, color: theme.dark ? '#68716c' : '#b9c2bc' },
+                label: { formatter: '昨收 ' + pre.toFixed(2), fontSize: 9, color: theme.textColor, position: 'insideEndTop' },
+                data: [{ yAxis: pre }],
+              },
+            },
+            { name: '均价', type: 'line', data: avgs, showSymbol: false, lineStyle: { width: 1, color: '#d9a441' } },
+          ],
+        }, true)
+      }
+
+      function loadTrend() {
+        if (!trendCode) return
+        fetch('/api/intraday/stock/' + encodeURIComponent(trendCode), { cache: 'no-store' })
+          .then(function (r) { return r.json() })
+          .then(function (res) {
+            if (!res.ok) throw new Error(res.error || '接口返回异常')
+            renderTrend(res)
+          })
+          .catch(function (err) {
+            $('#trendMeta').text('分时暂不可用：' + err.message)
+          })
+      }
+
+      const TREND_POS_KEY = 'market_trend_pos'
+      let trendPos = null
+      try { trendPos = JSON.parse(localStorage.getItem(TREND_POS_KEY) || 'null') } catch (err) { trendPos = null }
+      let trendDrag = null
+
+      // 绝对定位的坐标系是文档：用 scrollX/scrollY 把视口中心换算成文档坐标，
+      // 上下限也按 document 的滚动尺寸算，避免页面变长后浮窗卡在旧视口高度。
+      function dialogBounds() {
+        const de = document.documentElement
+        return {
+          maxX: Math.max(8, de.scrollWidth - 8),
+          maxY: Math.max(8, de.scrollHeight - 8),
+        }
+      }
+
+      function placeTrendDialog() {
+        const dlg = document.getElementById('trendDialog')
+        const w = dlg.offsetWidth
+        const h = dlg.offsetHeight
+        const b = dialogBounds()
+        let x = window.scrollX + window.innerWidth / 2 - w / 2
+        let y = window.scrollY + window.innerHeight / 2 - h / 2
+        if (trendPos && isFinite(trendPos.x) && isFinite(trendPos.y)) {
+          x = trendPos.x
+          y = trendPos.y
+        }
+        x = Math.min(Math.max(8, x), Math.max(8, b.maxX - w))
+        y = Math.min(Math.max(8, y), Math.max(8, b.maxY - h))
+        dlg.style.left = x + 'px'
+        dlg.style.top = y + 'px'
+      }
+
+      $('#trendHead').on('mousedown', function (e) {
+        if ($(e.target).closest('#trendClose').length) return
+        const dlg = document.getElementById('trendDialog')
+        trendDrag = { dx: e.pageX - dlg.offsetLeft, dy: e.pageY - dlg.offsetTop }
+        e.preventDefault()
+      })
+
+      $(document).on('mousemove', function (e) {
+        if (!trendDrag) return
+        const dlg = document.getElementById('trendDialog')
+        const w = dlg.offsetWidth
+        const h = dlg.offsetHeight
+        const b = dialogBounds()
+        const x = Math.min(Math.max(0, e.pageX - trendDrag.dx), Math.max(0, b.maxX - w))
+        const y = Math.min(Math.max(0, e.pageY - trendDrag.dy), Math.max(0, b.maxY - h))
+        dlg.style.left = x + 'px'
+        dlg.style.top = y + 'px'
+      })
+
+      $(document).on('mouseup', function () {
+        if (!trendDrag) return
+        trendDrag = null
+        const dlg = document.getElementById('trendDialog')
+        trendPos = { x: dlg.offsetLeft, y: dlg.offsetTop }
+        localStorage.setItem(TREND_POS_KEY, JSON.stringify(trendPos))
+      })
+
+      function openTrend(code, name) {
+        trendCode = code
+        $('#trendTitle').text(name ? name + '(' + code + ')' : code)
+        $('#trendMeta').text('加载中…')
+        $('#trendDialog').addClass('show')
+        placeTrendDialog()
+        ensureEcharts()
+          .then(function () {
+            if (trendChart) trendChart.resize()
+            loadTrend()
+          })
+          .catch(function (err) { $('#trendMeta').text(err.message) })
+        clearInterval(trendTimer)
+        trendTimer = setInterval(function () { if (!document.hidden) loadTrend() }, 30000)
+      }
+
+      function closeTrend() {
+        clearInterval(trendTimer)
+        trendTimer = null
+        $('#trendDialog').removeClass('show')
+      }
+
+      // 点击子板块（含「全部」）：按子板块 code 重新拉明细过滤，高亮当前项
+      $('#subplate').on('click', '.subplate', function (e) {
+        e.preventDefault()
+        const code = (($(this).attr('platecode') || $(this).attr('plateCode') || '') + '').trim()
+        if (!code) return
+        $('#subplate .subplate').removeClass('is-active')
+        $(this).addClass('is-active')
+        activeSubCode = (code === lastPlateCode) ? '' : code
+        const subName = (($(this).attr('platename') || $(this).attr('plateName') || '') + '').trim()
+          || $(this).text().trim()
+        const base = $('#plateRows .plate-row[data-code="' + lastPlateCode + '"] td').eq(1).text()
+        $('#detailTitle').text(activeSubCode
+          ? '标的强度 · ' + (base ? base + ' / ' : '') + subName
+          : '标的强度 · ' + (base || '全部'))
+        fetchStockRows(activeSubCode)   // 空串回退父板块全部；命中缓存则秒切
+      })
+
+      $('#stockBody').on('click', 'tr.kpstock', function (e) {
+        const link = $(this).find('a[code]').first()
+        const code = link.attr('code')
+        if (!code) return
+        e.preventDefault()
+        const name = link.clone().find('span').remove().end().text().trim()
+        openTrend(code, name)
+      })
+
+      $('#trendClose').on('click', closeTrend)
+      $(document).on('keydown', function (e) { if (e.key === 'Escape') closeTrend() })
+      window.addEventListener('resize', function () {
+        if (trendChart) trendChart.resize()
+        if ($('#trendDialog').hasClass('show')) placeTrendDialog()
+      })
+
+      $('#refreshBtn').on('click', load)
+      setInterval(function () { if (!document.hidden) load() }, 60000)
+      applyDetailVisibility()
+      load()
+    })
+  </script>
+</body>
+
+</html>

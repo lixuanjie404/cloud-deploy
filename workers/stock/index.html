@@ -114,55 +114,6 @@
           gap: 12px;
       }
 
-      .data-center {
-          position: relative;
-      }
-
-      .data-center-trigger {
-          min-width: 96px;
-      }
-
-      .data-center-menu {
-          position: absolute;
-          top: calc(100% + 10px);
-          right: 0;
-          width: 210px;
-          background: var(--card);
-          border: 1px solid #e0e2dc;
-          border-radius: 6px;
-          padding: 8px;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-          opacity: 0;
-          visibility: hidden;
-          transform: translateY(-4px);
-          pointer-events: none;
-          transition: opacity 0.18s ease, transform 0.18s ease;
-          z-index: 30;
-      }
-
-      .data-center.open .data-center-menu {
-          opacity: 1;
-          visibility: visible;
-          transform: translateY(0);
-          pointer-events: auto;
-      }
-
-      .data-center-menu a {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          text-decoration: none;
-          color: var(--text);
-          border-radius: 5px;
-          padding: 9px 10px;
-          font-size: 13px;
-      }
-
-      .data-center-menu a:hover {
-          background: #f2f4ef;
-          color: var(--accent);
-      }
-
       .monitor-dropdown {
           position: relative;
       }
@@ -581,6 +532,24 @@
           font-family: inherit;
           border: 0;
           cursor: pointer;
+      }
+
+      /* 情绪热度弹窗的 当日/5日 切换（layer 弹层挂在 body，不在 .panel 内，需单独定义） */
+      .heat-range {
+          font-family: inherit;
+          font-size: 11px;
+          padding: 1px 9px;
+          margin-left: 4px;
+          border: 1px solid var(--timeline-border);
+          border-radius: 4px;
+          background: transparent;
+          color: var(--muted);
+          cursor: pointer;
+      }
+      .heat-range.is-active {
+          background: var(--accent);
+          border-color: var(--accent);
+          color: #fff;
       }
 
       /* 低打扰外链：平时几乎隐形，悬停才浮现下划线 */
@@ -1132,22 +1101,18 @@
       }
 
       /* 下拉菜单过渡更丝滑 */
-      .data-center-menu,
       .monitor-menu {
           border-radius: var(--radius-md);
           box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.03);
           transition: opacity 0.2s var(--ease-out), transform 0.2s var(--ease-out), visibility 0.2s;
       }
-      [data-theme="dark"] .data-center-menu,
       [data-theme="dark"] .monitor-menu {
           box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.04);
       }
-      .data-center-menu a,
       .monitor-menu a {
           border-radius: var(--radius-sm);
           transition: background 0.15s ease, color 0.15s ease;
       }
-      .data-center-menu a:hover,
       .monitor-menu a:hover {
           background: var(--accent-soft);
       }
@@ -1173,6 +1138,21 @@
           transform: translateY(-2px);
           border-color: rgba(74, 140, 111, 0.18);
           box-shadow: 0 6px 16px rgba(74, 140, 111, 0.08);
+      }
+
+      /* 深色主题：工具卡改为深底浅字，否则浅色 --text 配白底看不清 */
+      [data-theme="dark"] .ai-tool-card {
+          background: rgba(45, 45, 45, 0.9);
+          border-color: rgba(255, 255, 255, 0.12);
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+      }
+      [data-theme="dark"] .ai-tool-card:hover {
+          border-color: rgba(95, 185, 138, 0.45);
+          box-shadow: 0 10px 24px rgba(0, 0, 0, 0.36);
+      }
+      [data-theme="dark"] .ai-tool-icon {
+          background: var(--accent-soft);
+          border: 1px solid rgba(255, 255, 255, 0.08);
       }
 
       /* ai-tool-icon 微渐变 */
@@ -1256,7 +1236,127 @@
           border-radius: var(--radius-md);
           border: 1px solid var(--timeline-border);
       }
-  </style>
+  
+      .flow-quote {
+          display: flex;
+          flex-wrap: wrap;
+          align-items: baseline;
+          gap: 6px;
+          font-size: 12.5px;
+          color: var(--muted);
+          min-height: 1.6em;
+      }
+      .flow-quote-text {
+          color: var(--text);
+          transition: opacity 0.4s var(--ease-out);
+      }
+
+      /* ========== 工作流程面板：底部固定详情区（零遮挡） ========== */
+      /* 表头淡底 + 分隔线：强化“列头”感 */
+      .timeline-head span:not(:first-child) {
+          background: var(--accent-soft);
+          border-bottom: 2px solid var(--accent);
+          border-radius: 5px 5px 0 0;
+          padding: 5px 2px 3px;
+      }
+      /* 轨道线加深：更连贯 */
+      .timeline-slot::before {
+          background: linear-gradient(90deg, rgba(74, 140, 111, 0.42), rgba(74, 140, 111, 0.12));
+      }
+
+      /* 隐藏浮层，信息统一走底部详情区 */
+      .timeline-popover { display: none !important; }
+      /* 选中节点下方的小三角指示 */
+      .timeline-slot.wf-selected {
+          border-color: rgba(74, 140, 111, 0.55);
+          background: var(--card);
+          transform: translateY(-2px);
+          box-shadow: 0 10px 24px rgba(74, 140, 111, 0.16);
+      }
+      .timeline-slot.wf-selected::after {
+          content: ""; position: absolute; left: 50%; bottom: -9px;
+          width: 8px; height: 8px; background: var(--accent);
+          transform: translateX(-50%) rotate(45deg); border-radius: 1px;
+      }
+      .wf-detail {
+          display: none; margin-top: 10px; padding: 10px 12px;
+          border: 1px solid rgba(74, 140, 111, 0.28); border-radius: 8px;
+          background: var(--accent-soft);
+      }
+      .wf-detail.is-open { display: block; }
+      .wf-detail-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; gap: 8px; }
+      .wf-detail-head strong { font-size: 12px; }
+      .wf-detail-head span { font-size: 10px; color: var(--muted); }
+      .wf-detail-links { display: flex; flex-wrap: wrap; gap: 6px; }
+      .wf-detail-links a {
+          display: inline-block; padding: 6px 11px; border-radius: 7px;
+          background: var(--card); border: 1px solid var(--timeline-border);
+          color: var(--text); font-size: 11px; text-decoration: none;
+          transition: border-color 0.15s ease, background 0.15s ease;
+      }
+      .wf-detail-links a:hover { border-color: var(--accent); background: var(--accent-soft); }
+      .wf-detail-text { font-size: 11px; color: var(--muted); line-height: 1.6; }
+
+      .progress-note {
+          border: 1px solid var(--timeline-border);
+          border-radius: 6px;
+          padding: 10px 14px;
+          margin-top: 16px;
+          background: var(--accent-soft);
+          font-size: 13px;
+          line-height: 1.8;
+      }
+      .progress-note.is-hidden {
+          display: none;
+      }
+      .progress-note-head {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 4px;
+      }
+      .progress-note-title {
+          font-weight: 650;
+          color: var(--accent);
+          font-size: 12px;
+          letter-spacing: 0.5px;
+      }
+      .progress-note-src {
+          font-size: 12px;
+          color: var(--muted);
+          text-decoration: none;
+          border-bottom: 1px dashed currentColor;
+      }
+      .progress-note-src:hover {
+          color: var(--accent);
+      }
+      .progress-note-body {
+          position: relative;
+          overflow: hidden;
+          color: var(--text);
+          height: 12.15em; /* JS 会按最长一条语录撑高，避免长句被裁 */
+          -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 5%, #000 95%, transparent 100%);
+          mask-image: linear-gradient(180deg, transparent 0, #000 5%, #000 95%, transparent 100%);
+      }
+      .lyrics-track {
+          transition: transform 1.1s var(--ease-out);
+          will-change: transform;
+      }
+      .lyrics-track.no-trans {
+          transition: none;
+      }
+      .lyrics-line {
+          display: block;
+          line-height: 1.8;
+          font-weight: 600;
+          opacity: 0.32;
+          transition: opacity 0.45s var(--ease-out);
+      }
+      .lyrics-line.is-active {
+          opacity: 1;
+          color: var(--accent);
+      }
+</style>
 </head>
 <body class="main-body">
 
@@ -1270,26 +1370,6 @@
       </div>
     </div>
     <div class="action-group">
-      <div class="data-center" id="dataCenter">
-        <button class="ghost-btn data-center-trigger" id="dataCenterTrigger" aria-expanded="false">资讯中心 ▾</button>
-        <div class="data-center-menu" id="dataCenterMenu">
-          <a href="https://data.eastmoney.com/report/industry.jshtml" target="_blank" rel="noopener noreferrer">
-            <span>📘</span><span>行业研报</span>
-          </a>
-          <a href="https://www.jiuyangongshe.com/" target="_blank" rel="noopener noreferrer">
-            <span>🌐</span><span>九阳公社</span>
-          </a>
-          <a href="https://724.guzhang.com/" target="_blank" rel="noopener noreferrer">
-            <span>🧭</span><span>7×24 快讯</span>
-          </a>
-          <a href="https://xuangutong.com.cn/top-gainer" target="_blank" rel="noopener noreferrer">
-            <span>🔥</span><span>涨幅排行</span>
-          </a>
-          <a href="https://ima.qq.com/" target="_blank" rel="noopener noreferrer">
-            <span>🐧</span><span>IMA 知识库</span>
-          </a>
-        </div>
-      </div>
       <button class="ghost-btn" id="toggleTheme" title="切换主题 (Ctrl+Shift+D)">🌙</button>
       <div class="monitor-dropdown" id="monitorDropdown">
         <button class="ghost-btn monitor-trigger" id="monitorTrigger">实时监控 ▾</button>
@@ -1381,10 +1461,6 @@
             <span class="ai-tool-icon">鲸</span>
             <span><span class="ai-tool-name">LingoWhale</span><span class="ai-tool-desc">信息深潜</span></span>
           </a>
-          <a class="ai-tool-card" href="https://ai-stock.onrender.com" target="_blank" rel="noopener noreferrer" title="ai-stock.onrender.com · 新窗口打开">
-            <span class="ai-tool-icon">云</span>
-            <span><span class="ai-tool-name">云端服务</span><span class="ai-tool-desc">按需访问</span></span>
-          </a>
         </div>
       </div>
     </section>
@@ -1412,11 +1488,18 @@
           <span class="progress-summary-status" id="advancersStatus">正在同步 qxlive 数据</span>
         </div>
       </div>
+      <div class="progress-note is-hidden" id="progressNote" aria-live="polite">
+        <div class="progress-note-head">
+          <span class="progress-note-title">📝 便签 · 一瞬流光语录</span>
+          <a class="progress-note-src" href="https://www.xueqiu.com/3128122404/236390509" target="_blank" rel="noopener noreferrer">来源</a>
+        </div>
+        <div class="progress-note-body" id="progressNoteBody"><div class="lyrics-track" id="lyricsTrack"></div></div>
+      </div>
     </section>
 
     <section class="panel" id="workflowPanel">
       <h3>工作流程</h3>
-      <p>以工作流程方式整理常用入口，默认只呈现轻量节奏视图；点击节点可查看该阶段适合打开的工具。</p>
+      <p class="flow-quote"><span class="flow-quote-text" id="flowTipText">按 ? 查看快捷键</span></p>
       <div class="focus-timeline" aria-label="双角色横向时间轴">
         <div class="timeline-head">
           <span></span>
@@ -1430,22 +1513,23 @@
             <strong>日志</strong>
             <small>观察 / 决策</small>
           </div>
-          <div class="timeline-slot" tabindex="0" data-links="https://www.jin10.com/activities/2026/02/pizza_index/index.html|https://data.eastmoney.com/rzrq/total.html">
+          <div class="timeline-slot" tabindex="0" data-links="https://www.jin10.com/activities/2026/02/pizza_index/index.html|https://724.guzhang.com/|https://data.eastmoney.com/rzrq/total.html">
             <span class="timeline-dot"></span>
             <span class="timeline-label">每日信息</span>
-            <span class="timeline-hint">点击访问</span>
+            <span class="timeline-hint">展开入口</span>
             <div class="timeline-popover">
               <strong>快速入口</strong>
               <div class="timeline-links">
                 <a href="https://www.jin10.com/activities/2026/02/pizza_index/index.html" target="_blank">金十数据</a>
-                <a href="https://data.eastmoney.com/rzrq/total.html" target="_blank">资金流向</a>
+                <a href="https://724.guzhang.com/" target="_blank">7×24 快讯</a>
+                <a href="https://data.eastmoney.com/rzrq/total.html" target="_blank">融资余额</a>
               </div>
             </div>
           </div>
-          <div class="timeline-slot" tabindex="0" data-links="https://weibo.com/3608427684|https://weibo.com/mygroups?gid=4140006190600547|https://eq.10jqka.com.cn/frontend/thsTopRank/index.html#/|https://space.bilibili.com/43295527/dynamic|https://www.tgb.cn/user/blog/moreTopic?userID=12533004">
+          <div class="timeline-slot" tabindex="0" data-links="https://weibo.com/3608427684|https://weibo.com/mygroups?gid=4140006190600547|https://eq.10jqka.com.cn/frontend/thsTopRank/index.html#/|https://space.bilibili.com/43295527/dynamic|https://www.tgb.cn/user/blog/moreTopic?userID=12533004|https://www.jiuyangongshe.com/">
             <span class="timeline-dot"></span>
             <span class="timeline-label">实时筛选</span>
-            <span class="timeline-hint">点击访问</span>
+            <span class="timeline-hint">展开入口</span>
             <div class="timeline-popover">
               <strong>快速入口</strong>
               <div class="timeline-links">
@@ -1454,6 +1538,7 @@
                 <a href="https://eq.10jqka.com.cn/frontend/thsTopRank/index.html#/" target="_blank">热榜排行</a>
                 <a href="https://space.bilibili.com/43295527/dynamic" target="_blank">B站动态</a>
                 <a href="https://www.tgb.cn/user/blog/moreTopic?userID=12533004" target="_blank">胖橘</a>
+                <a href="https://www.jiuyangongshe.com/" target="_blank">韭研公社</a>
               </div>
             </div>
           </div>
@@ -1463,11 +1548,17 @@
             <span class="timeline-hint">悬浮查看</span>
             <div class="timeline-popover"><strong>可能使用</strong><span>工具集、异动监控、实时提醒。</span></div>
           </div>
-          <div class="timeline-slot" tabindex="0">
+          <div class="timeline-slot" tabindex="0" data-links="https://ima.qq.com/">
             <span class="timeline-dot"></span>
             <span class="timeline-label">归档总结</span>
-            <span class="timeline-hint">悬浮查看</span>
-            <div class="timeline-popover"><strong>可能使用</strong><span>归档记录、AI 总结、对照清单。</span></div>
+            <span class="timeline-hint">展开入口</span>
+            <div class="timeline-popover">
+              <strong>快速入口</strong>
+              <div class="timeline-links">
+                <a href="https://ima.qq.com/" target="_blank">IMA 知识库</a>
+              </div>
+              <span>归档记录、AI 总结、对照清单。</span>
+            </div>
           </div>
         </div>
         <div class="timeline-row">
@@ -1475,60 +1566,73 @@
             <strong>支线</strong>
             <small>浏览 / 归档</small>
           </div>
-          <div class="timeline-slot" tabindex="0" data-links="#/news.html|https://duanxianxia.cn/web/jjlive|https://wenda.tdx.com.cn/site/wenda/stock_index.html?message=去除st,去除北交所,成交额前100,量比,实际换手率|https://wenda.tdx.com.cn/site/wenda/page-user-center.html|/qxlive.html">
+          <div class="timeline-slot" tabindex="0" data-links="#/news.html|https://duanxianxia.cn/web/jjlive|#trend-intraday|https://wenda.tdx.com.cn/site/wenda/stock_index.html?message=去除st,去除北交所,成交额前100,量比,实际换手率|https://wenda.tdx.com.cn/site/wenda/page-user-center.html|/qxlive.html">
             <span class="timeline-dot"></span>
             <span class="timeline-label">早间工具</span>
-            <span class="timeline-hint">点击访问</span>
+            <span class="timeline-hint">展开入口</span>
             <div class="timeline-popover">
               <strong>快速入口</strong>
               <div class="timeline-links">
                 <a href="#/news.html" id="news">快讯</a>
                 <a href="https://duanxianxia.cn/web/jjlive" class="jjlive-link">竞价数据</a>
+                <a href="javascript:void(0)" class="kline-entry" data-view="intraday">分时·竞价</a>
                 <a href="https://wenda.tdx.com.cn/site/wenda/stock_index.html?message=去除st,去除北交所,成交额前100,量比,实际换手率" target="_blank">问小达</a>
                 <a href="https://wenda.tdx.com.cn/site/wenda/page-user-center.html" target="_blank">问小达模板</a>
                 <a href="/qxlive.html" target="_blank">指标面板</a>
               </div>
             </div>
           </div>
-          <div class="timeline-slot" tabindex="0" data-links="#https://duanxianxia.cn/web/fupangu/|https://duanxianxia.com/lt|http://page.tdx.com.cn:7615/site/kggx/tk_yzlhb_yz.html">
+          <div class="timeline-slot" tabindex="0" data-links="#https://duanxianxia.cn/web/fupangu/|https://duanxianxia.cn/lt|http://page.tdx.com.cn:7615/site/kggx/tk_yzlhb_yz.html">
             <span class="timeline-dot"></span>
             <span class="timeline-label">午间整理</span>
-            <span class="timeline-hint">点击访问</span>
+            <span class="timeline-hint">展开入口</span>
             <div class="timeline-popover">
               <strong>快速入口</strong>
               <div class="timeline-links">
                 <a href="#https://duanxianxia.cn/web/fupangu/" id="lianban">复盘</a>
-                <a href="https://duanxianxia.com/lt" target="_blank">龙头高度</a>
+                <a href="https://duanxianxia.cn/lt" target="_blank">龙头高度</a>
                 <a href="http://page.tdx.com.cn:7615/site/kggx/tk_yzlhb_yz.html" target="_blank">连板统计</a>
               </div>
             </div>
           </div>
-          <div class="timeline-slot" tabindex="0" data-links="#https://duanxianxia.cn/web/fupan|https://data.10jqka.com.cn/market/longhu/">
+          <div class="timeline-slot" tabindex="0" data-links="#https://duanxianxia.cn/web/fupan|https://data.10jqka.com.cn/market/longhu/|https://xuangutong.com.cn/top-gainer">
             <span class="timeline-dot"></span>
             <span class="timeline-label">热点跟进</span>
-            <span class="timeline-hint">点击访问</span>
+            <span class="timeline-hint">展开入口</span>
             <div class="timeline-popover">
               <strong>快速入口</strong>
               <div class="timeline-links">
                 <a href="#https://duanxianxia.cn/web/fupan" id="fupan">涨停分析</a>
-                <a href="https://data.10jqka.com.cn/market/longhu/" target="_blank">异动明细</a>
+                <a href="https://data.10jqka.com.cn/market/longhu/" target="_blank">龙虎榜</a>
+                <a href="https://xuangutong.com.cn/top-gainer" target="_blank">涨幅排行</a>
               </div>
             </div>
           </div>
-          <div class="timeline-slot" tabindex="0" data-links="https://data.10jqka.com.cn/financial/yjyg/|https://finance.sina.com.cn/stock/reportch/jinqilin.shtml|https://data.eastmoney.com/report/stock.jshtml">
+          <div class="timeline-slot" tabindex="0" data-links="https://data.10jqka.com.cn/financial/yjyg/|https://finance.sina.com.cn/stock/reportch/jinqilin.shtml|https://data.eastmoney.com/report/industry.jshtml|https://data.eastmoney.com/report/stock.jshtml|#trend-daily">
             <span class="timeline-dot"></span>
             <span class="timeline-label">资料归档</span>
-            <span class="timeline-hint">点击访问</span>
+            <span class="timeline-hint">展开入口</span>
             <div class="timeline-popover">
               <strong>快速入口</strong>
               <div class="timeline-links">
                 <a href="https://data.10jqka.com.cn/financial/yjyg/" target="_blank">财报预告</a>
                 <a href="https://finance.sina.com.cn/stock/reportch/jinqilin.shtml" target="_blank">新浪研报</a>
+                <a href="https://data.eastmoney.com/report/industry.jshtml" target="_blank">行业研报</a>
                 <a href="https://data.eastmoney.com/report/stock.jshtml" target="_blank">研报中心</a>
+                <a href="javascript:void(0)" class="kline-entry" data-view="kline">日线回看</a>
               </div>
             </div>
           </div>
         </div>
+      </div>
+      <!-- 方案B：底部固定详情区，点击节点在此显示入口 -->
+      <div class="wf-detail" id="wfDetail">
+        <div class="wf-detail-head">
+          <strong id="wfDetailTitle">快速入口</strong>
+          <span>点击其它节点切换 · 不遮挡任何内容</span>
+        </div>
+        <div class="wf-detail-links" id="wfDetailLinks"></div>
+        <div class="wf-detail-text" id="wfDetailText"></div>
       </div>
     </section>
 
@@ -1537,7 +1641,8 @@
       <p>快速查看运行指标走势，保持外观为工作台页面的常态。</p>
       <div class="metric-actions">
         <a class="tag" href="/qxlive.html" target="_blank">查看指标面板</a>
-        <button class="tag" type="button" id="klineBtn">分时走势</button>
+        <a class="tag" href="/market.html" target="_blank">今日市场</a>
+        <button class="tag" type="button" id="heatBtn">情绪热度</button>
         <a class="quiet-link" href="https://www.duanxianxia.cn" target="_blank" rel="noopener noreferrer" title="duanxianxia.cn">数据源</a>
       </div>
     </section>
@@ -1545,33 +1650,66 @@
 </div>
 
 <script>
-  // ========== 时间轴点击显示选项 ==========
-  document.querySelectorAll('.timeline-slot[data-links]').forEach(function(slot) {
+  // ========== 工作流程面板：底部固定详情区（零遮挡） ==========
+  var wfDetail = document.getElementById('wfDetail')
+  var wfDetailTitle = document.getElementById('wfDetailTitle')
+  var wfDetailLinks = document.getElementById('wfDetailLinks')
+  var wfDetailText = document.getElementById('wfDetailText')
+  var wfCurrent = null      // 当前选中的 slot
+  var wfMovedLinks = []     // 被移动到详情区的原始 <a> 及其归属 popover
+
+  // 把选中节点的链接移入详情区（移动而非复制，保留 #news/.kline-entry 等已绑定的事件）
+  function wfOpenDetail(slot) {
+    wfCloseDetail()
+    var label = slot.querySelector('.timeline-label')
+    var pop = slot.querySelector('.timeline-popover')
+    if (!pop) return
+    var title = label ? label.textContent.trim() : '快速入口'
+    var links = Array.prototype.slice.call(pop.querySelectorAll('.timeline-links a'))
+    wfDetailTitle.textContent = title + ' · 快速入口'
+    links.forEach(function(a) {
+      // 记录真实父节点（.timeline-links），归位时必须放回原容器；
+      // 若错误地放回 popover 根节点，下次 .timeline-links a 就选不到，链接会被误当成纯文本
+      a._wfParent = a.parentNode
+      wfMovedLinks.push(a)
+      wfDetailLinks.appendChild(a)
+    })
+    // 无链接节点（如“收尾跟踪”）：展示其说明文字，避免隐藏浮层后信息丢失
+    var text = links.length ? '' : (pop.textContent || '').replace(/可能使用|快速入口/g, '').trim()
+    wfDetailText.textContent = text
+    wfDetail.classList.add('is-open')
+    slot.classList.add('wf-selected')
+    wfCurrent = slot
+  }
+
+  function wfCloseDetail() {
+    wfMovedLinks.forEach(function(a) {
+      if (a._wfParent) a._wfParent.appendChild(a)
+    })
+    wfMovedLinks = []
+    wfDetailText.textContent = ''
+    wfDetail.classList.remove('is-open')
+    if (wfCurrent) wfCurrent.classList.remove('wf-selected')
+    wfCurrent = null
+  }
+
+  // 所有节点都可点开详情区（含无 data-links 的说明型节点）
+  document.querySelectorAll('.timeline-slot').forEach(function(slot) {
     slot.addEventListener('click', function(e) {
-      // 如果点击的是 popover 内的链接，让链接自然跳转
-      if (e.target.closest('.timeline-popover a')) {
-        return
-      }
-      // 切换 popover 显示状态
-      var wasActive = slot.classList.contains('active')
-      // 关闭其他 slot 的 popover
-      document.querySelectorAll('.timeline-slot.active').forEach(function(s) {
-        s.classList.remove('active')
-      })
-      // 如果之前不是 active，则显示 popover
-      if (!wasActive) {
-        slot.classList.add('active')
-      }
+      // 详情区内的链接点击：让链接自然跳转，不拦截
+      if (e.target.closest('.wf-detail-links a')) return
+      if (e.target.closest('.timeline-popover a')) return
+      if (wfCurrent === slot) wfCloseDetail()
+      else wfOpenDetail(slot)
     })
   })
 
-  // 点击其他区域关闭 popover
+  // 点击面板外关闭详情区。
+  // 关键：排除交互控件（button/a/input 等），否则点主题切换按钮会冒泡到这里把详情区关掉。
   document.addEventListener('click', function(e) {
-    if (!e.target.closest('.timeline-slot[data-links]')) {
-      document.querySelectorAll('.timeline-slot.active').forEach(function(slot) {
-        slot.classList.remove('active')
-      })
-    }
+    if (e.target.closest('#workflowPanel')) return
+    if (e.target.closest('button, a, input, select, textarea, label')) return
+    wfCloseDetail()
   })
 
   // ========== 主题切换 ==========
@@ -1602,7 +1740,6 @@
     '4': function() { $('#ztlive').trigger('click') },
     '5': function() { $('#fupan').trigger('click') },
     't': function() { $('#gotoWorkflow').trigger('click') },
-    'd': function() { $('#dataCenterTrigger').trigger('click') },
     '?': function() { showShortcutsHelp() }
   }
 
@@ -1611,7 +1748,7 @@
       type: 1,
       title: '快捷键',
       area: ['320px', 'auto'],
-      content: '<div style="padding:16px;line-height:2;"><strong>常用快捷键：</strong><br>1 - 快讯<br>2 - 竞价数据<br>3 - 异动监控<br>4 - 实时监控<br>5 - 涨停分析<br>t - 定位工作流程<br>d - 资讯中心<br>? - 显示此帮助<br><br><em>Ctrl+Shift+D - 切换深色模式</em></div>'
+      content: '<div style="padding:16px;line-height:2;"><strong>常用快捷键：</strong><br>1 - 快讯<br>2 - 竞价数据<br>3 - 异动监控<br>4 - 实时监控<br>5 - 涨停分析<br>t - 定位工作流程<br>? - 显示此帮助<br><br><em>Ctrl+Shift+D - 切换深色模式</em></div>'
     })
   }
 
@@ -1649,52 +1786,12 @@
     if (first) first.classList.add('active')
   })
 
-  var dataCenter = $('#dataCenter')
-  var dataCenterTrigger = $('#dataCenterTrigger')
-  var dataCenterMenu = $('#dataCenterMenu')
-  var dataCenterTimer
-
-  function setDataCenterOpen(open) {
-    dataCenter.toggleClass('open', open)
-    dataCenterTrigger.attr('aria-expanded', open ? 'true' : 'false')
-    dataCenterTrigger.text(open ? '资讯中心 ▴' : '资讯中心 ▾')
-  }
-
-  function queueDataCenterClose(delay) {
-    clearTimeout(dataCenterTimer)
-    dataCenterTimer = setTimeout(function () {
-      setDataCenterOpen(false)
-    }, delay || 120)
-  }
-
-  dataCenterTrigger.on('click', function (event) {
-    event.preventDefault()
-    event.stopPropagation()
-    clearTimeout(dataCenterTimer)
-    setDataCenterOpen(!dataCenter.hasClass('open'))
-  })
-
-  dataCenter.on('mouseenter', function () {
-    clearTimeout(dataCenterTimer)
-    setDataCenterOpen(true)
-  })
-
-  dataCenter.on('mouseleave', function () {
-    queueDataCenterClose(180)
-  })
-
-  dataCenterMenu.on('click', function (event) {
-    event.stopPropagation()
-  })
-
   $(document).on('click', function () {
-    setDataCenterOpen(false)
     setMonitorOpen(false)
   })
 
   $(document).on('keydown', function (event) {
     if (event.key === 'Escape') {
-      setDataCenterOpen(false)
       setMonitorOpen(false)
     }
   })
@@ -1737,10 +1834,6 @@
     setMonitorOpen(false)
   })
 
-  $('#openNews').on('click', function () {
-    $('#news').trigger('click')
-  })
-
   let progressModeButtons = $('.progress-mode-button')
   let progressContent = $('#progressContent')
   let amountFrame = $('#amountFrame')
@@ -1748,6 +1841,7 @@
   let advancersSummary = $('#advancersSummary')
   let advancersValue = $('#advancersValue')
   let advancersStatus = $('#advancersStatus')
+  let progressNote = $('#progressNote')
   let progressStorageKey = 'stock_progress_mode'
   let advancersTimer
   let advancersChartInstance
@@ -1929,6 +2023,11 @@
     amountFrame.toggleClass('is-collapsed', selectedMode !== 'amount')
     advancersChart.toggleClass('is-hidden', selectedMode !== 'advancers')
     advancersSummary.toggleClass('is-hidden', selectedMode !== 'advancers')
+    progressNote.toggleClass('is-hidden', selectedMode !== 'none')
+    if (selectedMode === 'none') {
+      // 隐藏时无法量高度，切回可见后重算居中；顺便重置停留计时
+      requestAnimationFrame(function () { centerLyric(lyricIdx, false); scheduleNote() })
+    }
     clearInterval(advancersTimer)
 
     if (selectedMode === 'amount') {
@@ -2160,17 +2259,45 @@
     return stockChart
   }
 
+  // 分时时间轴固定为「全天」：盘中数据只到最新一分钟，尾部补空，
+  // 避免少半天数据被拉伸占满整个图宽（下午段从 13:01 起，与东财分时网格一致）
+  function padIntradayAxis (times) {
+    const axis = times.slice()
+    if (!axis.length) return axis
+    const toMin = function (t) {
+      const p = String(t).split(':')
+      return Number(p[0]) * 60 + Number(p[1])
+    }
+    const fmt = function (v) {
+      return String(Math.floor(v / 60)).padStart(2, '0') + ':' + String(v % 60).padStart(2, '0')
+    }
+    const MORNING_END = 11 * 60 + 30
+    const AFTERNOON_START = 13 * 60 + 1
+    const CLOSE = 15 * 60
+    const cur = toMin(axis[axis.length - 1])
+    if (cur >= CLOSE) return axis
+    if (cur < MORNING_END) {
+      for (let t = cur + 1; t <= MORNING_END; t += 1) axis.push(fmt(t))
+    }
+    for (let t = Math.max(AFTERNOON_START, cur + 1); t <= CLOSE; t += 1) axis.push(fmt(t))
+    return axis
+  }
+
   function renderIntraday (el, data) {
     const theme = chartTheme()
     const pre = data.preClose
     const bars = data.points || []
     const dates = bars.map(function (b) { return b.time })
-    const prices = bars.map(function (b) { return b.price })
+    const axis = padIntradayAxis(dates)
+    const padTail = function (arr) {
+      return arr.concat(new Array(Math.max(0, axis.length - arr.length)).fill(null))
+    }
+    const prices = padTail(bars.map(function (b) { return b.price }))
     // 竞价段是虚拟撮合价、没有真实成交，均价线从连续竞价开始画
-    const avgs = bars.map(function (b) { return b.auction ? null : b.avg })
-    const volumes = bars.map(function (b) {
+    const avgs = padTail(bars.map(function (b) { return b.auction ? null : b.avg }))
+    const volumes = padTail(bars.map(function (b) {
       return { value: b.volume, itemStyle: { color: b.price >= pre ? theme.up : theme.down, opacity: 0.55 } }
-    })
+    }))
     const auctionEnd = typeof data.auctionEnd === 'number' ? data.auctionEnd : -1
     const auctionArea = auctionEnd > 0 ? {
       silent: true,
@@ -2190,6 +2317,7 @@
         axisPointer: { type: 'cross', label: { backgroundColor: theme.dark ? '#3a3a3a' : '#8b948e' } },
         formatter: function (params) {
           const b = bars[params[0].dataIndex]
+          if (!b) return ''
           const priceLine = '价 ' + b.price.toFixed(2) + (b.auction ? '' : '　均 ' + b.avg.toFixed(2))
           const amountLine = b.auction
             ? '竞价虚拟撮合（9:25 成交量计入开盘首分钟）'
@@ -2204,9 +2332,14 @@
       },
       grid: { left: 2, right: 46, top: 8, bottom: 18, containLabel: false },
       xAxis: {
-        type: 'category', data: dates, boundaryGap: false,
+        type: 'category', data: axis, boundaryGap: false,
         axisLine: { lineStyle: { color: theme.axisColor } }, axisTick: { show: false },
-        axisLabel: { color: theme.textColor, fontSize: 9, margin: 2, interval: Math.max(1, Math.floor(dates.length / 5)) },
+        axisLabel: {
+          color: theme.textColor, fontSize: 9, margin: 2,
+          interval: function (index, value) {
+            return ['09:30', '10:30', '11:30', '13:30', '14:30', '15:00'].indexOf(value) !== -1
+          },
+        },
         splitLine: { show: false },
       },
       yAxis: [
@@ -2338,7 +2471,8 @@
     })
   }
 
-  $('#klineBtn').on('click', function () {
+  function openTrendDialog (defaultView) {
+    if (defaultView === 'intraday' || defaultView === 'kline') stockView = defaultView
     layer.open({
       type: 1,
       title: '走势详情',
@@ -2373,6 +2507,484 @@
         stockChart = null
       },
     })
+  }
+
+  $('.kline-entry').on('click', function (e) {
+    e.preventDefault()
+    openTrendDialog($(this).attr('data-view'))
+  })
+
+  // ========== 情绪热度弹窗（短线/市场两条 0-100 热度折线） ==========
+  // 构成与锚点来自 deep-research 结论（锚点为冷启动固定参数，集中在此便于校准；历史分位为终态）：
+  // 短线 = 涨停家数(30-80) + 连板高度(3-6板) + 封板率(50-75%) + 昨涨停表现(-5%~+3%)，等权
+  // 市场 = 上涨占比(30-70%) + 主力净流入(±50亿) + 亏钱效应(0-6 反向)，等权
+  const HEAT_ANCHOR = {
+    short: [
+      { key: 'ZT', lo: 30, hi: 80, fb: 55, label: '涨停家数' },
+      { key: 'LBGD', lo: 3, hi: 6, fb: 4.5, label: '连板高度' },
+      { key: 'PB', lo: 50, hi: 75, fb: 62, label: '封板率' },
+      { key: 'ZTBX', lo: -5, hi: 3, fb: -1, label: '昨涨停表现' }
+    ],
+    market: [
+      { key: 'BREADTH', lo: 30, hi: 70, fb: 50, label: '上涨占比' },
+      { key: 'HSLN', lo: -300, hi: 300, fb: 0, label: '主力流入' },
+      { key: 'KQXY', lo: 10, hi: 0, fb: 5, label: '亏钱效应' }
+    ]
+  }
+
+  // 短线红 / 市场蓝：刻意拉开色相，避免原来红绿同明度时叠在一起分不清
+  const HEAT_COLORS = { short: '#f43f3f', market: '#2f6bff' }
+  const HEAT_HISTORY_KEY = 'heat_history_v1'
+  const HEAT_HISTORY_DAYS = 8
+  const HEAT_ROW_KEYS = ['ZT', 'DT', 'LBGD', 'PB', 'ZTBX', 'KQXY']
+
+  let heatChart = null
+  let heatTimer = null
+  let heatSeq = 0
+  let heatDayView = null
+  let heatPrevRaw = null
+  let heatMode = 'day'
+  let heatHistory = {}
+
+  function heatNum(v, fb) {
+    const n = Number(v)
+    return v === null || v === undefined || v === '' || isNaN(n) ? fb : n
+  }
+
+  function heatEsc(s) {
+    return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]
+    })
+  }
+
+  function heatDayKey(d) {
+    const t = d || new Date()
+    return t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0')
+  }
+
+  // 只按工作日回推，节假日识别不了；昨日数据仅作补充，不覆盖已按真实日期积累的历史
+  function heatPrevWorkday(key) {
+    const d = new Date(key + 'T00:00:00')
+    do { d.setDate(d.getDate() - 1) } while (d.getDay() === 0 || d.getDay() === 6)
+    return heatDayKey(d)
+  }
+
+  function heatTimeLabel(t) {
+    const s = String(t || '')
+    return s.length === 4 ? s.slice(0, 2) + ':' + s.slice(2) : s
+  }
+
+  // 标准交易日分钟轴 09:15-11:30 / 13:00-15:00，共 257 点，昨日接口不返回时间轴时用它补齐
+  function heatFullAxis() {
+    const out = []
+    const push = function (t) {
+      out.push(String(Math.floor(t / 60)).padStart(2, '0') + ':' + String(t % 60).padStart(2, '0'))
+    }
+    for (let t = 9 * 60 + 15; t <= 11 * 60 + 30; t++) push(t)
+    for (let t = 13 * 60; t <= 15 * 60; t++) push(t)
+    return out
+  }
+
+  function computeHeatSeries(qxl) {
+    const s = (qxl && qxl.series) || {}
+    const rawAxis = (qxl && qxl.Aaxis) || []
+    // x 轴固定为全天 257 点：盘中接口只返回到当前的一段，按时间落到对应位置，未到的时点留 null。
+    // 这样时间轴比例始终是全天，数据只画已有的那一段，不会随盘中推进而横向拉伸。
+    const axis = heatFullAxis()
+    const axisPos = {}
+    axis.forEach(function (t, idx) { axisPos[t] = idx })
+    const clamp = (v) => Math.min(100, Math.max(0, v))
+    const lin = (v, lo, hi) => clamp(((v - lo) / (hi - lo)) * 100)
+    const val = (key, i, fb) => {
+      const arr = s[key]
+      const x = arr ? Number(arr[i]) : NaN
+      return isNaN(x) ? fb : x
+    }
+    const breadth = rawAxis.map(function (_, i) {
+      const sz = val('SZ', i, 3000)
+      return (sz / Math.max(1, sz + val('XD', i, 3000))) * 100
+    })
+    const score = function (factors, i) {
+      const sum = factors.reduce(function (acc, f) {
+        const v = f.key === 'BREADTH' ? breadth[i] : val(f.key, i, f.fb)
+        return acc + lin(v, f.lo, f.hi)
+      }, 0)
+      return sum / factors.length
+    }
+    const short = new Array(axis.length).fill(null)
+    const market = new Array(axis.length).fill(null)
+    const rows = new Array(axis.length).fill(null)
+    rawAxis.forEach(function (raw, i) {
+      const pos = axisPos[heatTimeLabel(raw)]
+      if (pos === undefined) return
+      short[pos] = Math.round(score(HEAT_ANCHOR.short, i) * 10) / 10
+      market[pos] = Math.round(score(HEAT_ANCHOR.market, i) * 10) / 10
+      const row = {}
+      HEAT_ROW_KEYS.forEach(function (k) {
+        const arr = s[k]
+        const n = arr ? Number(arr[i]) : NaN
+        row[k] = isNaN(n) ? null : n
+      })
+      rows[pos] = row
+    })
+    return { axis: axis, stamps: axis.slice(), short: short, market: market, rows: rows }
+  }
+
+  // 数据源只提供当日与昨日分钟序列，5 日视图只能靠浏览器按日累积（localStorage）
+  function loadHeatHistory() {
+    try {
+      const raw = localStorage.getItem(HEAT_HISTORY_KEY)
+      heatHistory = raw ? JSON.parse(raw) : {}
+    } catch (e) {
+      heatHistory = {}
+    }
+    if (!heatHistory || typeof heatHistory !== 'object') heatHistory = {}
+  }
+
+  function recordHeatHistory(key, view) {
+    if (!view || !view.axis.length) return
+    heatHistory[key] = view
+    const keys = Object.keys(heatHistory).sort()
+    while (keys.length > HEAT_HISTORY_DAYS) delete heatHistory[keys.shift()]
+    try { localStorage.setItem(HEAT_HISTORY_KEY, JSON.stringify(heatHistory)) } catch (e) { /* 超容量时只保留内存态 */ }
+  }
+
+  function mergeHeatPrev() {
+    if (!heatPrevRaw) return
+    const key = heatPrevWorkday(heatDayKey())
+    if (heatHistory[key]) return
+    recordHeatHistory(key, computeHeatSeries({ series: heatPrevRaw, Aaxis: heatFullAxis() }))
+  }
+
+  function buildHeatWeekView() {
+    const keys = Object.keys(heatHistory).sort().slice(-5)
+    const view = { axis: [], stamps: [], short: [], market: [], rows: [], bounds: [], days: keys }
+    keys.forEach(function (k) {
+      const day = heatHistory[k]
+      if (!day || !day.axis) return
+      view.bounds.push(view.axis.length)
+      day.axis.forEach(function (label, i) {
+        view.axis.push((i === 0 ? k.slice(5) + ' ' : '') + label)
+        view.stamps.push(k.slice(5) + ' ' + label)
+        view.short.push(day.short[i])
+        view.market.push(day.market[i])
+        view.rows.push(day.rows[i])
+      })
+    })
+    return view
+  }
+
+  function currentHeatView() {
+    return heatMode === 'week' ? buildHeatWeekView() : heatDayView
+  }
+
+  function heatChartOption(view) {
+    // 盘中末尾时点尚未发生（null），最后有效索引用于把光标限制在有数据的时间段内
+    let lastIdx = -1
+    for (let i = view.short.length - 1; i >= 0; i--) {
+      if (view.short[i] !== null && view.short[i] !== undefined) { lastIdx = i; break }
+    }
+    const lineSeries = function (name, values, color, width) {
+      return {
+        name: name, type: 'line', data: values, smooth: true, showSymbol: false,
+        lineStyle: { color: color, width: width }, itemStyle: { color: color },
+        areaStyle: { opacity: 0.06, color: color },
+        emphasis: { focus: 'series' }
+      }
+    }
+    // 50 中位线 + 5 日模式的日界分隔线
+    const markData = [{ yAxis: 50 }]
+    if (view.bounds) {
+      view.bounds.slice(1).forEach(function (idx) {
+        markData.push({ xAxis: idx, lineStyle: { color: 'rgba(127,127,127,0.5)', type: 'solid' } })
+      })
+    }
+    return {
+      animation: false,
+      legend: {
+        top: 0, right: 4, itemWidth: 10, itemHeight: 8,
+        textStyle: { fontSize: 10, color: '#7b857f' }
+      },
+      grid: { left: 32, right: 12, top: 26, bottom: 30 },
+      tooltip: {
+        trigger: 'axis',
+        triggerOn: 'mousemove',
+        confine: true,
+        // 固定在右下角：盘中数据集中在左侧、右侧为空白区，既不挡曲线，也避开右上图例与底部时间轴
+        position: function (pos, params, dom, rect, size) {
+          const vw = size.viewSize[0], vh = size.viewSize[1]
+          // 用图表尺寸比例算固定坐标，不随 tooltip 内容宽度变化而漂移
+          return [Math.round(vw * 0.52), Math.round(vh * 0.57)]
+        },
+        textStyle: { fontSize: 11 },
+        axisPointer: {
+          type: 'cross',
+          snap: false,
+          lineStyle: { color: 'rgba(127,127,127,0.55)' },
+          crossStyle: { color: 'rgba(127,127,127,0.55)' },
+          label: { show: true, fontSize: 10, backgroundColor: '#6b7280' }
+        },
+        formatter: function (params) {
+          if (!params || !params.length) return ''
+          let i = params[0].dataIndex
+          if (lastIdx >= 0 && i > lastIdx) i = lastIdx   // 光标落在未发生的空白区时，内容固定在最后时点
+          const showVal = function (v) {
+            return v !== null && v !== undefined ? v : '--'
+          }
+          // 数值直接从 clamp 后的 i 取，保证时间/数值/分项三者对齐同一时点（params 里是鼠标真实位置，可能是空白点）
+          let html = (view.stamps[i] || view.axis[i] || params[0].axisValue || '') +
+            '<br/>短线 <b style="color:' + HEAT_COLORS.short + '">' + showVal(view.short[i]) + '</b>' +
+            ' · 市场 <b style="color:' + HEAT_COLORS.market + '">' + showVal(view.market[i]) + '</b>'
+          const row = view.rows[i]
+          if (row) {
+            html += '<br/>涨停 ' + heatNum(row.ZT, '--') + ' · 跌停 ' + heatNum(row.DT, '--') +
+              ' · 高度 ' + heatNum(row.LBGD, '--') +
+              '<br/>封板率 ' + heatNum(row.PB, '--') + ' · 昨涨停 ' + heatNum(row.ZTBX, '--') + '% · 亏钱效应 ' + heatNum(row.KQXY, '--')
+          }
+          return html
+        }
+      },
+      xAxis: {
+        type: 'category', data: view.axis,
+        axisLabel: { show: true, color: '#7b857f', fontSize: 10, hideOverlap: true },
+        axisTick: { show: false },
+        axisLine: { lineStyle: { color: '#7b857f' } }
+      },
+      yAxis: {
+        min: 0, max: 100,
+        splitLine: { show: true, lineStyle: { color: 'rgba(127,127,127,0.15)' } },
+        axisLabel: { color: '#7b857f', fontSize: 10 }
+      },
+      series: [
+        Object.assign(lineSeries('短线情绪热度', view.short, HEAT_COLORS.short, 2), {
+          markLine: {
+            silent: true, symbol: 'none',
+            lineStyle: { color: 'rgba(127,127,127,0.45)', type: 'dashed' },
+            data: markData, label: { show: false }
+          }
+        }),
+        lineSeries('市场情绪热度', view.market, HEAT_COLORS.market, 1.8)
+      ]
+    }
+  }
+
+  function renderHeat() {
+    if (!document.getElementById('heatChart')) return
+    const view = currentHeatView()
+    if (!view || !view.axis.length) {
+      $('#heatMeta').text(heatMode === 'week' ? '暂无历史，随使用按日积累' : '加载中…')
+      return
+    }
+    ensureEcharts().then(function () {
+      if (!document.getElementById('heatChart')) return
+      const isNew = !heatChart
+      if (isNew) heatChart = echarts.init(document.getElementById('heatChart'))
+
+      // 光标限制在有数据的时间段内：盘中末尾时点未发生（null），不允许光标移进去。
+      let lastIdx = -1
+      for (let i = view.short.length - 1; i >= 0; i--) {
+        if (view.short[i] !== null && view.short[i] !== undefined) { lastIdx = i; break }
+      }
+      heatChart._heatLastIdx = lastIdx
+      const pinToLast = function () {
+        if (heatChart && !heatChart.isDisposed() && heatChart._heatLastIdx >= 0) {
+          heatChart.dispatchAction({ type: 'showTip', seriesIndex: 0, dataIndex: heatChart._heatLastIdx })
+        }
+      }
+      // 关键：在 setOption 之前注册 zrender mousemove，抢在 ECharts tooltip 的默认跟随之前。
+      // 越界时 ev.stop() 直接拦掉默认跟随，光标不会先闪进空白区再被钉回。
+      if (isNew && !heatChart._heatPointerBound) {
+        heatChart._heatPointerBound = true
+        heatChart.getZr().on('mousemove', function (ev) {
+          const chart = heatChart
+          if (!chart || chart.isDisposed()) return
+          const last = chart._heatLastIdx
+          if (last === undefined || last < 0) return
+          const w = chart.getWidth(), h = chart.getHeight()
+          const x = ev.offsetX, y = ev.offsetY
+          if (x < 32 || x > w - 12 || y < 26 || y > h - 30) return  // grid 外不干预
+          let idx
+          try { idx = Math.round(chart.convertFromPixel({ xAxisIndex: 0 }, x)) } catch (e) { return }
+          if (idx > last) {
+            if (ev.stop) ev.stop()   // 拦在 ECharts 默认 axisPointer 之前，消除闪烁
+            pinToLast()
+          }
+        })
+      }
+
+      heatChart.setOption(heatChartOption(view), true)
+      if (isNew && lastIdx >= 0) setTimeout(pinToLast, 0)  // 首次打开：默认停在最后时点（需等渲染完成）
+
+      // 盘中末尾时点尚未发生（null），取最后一个有值的点作为当前读数
+      const lastValue = function (arr) {
+        for (let i = arr.length - 1; i >= 0; i--) {
+          if (arr[i] !== null && arr[i] !== undefined) return arr[i]
+        }
+        return '--'
+      }
+      if (heatDayView && heatDayView.short.length) {
+        const sv = lastValue(heatDayView.short)
+        const mv = lastValue(heatDayView.market)
+        const tint = (v) => typeof v === 'number' && v >= 60 ? 'color:#f2555a;' : (typeof v === 'number' && v <= 40 ? 'color:#4cb782;' : '')
+        $('#heatShortVal').attr('style', tint(sv)).text(sv)
+        $('#heatMarketVal').attr('style', tint(mv)).text(mv)
+      }
+      $('#heatMeta').text(heatMode === 'week'
+        ? '近 ' + view.days.length + ' 个交易日 · 本地积累'
+        : '更新于 ' + new Date().toTimeString().slice(0, 8))
+    })
+  }
+
+  function loadHeat() {
+    const seq = ++heatSeq
+    $.ajax({
+      type: 'POST',
+      url: 'https://duanxianxia.cn/api/getLiveByStrong',
+      data: { platetype: 'strong', platelist: '' },
+      dataType: 'json',
+      success: function (data) {
+        if (seq !== heatSeq || !document.getElementById('heatChart')) return
+        if (!data || data.result !== 'success') {
+          $('#heatMeta').text('接口返回异常')
+          return
+        }
+        heatDayView = computeHeatSeries(data.qxlive)
+        const now = new Date()
+        // 周末接口返回的是周五数据，不按周末日期落历史；节假日会与上一交易日重复，属已知限制
+        if (now.getDay() !== 0 && now.getDay() !== 6) recordHeatHistory(heatDayKey(now), heatDayView)
+        renderHeat()
+      },
+      error: function () {
+        if (seq === heatSeq) $('#heatMeta').text('数据源暂不可用')
+      }
+    })
+  }
+
+  function loadHeatPrev() {
+    $.ajax({
+      type: 'POST',
+      url: 'https://duanxianxia.cn/api/getLastQxlive',
+      data: {},
+      dataType: 'json',
+      success: function (data) {
+        if (!data || !data.qxlast) return
+        heatPrevRaw = data.qxlast
+        mergeHeatPrev()
+        if (heatMode === 'week') renderHeat()
+      }
+    })
+  }
+
+  // 人气核心：空间核心=最高连板；主线题材=涨停家数最多的题材；封板先锋=最早封板。
+  // getZtliveData 只有 名称/题材/连板/封板时间，没有成交额与封单，因此不做「容量核心」判断。
+  function heatBoards(zt) {
+    const s = String(zt || '')
+    if (s.indexOf('首板') !== -1) return 1
+    const m = s.match(/(\d+)天(\d+)板/)
+    if (m) return Number(m[2])
+    const n = s.match(/(\d+)/)
+    return n ? Number(n[1]) : 1
+  }
+
+  function renderHeatCore(list) {
+    const el = $('#heatCore')
+    if (!el.length) return
+    const items = (list || []).map(function (x) {
+      return { name: x.name || x.code || '--', theme: x.ztyy || '', boards: heatBoards(x.zt), time: x.time || '' }
+    })
+    if (!items.length) {
+      el.text('涨停池暂不可用')
+      return
+    }
+    const byBoards = function (a, b) { return b.boards - a.boards || a.time.localeCompare(b.time) }
+    const space = items.slice().sort(byBoards)[0]
+    const agg = {}
+    items.forEach(function (it) {
+      it.theme.split('+').map(function (t) { return t.trim() }).filter(Boolean).forEach(function (t) {
+        (agg[t] = agg[t] || []).push(it)
+      })
+    })
+    const themes = Object.keys(agg).map(function (k) { return { name: k, items: agg[k] } })
+      .sort(function (a, b) { return b.items.length - a.items.length })
+    const main = themes.length && themes[0].items.length >= 2 ? themes[0] : null
+    const pioneer = items.slice().sort(function (a, b) { return a.time.localeCompare(b.time) || b.boards - a.boards })[0]
+    const row = function (label, text) {
+      return '<div><span style="color:#7b857f">' + label + '</span> ' + text + '</div>'
+    }
+    let html = row('空间核心', '<b>' + heatEsc(space.name) + '</b>（' + space.boards + '板）' + (space.theme ? ' · ' + heatEsc(space.theme) : ''))
+    if (main) {
+      const leader = main.items.slice().sort(byBoards)[0]
+      html += row('主线题材', heatEsc(main.name) + '（' + main.items.length + '家涨停） · 核心 ' + heatEsc(leader.name) + '（' + leader.boards + '板）')
+    } else {
+      html += row('主线题材', '涨停分散，暂无 2 家以上题材')
+    }
+    html += row('封板先锋', heatEsc(pioneer.name) + '（' + pioneer.boards + '板）' + (pioneer.time ? ' · ' + heatEsc(pioneer.time) + ' 封板' : ''))
+    el.html(html)
+  }
+
+  function loadHeatCore() {
+    $.ajax({
+      type: 'POST',
+      url: 'https://duanxianxia.cn/api/getZtliveData',
+      data: {},
+      dataType: 'json',
+      success: function (data) { renderHeatCore(data && data.list) },
+      error: function () {
+        const el = $('#heatCore')
+        if (el.length) el.text('涨停池暂不可用')
+      }
+    })
+  }
+
+  $('#heatBtn').on('click', function () {
+    layer.open({
+      type: 1,
+      title: '情绪热度',
+      area: ['520px', '560px'],
+      maxmin: true,
+      moveOut: true,
+      shade: 0.2,
+      content: '<div style="box-sizing:border-box;padding:6px 12px;">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px;">' +
+          '<div style="font-size:11px;color:#7b857f;">短线 <span id="heatShortVal">--</span> · 市场 <span id="heatMarketVal">--</span> · <span id="heatMeta">加载中…</span></div>' +
+          '<div style="white-space:nowrap;">' +
+            '<button type="button" class="heat-range is-active" data-range="day">当日</button>' +
+            '<button type="button" class="heat-range" data-range="week">5日</button>' +
+          '</div>' +
+        '</div>' +
+        '<div id="heatChart" style="height:300px;"></div>' +
+        '<div id="heatCore" style="font-size:11px;line-height:1.9;border-top:1px dashed rgba(127,127,127,0.3);padding-top:5px;margin-top:4px;">人气核心识别中…</div>' +
+        '<div style="font-size:10px;color:#7b857f;line-height:1.7;margin-top:4px;">短线 = 涨停家数(30-80) / 连板高度(3-6板) / 封板率(50-75%) / 昨涨停表现(-5%~+3%) 等权；市场 = 上涨占比(30-70%) / 主力流入(±50亿) / 亏钱效应(0-6,反向) 等权。固定锚点冷启动口径，当日读数仅供方向参考，收盘判定更准。5 日视图由浏览器按日积累，首次使用不足 5 天属正常。</div>' +
+        '</div>',
+      success: function () {
+        heatChart = null
+        heatMode = 'day'
+        loadHeatHistory()
+        loadHeat()
+        loadHeatPrev()
+        loadHeatCore()
+      },
+      end: function () {
+        clearTimeout(heatTimer)
+        heatTimer = null
+        if (heatChart && !heatChart.isDisposed()) heatChart.dispose()
+        heatChart = null
+      }
+    })
+    clearInterval(heatTimer)
+    heatTimer = setInterval(function () {
+      if (!document.hidden) {
+        loadHeat()
+        loadHeatCore()
+      }
+    }, 60000)
+  })
+
+  $(document).on('click', '.heat-range', function () {
+    heatMode = $(this).attr('data-range') === 'week' ? 'week' : 'day'
+    $('.heat-range').removeClass('is-active')
+    $('.heat-range[data-range="' + heatMode + '"]').addClass('is-active')
+    renderHeat()
   })
 
   function setView (view) {
@@ -2433,7 +3045,157 @@
         scheduleRefresh()
       })
   }
+
+  // ========== 加载时提示（工作流程行小贴士） + 今日进度便签歌词滚动（雪球《一瞬流光语录》236390509） ==========
+  const FLOW_TIPS = [
+    '按 ? 查看快捷键',
+    'Ctrl+Shift+D 切换深色主题',
+    '点击时间轴节点，查看该阶段适合打开的工具',
+    '数字键 1-5 快速打开常用入口',
+    '按 t 定位工作流程',
+    '支线节点工具支持点击展开、悬停预览',
+    '今日进度「无」视图内置便签滚动',
+    '走势详情可输入 6 位代码，自动记住上次选择'
+  ]
+  const XQ_QUOTES = [
+    { n: 1, t: '杜绝临时起意，只计划操作。临时起意的操作通常是大亏的根源。或许你与赵老哥的区别就在于：不该冲动的时候你冲动了而他没冲动，该坚决的的时候他坚决了而你退缩了。失之毫厘，差之千里。淡泊一切以后，也许就会否极泰来。' },
+    { n: 2, t: '标定空仓日子，不会空仓永远做不大。' },
+    { n: 3, t: '做交易，首先是处理好手里的，处理妥善好后再开始下一笔，前辈都是这么教' },
+    { n: 4, t: '喜欢新高，厌恶下跌。特别趋势，重在突破。能新高的东西自然有他新高的道理。' },
+    { n: 5, t: '做反弹：趋势有弹性的，极端资金走完，压力小了容易反弹。' },
+    { n: 6, t: '行情不好的时候为什么会管不住手，看不到确定性，又不敢全仓一个，所以广撒网蒙一个，实际情况，本来就是垃圾行情，反而因为分仓的其他杂毛拖了后腿。' },
+    { n: 7, t: '永远只看龙头，少看杂毛弱转强，这是大面源泉，好比丑女化妆一时的美丽换来长久的恶心。' },
+    { n: 8, t: '真正龙头都有渡劫，渡劫成功，谓之真龙。往往越不舒服的买点，越是大肉的源泉。买入分歧，卖出一致，分歧是好的买点，能不能拿住敢不敢买，是对整体大势的判断，行情没走完，又是绕不开的点，自然还会继续。上涨中的分歧，自然继续。' },
+    { n: 9, t: '分歧，一致，加速，顶一字市场不同人眼中会有不同的确定性，这才构成了生态。事实上整个上升途中的放量与缩量只是外部情绪对他产生的影响，其能否延续上涨归根结底还是看整个行情的深度，也是周期的大小。如果暴量后行情未完，自然继续，市场其他股票大面积溃散，它自然难以为继。它是市场氛围的承载点，享受的是市场情绪的溢价，是氛围的反哺。' },
+    { n: 10, t: '坚持做错题集，做到行动一致。不研究新打法。' },
+    { n: 11, t: '退潮末期的题材，走的都很曲折。逆情绪动，穿越，打到高潮。抱团打出了一定的持续赚钱效应。趋势股，也是带情绪的。只要是人在玩，就会有交易情绪。' },
+    { n: 12, t: '最核心是理解每个阶段的本质炒作，并高度凝结，找出最核心，市场认可的个股。情绪周期决定未来，板块人气决定龙头，跟指数共振，逆势分歧，走向一统。所以，要分清，谁才是阶段的王？' },
+    { n: 13, t: '如果没有在好位置上车，会越等越焦虑。牛股不管哪里上车都是对的。最重要的是在车上。不要想着回调买入，真好是很难给大幅度的回调机会的。适量买套也正常。' },
+    { n: 14, t: '手风不顺的时候，尽量别持股。第二天赚钱走，不管是否卖飞。' },
+    { n: 15, t: '赚钱主要看行情，有时持续亏钱几个月是很正常的。如果不能坦然面对，天天要赌，容易爆亏。没有理由去自负，或者妄自菲薄。不计较得失，有些事，做着做着，也就成了。没成，也没关系，世界之大，缺你又有何妨？不要把自己看的太重，虚心面对市场即可。把关注点从成败，盈亏以及得失上移开。' },
+    { n: 16, t: '天天在杂毛里玩，如何看得清这个市场' },
+    { n: 17, t: '跟风什么时候可以做。第一种情况，就是每日的最主流的题材。第二种情况，新题材首发，先上车再补票。在领头羊分歧时候做跟风，肯定后排跟风更没底气了。你错不在做跟风，你错在时机。' },
+    { n: 18, t: '弱修复，僵持阶段。看戏。经验多了以后，盘面博弈会让交易者条件反射。对的条件反射会带来赚钱。而这种条件反射获取的唯一途径就是经历加学。不断总结加错题集。' },
+    { n: 19, t: '短线客的常规买点，并不代表市场整体的确定性买点。' },
+    { n: 20, t: '如果一个趋势股开始变轨加速的时候，那么就已经开始吸引情绪资金进来了。我现在做的与你当时做的不同。纯资金流的打法。输出的资金是外资和机构。很少有接力游资或市场资金参与。这种股票，一般比较独立。爆发力不强但很稳定' },
+    { n: 21, t: '潮水从来都不是一次退去的。次新连续被锤，物极必反，先知先觉的资金逆势入场，用资金优势，引导大众预期一步步向好。在人声鼎沸中，悄然离去，不带走一片云彩' },
+    { n: 22, t: '人们总是在人声鼎沸中畅享未来，却无法在墙倒众人推时寻找生机。随波逐大流是散户的特质，这就是，所谓的，局限性，突破每一层的局限，便可以，上一层台阶。' },
+    { n: 23, t: '一只股，跨越了几个月的行情。第一波，带动整个板块主升的标杆。第二波，又作为乱军从中脱颖而出的领袖，是否能带领板块二次高潮？' },
+    { n: 24, t: '做短线，这种股看一眼都是犯罪啊，市场有既定主流与核心的时候，你去看这种非主流，就等于犯罪了' },
+    { n: 25, t: '你看的是放量滞涨，市场看到的是分歧中继，懂了吗？做股票啊，多多尊重市场啊，除非你的理解已经超出市场，否则就是跟随。不坚定，才是大错特错！' },
+    { n: 26, t: '迷茫期，龙头迷茫，小弟更迷茫，是不太可能后来者居上的。衰退期，资金不敢追高位，强度在低位，低反哺高，但谨慎追高，除非什么，除非与情绪共振。明显可能带来的负反馈，所以，那个反包，我不太会买，就算买，第二天开盘就是卖出点。三年前我的偶像告诉我，我炒股重型不重神，后来我突破了这一层，收益才大幅提高。同一种k线形态，时机不同，意义不同，也印证那句，炒股看图型，成功率不会超过四成。' },
+    { n: 27, t: '共识加速段的产物。原本以为是光伏。结果市场选择了风电做最强悍的补涨共识加速。短线更重要的是应对。动态博弈，做个永远的滑头这辈子就可以吃喝不愁' },
+    { n: 28, t: '正常，做快板是想赚快钱。快，是强势的一种外在表现，但快，绝不是强势的绝对表现。强势，我觉得还是最主要体现在时机上。我今年满仓打的板，一定要符合三个点。第一，指数大势，单边上涨，第二，板块随指数同步启动为当日核心板块，第三，个股为板块内人气容量核心。三点若是共振，哪怕百亿成交，第二日也是秒板。' },
+    { n: 29, t: '怎么说呢，具体问题具体分析。一根直线打上去，直线拉升是最省钱的。又不是氛围主升期。综合几个方面，判断为反抽板概率更大，这不是我的交易习惯' },
+    { n: 30, t: '在手风不顺的时候，尽量别持股。第二天赚钱走，不管是否卖飞。如果在回血时候因为贪心导致该回的血没回，那么下次操作失误亏损就会继续扩大，由大幅回撤变为腰斩。反而回血以后，再平稳节奏等下一次舒服买点再次回血，这样的话很容易把心态回正。然后等新高后，适当格局，状态回归。所谓，截断亏损，让盈利奔跑就是这样了。' },
+    { n: 31, t: '这种行情不怪量化。是客观存在的自然运行规律罢了。涨多了跌，跌多了涨，亘古不变的道理。市场进入了亏钱周期。下雨了，最好就是不要出门。很多人觉得自己聪明。逆势也可以赚钱，聪明反被聪明误。大智若愚，空仓应对下跌是最明智之举。但是呢，如果不小仓位去感受下行情的冷暖也会让自己思维钝化。这就是试仓的好处，用舌头微碰一下烫水，就不会再喝了。当然，仓位把控是门学问，是建立在强大的认知和盘感上面' },
+    { n: 32, t: '龙头，何为龙头？连板，高度？说法越来越玄乎，道理很简单，做到很难。' },
+    { n: 33, t: '每一只牛股的走法都是不同的，没有两只完全相同的牛股' },
+    { n: 34, t: '爆量弱转强已经明确说过了，不是圣经。型必须要符合神，神对了，型只是外在表现。什么是神，是个股在周期的特定时期的地位' },
+    { n: 35, t: '越简单越纯粹，还是对于周期的把握，以及对特定时期，已经被市场认可的人气股在特定时期介入。本轮行情最大的总结就是。情绪不佳的时候疯狂出手导致行情火爆时候不敢去赌，怕扩大亏损。炒股最大的本事还是在于对水温的判断，收和放。无需讲得复杂，大道至简。市场低迷要忍得住，切忌自大，觉得自己聪明。大智若愚。市场火爆时，一定要把自己当傻子，随大流，滚滚洪流无法阻挡。连板，趋势，10厘米，到20厘米，不用局限，哪里好往那边里挤就是了。在趋势没有发生明显改变之前，切勿猜顶底。' }
+  ]
+
+  function shuffleQuotes(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      const tmp = arr[i]
+      arr[i] = arr[j]
+      arr[j] = tmp
+    }
+  }
+
+  shuffleQuotes(FLOW_TIPS)
+  let lyricIdx = 0
+  const flowTipText = $('#flowTipText')
+  const progressNoteBody = $('#progressNoteBody')
+  const lyricsTrack = $('#lyricsTrack')
+  let lyricsLines = []
+
+  function renderFlowTip(tip) {
+    flowTipText.text(tip)
+  }
+
+  function buildLyrics() {
+    XQ_QUOTES.forEach(function (q) {
+      const line = $('<span class="lyrics-line"></span>').text(q.n + '. ' + q.t)
+      lyricsTrack.append(line)
+      lyricsLines.push(line)
+    })
+  }
+
+  // 视口高度至少容纳最长的一条语录；否则切到长句时会被裁掉
+  function fitNoteViewport(body) {
+    if (progressNote.hasClass('is-hidden')) return
+    const em = parseFloat(getComputedStyle(progressNote[0]).fontSize) || 13
+    let tallest = 0
+    lyricsLines.forEach(function (l) { tallest = Math.max(tallest, l[0].offsetHeight) })
+    body.style.height = Math.max(12.15 * em, tallest + 16) + 'px'
+  }
+
+  function centerLyric(idx, animate) {
+    const line = lyricsLines[idx]
+    if (!line || !line[0]) return
+    const body = progressNoteBody[0]
+    fitNoteViewport(body)
+    // 首/末行也要能居中：给轨道补上下留白，否则第一句永远贴顶
+    const firstH = lyricsLines[0][0].offsetHeight
+    const lastH = lyricsLines[lyricsLines.length - 1][0].offsetHeight
+    lyricsTrack.css({
+      paddingTop: Math.max(0, (body.clientHeight - firstH) / 2) + 'px',
+      paddingBottom: Math.max(0, (body.clientHeight - lastH) / 2) + 'px'
+    })
+    const max = Math.max(0, lyricsTrack[0].scrollHeight - body.clientHeight)
+    let target = line[0].offsetTop + line[0].offsetHeight / 2 - body.clientHeight / 2
+    target = Math.min(Math.max(0, target), max)
+    if (!animate) lyricsTrack.addClass('no-trans')
+    lyricsTrack.css('transform', 'translateY(-' + target + 'px)')
+    if (!animate) {
+      void lyricsTrack[0].offsetHeight
+      lyricsTrack.removeClass('no-trans')
+    }
+    lyricsLines.forEach(function (l, i) { l.toggleClass('is-active', i === idx) })
+  }
+
+  function rotateNote() {
+    if (document.hidden || progressNote.hasClass('is-hidden')) return
+    let next = lyricIdx + 1
+    if (next >= XQ_QUOTES.length) next = 0
+    lyricIdx = next
+    centerLyric(lyricIdx, true)
+  }
+
+  // 停留时长随字数增加，长句留足阅读时间
+  const noteDwellBaseMs = 8000
+  const noteDwellPerCharMs = 55
+  const noteDwellMaxMs = 24000
+  let noteTimer = null
+
+  function noteDwellMs(idx) {
+    const quote = XQ_QUOTES[idx]
+    const chars = quote ? quote.t.length : 0
+    return Math.min(noteDwellMaxMs, noteDwellBaseMs + chars * noteDwellPerCharMs)
+  }
+
+  function scheduleNote() {
+    clearTimeout(noteTimer)
+    noteTimer = setTimeout(function () {
+      rotateNote()
+      scheduleNote()
+    }, noteDwellMs(lyricIdx))
+  }
+
+  renderFlowTip(FLOW_TIPS[0])
+  buildLyrics()
+  centerLyric(0, false)
+  scheduleNote()
+
+  let lyricsResizeTimer
+  $(window).on('resize', function () {
+    clearTimeout(lyricsResizeTimer)
+    lyricsResizeTimer = setTimeout(function () { centerLyric(lyricIdx, false) }, 150)
+  })
 </script>
+
 
 </body>
 </html>
