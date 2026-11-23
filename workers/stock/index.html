@@ -534,7 +534,69 @@
           cursor: pointer;
       }
 
-      /* 情绪热度弹窗的 当日/5日 切换（layer 弹层挂在 body，不在 .panel 内，需单独定义） */
+      /* 情绪热度浮窗：与今日市场分时浮窗同款——无遮罩、可拖动、记忆位置，不挡页面其它内容 */
+      .heat-dialog {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: min(520px, 92vw);
+          background: var(--card);
+          border: 1px solid var(--timeline-border);
+          border-radius: 10px;
+          box-shadow: 0 18px 60px rgba(0, 0, 0, 0.28);
+          display: none;
+          z-index: 51;
+      }
+      .heat-dialog.show { display: block; }
+      .heat-head {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 8px;
+          padding: 10px 14px;
+          border-bottom: 1px solid var(--timeline-border);
+          cursor: move;
+          user-select: none;
+      }
+      .heat-head h3 {
+          margin: 0;
+          font-size: 14px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+      }
+      .heat-head .meta {
+          margin-left: 8px;
+          font-size: 11px;
+          color: var(--muted);
+          font-weight: normal;
+      }
+      .heat-close {
+          border: none;
+          background: transparent;
+          color: var(--muted);
+          font-size: 15px;
+          cursor: pointer;
+          padding: 2px 6px;
+          border-radius: 4px;
+      }
+      .heat-close:hover { color: var(--accent); }
+      #heatChart { height: 300px; padding: 4px 6px 0; }
+      .heat-core {
+          font-size: 11px;
+          line-height: 1.9;
+          border-top: 1px dashed var(--timeline-border);
+          padding: 6px 14px 0;
+          margin: 4px 0 0;
+      }
+      .heat-foot {
+          padding: 2px 14px 10px;
+          font-size: 10px;
+          color: var(--muted);
+          line-height: 1.7;
+      }
+
+      /* 情绪热度浮窗的 当日/5日 切换 */
       .heat-range {
           font-family: inherit;
           font-size: 11px;
@@ -551,6 +613,67 @@
           border-color: var(--accent);
           color: #fff;
       }
+
+      /* 催化推演浮窗：事件源 -> AI 多阶分析 -> 推送钉钉 */
+      .catalyst-entry {
+          display: inline-block;
+          margin-top: 6px;
+          font-size: 11px;
+          color: var(--accent);
+          text-decoration: none;
+          border-bottom: 1px dashed var(--accent);
+      }
+      .catalyst-dialog {
+          position: absolute;
+          left: 0; top: 0;
+          width: min(960px, 94vw);
+          max-height: 86vh;
+          display: none;
+          flex-direction: column;
+          background: var(--card);
+          border: 1px solid var(--timeline-border);
+          border-radius: 10px;
+          box-shadow: 0 18px 60px rgba(0,0,0,.28);
+          z-index: 52;
+          overflow: hidden;
+      }
+      .catalyst-dialog.show { display: flex; }
+      .cat-head {
+          display: flex; align-items: center; justify-content: space-between;
+          gap: 8px; padding: 10px 14px;
+          border-bottom: 1px solid var(--timeline-border);
+          cursor: move; user-select: none;
+      }
+      .cat-head h3 { margin: 0; font-size: 14px; }
+      .cat-head .meta { font-size: 11px; color: var(--muted); font-weight: normal; margin-left: 8px; }
+      .cat-close { border: none; background: transparent; color: var(--muted); font-size: 15px; cursor: pointer; padding: 2px 6px; border-radius: 4px; }
+      .cat-close:hover { color: var(--accent); }
+      .cat-body { display: flex; min-height: 420px; max-height: 68vh; }
+      .cat-events { width: 300px; flex: none; border-right: 1px solid var(--timeline-border); overflow-y: auto; }
+      .cat-events-head { padding: 8px 12px; font-size: 11px; color: var(--muted); border-bottom: 1px dashed var(--timeline-border); display: flex; justify-content: space-between; gap: 6px; }
+      .cat-event { padding: 9px 12px; border-bottom: 1px solid var(--timeline-border); cursor: pointer; }
+      .cat-event:hover { background: var(--accent-soft); }
+      .cat-event.is-active { background: var(--accent-soft); border-left: 3px solid var(--accent); padding-left: 9px; }
+      .cat-event .t { font-size: 12px; line-height: 1.5; }
+      .cat-event .m { font-size: 10px; color: var(--muted); margin-top: 4px; }
+      .cat-src { display: inline-block; font-size: 10px; padding: 0 5px; border: 1px solid var(--timeline-border); border-radius: 3px; margin-right: 6px; }
+      .cat-detail { flex: 1; overflow-y: auto; padding: 12px 14px; min-width: 0; }
+      .cat-layer { margin-bottom: 10px; }
+      .cat-layer h4 { margin: 0 0 5px; font-size: 12px; color: var(--accent); }
+      .cat-layer ul { margin: 0; padding-left: 18px; font-size: 11px; line-height: 1.7; }
+      .cat-falsifier { font-size: 11px; color: var(--muted); border-top: 1px dashed var(--timeline-border); padding-top: 8px; margin-top: 8px; line-height: 1.6; }
+      .cat-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 6px; }
+      .cat-table th { text-align: left; color: var(--muted); font-weight: normal; border-bottom: 1px solid var(--timeline-border); padding: 4px 5px; }
+      .cat-table td { border-bottom: 1px solid var(--timeline-border); padding: 4px 5px; }
+      .cat-badge { font-size: 10px; padding: 0 5px; border-radius: 3px; border: 1px solid var(--timeline-border); white-space: nowrap; }
+      .cat-badge.wait { color: var(--accent); border-color: var(--accent); }
+      .cat-badge.start { color: #b8860b; border-color: #b8860b; }
+      .cat-badge.done { color: #c0392b; border-color: #c0392b; }
+      .cat-foot { display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding: 8px 14px; border-top: 1px solid var(--timeline-border); }
+      .cat-push { font-family: inherit; font-size: 12px; padding: 5px 14px; border: 1px solid var(--accent); border-radius: 5px; background: var(--accent); color: #fff; cursor: pointer; }
+      .cat-push:disabled { opacity: .5; cursor: not-allowed; }
+      .cat-msg { font-size: 11px; color: var(--muted); margin-right: auto; }
+      .cat-empty { color: var(--muted); font-size: 12px; padding: 24px 12px; text-align: center; }
 
       /* 低打扰外链：平时几乎隐形，悬停才浮现下划线 */
       .panel a.quiet-link {
@@ -1520,6 +1643,7 @@
             <div class="timeline-popover">
               <strong>快速入口</strong>
               <div class="timeline-links">
+                <a href="#" id="catalystEntry" title="AI 多阶事件推演">AI 催化推演（事件源 → 多阶分析 → 推送）›</a>
                 <a href="https://www.jin10.com/activities/2026/02/pizza_index/index.html" target="_blank">金十数据</a>
                 <a href="https://724.guzhang.com/" target="_blank">7×24 快讯</a>
                 <a href="https://data.eastmoney.com/rzrq/total.html" target="_blank">融资余额</a>
@@ -1643,10 +1767,47 @@
         <a class="tag" href="/qxlive.html" target="_blank">查看指标面板</a>
         <a class="tag" href="/market.html" target="_blank">今日市场</a>
         <button class="tag" type="button" id="heatBtn">情绪热度</button>
+        <button class="tag" type="button" id="catalystBtn">AI 催化推演</button>
         <a class="quiet-link" href="https://www.duanxianxia.cn" target="_blank" rel="noopener noreferrer" title="duanxianxia.cn">数据源</a>
       </div>
     </section>
   </main>
+</div>
+
+<!-- 情绪热度浮窗：与今日市场分时浮窗同款，无遮罩/可拖动/记忆位置 -->
+<div class="heat-dialog" id="heatDialog" role="dialog" aria-modal="false">
+  <div class="heat-head" id="heatHead">
+    <h3>情绪热度<span class="meta">短线 <span id="heatShortVal">--</span> · 市场 <span id="heatMarketVal">--</span> · <span id="heatMeta">加载中…</span></span></h3>
+    <div style="display:flex;align-items:center;gap:4px;white-space:nowrap;">
+      <button type="button" class="heat-range is-active" data-range="day">当日</button>
+      <button type="button" class="heat-range" data-range="week">5日</button>
+      <button class="heat-close" id="heatClose" type="button" title="关闭">✕</button>
+    </div>
+  </div>
+  <div id="heatChart"></div>
+  <div class="heat-core" id="heatCore">人气核心识别中…</div>
+  <div class="heat-foot">短线 = 涨停家数(30-80) / 连板高度(3-6板) / 封板率(50-75%) / 昨涨停表现(-5%~+3%) 等权；市场 = 上涨占比(30-70%) / 主力流入(±50亿) / 亏钱效应(0-6,反向) 等权。固定锚点冷启动口径，当日读数仅供方向参考，收盘判定更准。5 日视图由工作台每日打开自动记录，攒满 5 个交易日后完整展示。</div>
+</div>
+
+<!-- 催化推演浮窗：左=近期事件源，右=多阶分析+标的明细，底部=是否推送钉钉 -->
+<div class="catalyst-dialog" id="catalystDialog" role="dialog" aria-modal="false">
+  <div class="cat-head" id="catalystHead">
+    <h3>催化推演<span class="meta" id="catMeta">近期事件 · 等待加载</span></h3>
+    <button type="button" class="cat-close" id="catClose" title="关闭">✕</button>
+  </div>
+  <div class="cat-body">
+    <div class="cat-events">
+      <div class="cat-events-head"><span>近期事件源</span><span>钉钉 + 新华财经</span></div>
+      <div id="catEventList"><div class="cat-empty">加载中…</div></div>
+    </div>
+    <div class="cat-detail" id="catDetail">
+      <div class="cat-empty">↑ 点击事件源，生成 AI 多阶分析与标的明细</div>
+    </div>
+  </div>
+  <div class="cat-foot">
+    <span class="cat-msg" id="catMsg">分析仅供参考，非买卖建议</span>
+    <button type="button" class="cat-push" id="catPush" disabled>推送钉钉</button>
+  </div>
 </div>
 
 <script>
@@ -1928,6 +2089,10 @@
       advancersChartInstance = echarts.init(advancersChart[0])
     }
 
+    // 昨日做成橙色虚线、今日亮绿实线：暗色主题下原来的灰/绿都偏暗容易糊在一起，实虚线 + 冷暖色对比一眼可分
+    const advDark = document.documentElement.getAttribute('data-theme') === 'dark'
+    const todayColor = advDark ? '#5fb98a' : '#2f8f6b'
+    const prevColor = advDark ? '#f0a860' : '#d9822b'
     let chartSeries = [{
       name: '880005',
       type: 'line',
@@ -1935,9 +2100,9 @@
       smooth: true,
       showSymbol: false,
       connectNulls: false,
-      lineStyle: { width: 2, color: '#4a8c6f' },
-      itemStyle: { color: '#4a8c6f' },
-      areaStyle: { color: 'rgba(74, 140, 111, 0.10)' }
+      lineStyle: { width: 2.4, color: todayColor },
+      itemStyle: { color: todayColor },
+      areaStyle: { color: advDark ? 'rgba(95, 185, 138, 0.14)' : 'rgba(47, 143, 107, 0.12)' }
     }]
     if (Array.isArray(previousAdvancersSeries)) {
       chartSeries.push({
@@ -1947,8 +2112,8 @@
         smooth: true,
         showSymbol: false,
         connectNulls: false,
-        lineStyle: { width: 1, color: '#a5ada7' },
-        itemStyle: { color: '#a5ada7' }
+        lineStyle: { width: 1.8, color: prevColor, type: 'dashed' },
+        itemStyle: { color: prevColor }
       })
     }
 
@@ -2710,11 +2875,19 @@
         trigger: 'axis',
         triggerOn: 'mousemove',
         confine: true,
-        // 固定在右下角：盘中数据集中在左侧、右侧为空白区，既不挡曲线，也避开右上图例与底部时间轴
+        // 跟随十字光标并智能避让：优先放到光标右侧、垂直方向取光标对侧，
+        // 既不盖住光标指向的曲线点，也不越出图表边界（原先固定右下角会挡住移过去的信息）
         position: function (pos, params, dom, rect, size) {
           const vw = size.viewSize[0], vh = size.viewSize[1]
-          // 用图表尺寸比例算固定坐标，不随 tooltip 内容宽度变化而漂移
-          return [Math.round(vw * 0.52), Math.round(vh * 0.57)]
+          const cw = size.contentSize[0] || 0, ch = size.contentSize[1] || 0
+          const gap = 16
+          // 水平：优先放右侧，右边不够就翻到左侧，都不压住光标本身
+          let left = pos[0] + gap + cw <= vw ? pos[0] + gap : pos[0] - gap - cw
+          left = Math.max(0, Math.min(left, vw - cw))
+          // 垂直：优先放上方（避开光标处的曲线），上方不够就翻到下方
+          let top = pos[1] - gap - ch >= 0 ? pos[1] - gap - ch : pos[1] + gap
+          top = Math.max(0, Math.min(top, vh - ch))
+          return [left, top]
         },
         textStyle: { fontSize: 11 },
         axisPointer: {
@@ -2830,7 +3003,7 @@
         $('#heatMarketVal').attr('style', tint(mv)).text(mv)
       }
       $('#heatMeta').text(heatMode === 'week'
-        ? '近 ' + view.days.length + ' 个交易日 · 本地积累'
+        ? '已积累 ' + view.days.length + '/5 日 · 每日打开自动记录'
         : '更新于 ' + new Date().toTimeString().slice(0, 8))
     })
   }
@@ -2874,6 +3047,28 @@
       }
     })
   }
+
+  // 工作台一打开就静默记录当天数据，不必先点开弹窗。数据源只给当日+昨日，
+  // 5 日历史只能这样按日攒；每天打开一次，攒满 5 个交易日后视图自然完整。
+  function recordHeatOnce() {
+    const now = new Date()
+    if (now.getDay() === 0 || now.getDay() === 6) return
+    loadHeatHistory()
+    $.ajax({
+      type: 'POST',
+      url: 'https://duanxianxia.cn/api/getLiveByStrong',
+      data: { platetype: 'strong', platelist: '' },
+      dataType: 'json',
+      success: function (data) {
+        if (!data || data.result !== 'success' || !data.qxlive) return
+        const view = computeHeatSeries(data.qxlive)
+        if (!view || !view.axis.length) return
+        heatDayView = view
+        recordHeatHistory(heatDayKey(now), view)
+      }
+    })
+  }
+  recordHeatOnce()
 
   // 人气核心：空间核心=最高连板；主线题材=涨停家数最多的题材；封板先锋=最早封板。
   // getZtliveData 只有 名称/题材/连板/封板时间，没有成交额与封单，因此不做「容量核心」判断。
@@ -2936,41 +3131,55 @@
     })
   }
 
+  // 情绪热度浮窗：仿今日市场分时浮窗，无遮罩/可拖动/记忆位置，不挡页面其它内容
+  const HEAT_POS_KEY = 'index_heat_pos'
+  let heatPos = null
+  try { heatPos = JSON.parse(localStorage.getItem(HEAT_POS_KEY) || 'null') } catch (err) { heatPos = null }
+  let heatDrag = null
+
+  function heatDialogBounds() {
+    const de = document.documentElement
+    return {
+      maxX: Math.max(8, de.scrollWidth - 8),
+      maxY: Math.max(8, de.scrollHeight - 8)
+    }
+  }
+
+  function placeHeatDialog() {
+    const dlg = document.getElementById('heatDialog')
+    if (!dlg) return
+    const w = dlg.offsetWidth, h = dlg.offsetHeight
+    const b = heatDialogBounds()
+    let x = window.scrollX + window.innerWidth / 2 - w / 2
+    let y = window.scrollY + window.innerHeight / 2 - h / 2
+    if (heatPos && isFinite(heatPos.x) && isFinite(heatPos.y)) {
+      x = heatPos.x
+      y = heatPos.y
+    }
+    x = Math.min(Math.max(8, x), Math.max(8, b.maxX - w))
+    y = Math.min(Math.max(8, y), Math.max(8, b.maxY - h))
+    dlg.style.left = x + 'px'
+    dlg.style.top = y + 'px'
+  }
+
+  function closeHeat() {
+    clearTimeout(heatTimer)
+    heatTimer = null
+    const dlg = document.getElementById('heatDialog')
+    if (dlg) dlg.classList.remove('show')
+  }
+
   $('#heatBtn').on('click', function () {
-    layer.open({
-      type: 1,
-      title: '情绪热度',
-      area: ['520px', '560px'],
-      maxmin: true,
-      moveOut: true,
-      shade: 0.2,
-      content: '<div style="box-sizing:border-box;padding:6px 12px;">' +
-        '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px;">' +
-          '<div style="font-size:11px;color:#7b857f;">短线 <span id="heatShortVal">--</span> · 市场 <span id="heatMarketVal">--</span> · <span id="heatMeta">加载中…</span></div>' +
-          '<div style="white-space:nowrap;">' +
-            '<button type="button" class="heat-range is-active" data-range="day">当日</button>' +
-            '<button type="button" class="heat-range" data-range="week">5日</button>' +
-          '</div>' +
-        '</div>' +
-        '<div id="heatChart" style="height:300px;"></div>' +
-        '<div id="heatCore" style="font-size:11px;line-height:1.9;border-top:1px dashed rgba(127,127,127,0.3);padding-top:5px;margin-top:4px;">人气核心识别中…</div>' +
-        '<div style="font-size:10px;color:#7b857f;line-height:1.7;margin-top:4px;">短线 = 涨停家数(30-80) / 连板高度(3-6板) / 封板率(50-75%) / 昨涨停表现(-5%~+3%) 等权；市场 = 上涨占比(30-70%) / 主力流入(±50亿) / 亏钱效应(0-6,反向) 等权。固定锚点冷启动口径，当日读数仅供方向参考，收盘判定更准。5 日视图由浏览器按日积累，首次使用不足 5 天属正常。</div>' +
-        '</div>',
-      success: function () {
-        heatChart = null
-        heatMode = 'day'
-        loadHeatHistory()
-        loadHeat()
-        loadHeatPrev()
-        loadHeatCore()
-      },
-      end: function () {
-        clearTimeout(heatTimer)
-        heatTimer = null
-        if (heatChart && !heatChart.isDisposed()) heatChart.dispose()
-        heatChart = null
-      }
-    })
+    $('#heatDialog').addClass('show')
+    placeHeatDialog()
+    heatMode = 'day'
+    $('.heat-range').removeClass('is-active')
+    $('.heat-range[data-range="day"]').addClass('is-active')
+    loadHeatHistory()
+    if (heatChart && !heatChart.isDisposed()) heatChart.resize()
+    loadHeat()
+    loadHeatPrev()
+    loadHeatCore()
     clearInterval(heatTimer)
     heatTimer = setInterval(function () {
       if (!document.hidden) {
@@ -2978,6 +3187,37 @@
         loadHeatCore()
       }
     }, 60000)
+  })
+
+  $('#heatHead').on('mousedown', function (e) {
+    if ($(e.target).closest('#heatClose, .heat-range').length) return
+    const dlg = document.getElementById('heatDialog')
+    heatDrag = { dx: e.pageX - dlg.offsetLeft, dy: e.pageY - dlg.offsetTop }
+    e.preventDefault()
+  })
+  $(document).on('mousemove', function (e) {
+    if (!heatDrag) return
+    const dlg = document.getElementById('heatDialog')
+    const w = dlg.offsetWidth, h = dlg.offsetHeight
+    const b = heatDialogBounds()
+    dlg.style.left = Math.min(Math.max(0, e.pageX - heatDrag.dx), Math.max(0, b.maxX - w)) + 'px'
+    dlg.style.top = Math.min(Math.max(0, e.pageY - heatDrag.dy), Math.max(0, b.maxY - h)) + 'px'
+  })
+  $(document).on('mouseup', function () {
+    if (!heatDrag) return
+    heatDrag = null
+    const dlg = document.getElementById('heatDialog')
+    heatPos = { x: dlg.offsetLeft, y: dlg.offsetTop }
+    localStorage.setItem(HEAT_POS_KEY, JSON.stringify(heatPos))
+  })
+
+  $('#heatClose').on('click', closeHeat)
+  $(document).on('keydown', function (e) {
+    if (e.key === 'Escape' && $('#heatDialog').hasClass('show')) closeHeat()
+  })
+  window.addEventListener('resize', function () {
+    if (heatChart && !heatChart.isDisposed()) heatChart.resize()
+    if ($('#heatDialog').hasClass('show')) placeHeatDialog()
   })
 
   $(document).on('click', '.heat-range', function () {
@@ -3193,6 +3433,177 @@
   $(window).on('resize', function () {
     clearTimeout(lyricsResizeTimer)
     lyricsResizeTimer = setTimeout(function () { centerLyric(lyricIdx, false) }, 150)
+  })
+
+  // ========== 催化推演浮窗：事件源 -> AI 多阶分析 -> 是否推送钉钉 ==========
+  const CAT_API = 'http://127.0.0.1:8788'
+  const CAT_POS_KEY = 'index_catalyst_pos'
+  let catPos = null
+  try { catPos = JSON.parse(localStorage.getItem(CAT_POS_KEY) || 'null') } catch (err) { catPos = null }
+  let catDrag = null
+  let catEvents = []
+  let catCurrent = null
+  let catResult = null
+
+  function catBounds () {
+    const de = document.documentElement
+    return { maxX: Math.max(8, de.scrollWidth - 8), maxY: Math.max(8, de.scrollHeight - 8) }
+  }
+  function placeCatDialog () {
+    const dlg = document.getElementById('catalystDialog')
+    if (!dlg) return
+    const w = dlg.offsetWidth, h = dlg.offsetHeight
+    const b = catBounds()
+    let x = window.scrollX + window.innerWidth / 2 - w / 2
+    let y = window.scrollY + window.innerHeight / 2 - h / 2
+    if (catPos && isFinite(catPos.x) && isFinite(catPos.y)) { x = catPos.x; y = catPos.y }
+    dlg.style.left = Math.min(Math.max(8, x), Math.max(8, b.maxX - w)) + 'px'
+    dlg.style.top = Math.min(Math.max(8, y), Math.max(8, b.maxY - h)) + 'px'
+  }
+  function closeCat () {
+    document.getElementById('catalystDialog').classList.remove('show')
+  }
+  function catApi (path, opts) {
+    return fetch(CAT_API + path, opts || {}).then(function (r) {
+      return r.json().catch(function () { throw new Error('HTTP ' + r.status) })
+    }).then(function (d) {
+      if (!d.ok) throw new Error(d.error || ('HTTP ' + (d.code || '?')))
+      return d
+    })
+  }
+  function catEsc (s) {
+    return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]
+    })
+  }
+  function loadCatEvents () {
+    const list = document.getElementById('catEventList')
+    list.innerHTML = '<div class="cat-empty">加载中…</div>'
+    document.getElementById('catMeta').textContent = '近期事件 · 加载中…'
+    catApi('/api/events?days=3&limit=20').then(function (d) {
+      catEvents = d.events || []
+      document.getElementById('catMeta').textContent = '近期事件 ' + catEvents.length + ' 条' + (d.cached ? '（缓存）' : '')
+      if (!catEvents.length) {
+        list.innerHTML = '<div class="cat-empty">暂无事件，请确认 catalyst 服务已启动</div>'
+        return
+      }
+      list.innerHTML = catEvents.map(function (e, i) {
+        const t = e.title || e.content || '(无标题)'
+        return '<div class="cat-event" data-idx="' + i + '">' +
+          '<div class="t"><span class="cat-src">' + catEsc(e.source || '?') + '</span>' + catEsc(t) + '</div>' +
+          '<div class="m">' + catEsc(e.time || '') + '</div></div>'
+      }).join('')
+    }).catch(function (err) {
+      list.innerHTML = '<div class="cat-empty">加载失败：' + catEsc(err.message) + '</div>'
+    })
+  }
+  function renderCatDetail (d) {
+    const detail = document.getElementById('catDetail')
+    const layers = (d.layers || []).map(function (l) {
+      let items
+      if (Number(l.level) === 3) {
+        const bs = (l.boards || []).map(function (b) { return '<li>' + catEsc(b) + '</li>' }).join('')
+        const cs = (l.criteria || []).join('；')
+        items = '<ul>' + bs + '</ul>' + (cs ? '<div class="cat-falsifier">载体标准：' + catEsc(cs) + '</div>' : '')
+      } else {
+        items = '<ul>' + (l.targets || []).map(function (t) {
+          return '<li>' + catEsc(t.board) + '（' + catEsc(t.direction) + '）：' + catEsc(t.logic) + '</li>'
+        }).join('') + '</ul>'
+      }
+      return '<div class="cat-layer"><h4>' + catEsc(l.level) + '. ' + catEsc(l.name) + '</h4>' + items + '</div>'
+    }).join('')
+    const cands = d.candidates || []
+    const clsMap = { '待发酵': 'wait', '已启动': 'start', '已兑现': 'done' }
+    const table = cands.length
+      ? '<table class="cat-table"><thead><tr><th>代码 / 名称</th><th>题材</th><th>状态</th><th>依据</th></tr></thead><tbody>' +
+        cands.map(function (s) {
+          return '<tr><td>' + catEsc(s.name) + '<br>' + catEsc(s.code) + '</td><td>' + catEsc(s.board) + '</td>' +
+            '<td><span class="cat-badge ' + (clsMap[s.status] || '') + '">' + catEsc(s.status) + '</span></td>' +
+            '<td>' + catEsc(s.reason) + '</td></tr>'
+        }).join('') + '</tbody></table>'
+      : '<div class="cat-empty">暂无符合条件的标的</div>'
+    const conf = typeof d.confidence === 'number' ? (d.confidence * 100).toFixed(0) + '%' : 'n/a'
+    detail.innerHTML =
+      '<h4 style="margin:0 0 8px;font-size:13px;">' + catEsc((d.event && d.event.summary) || (catCurrent && catCurrent.title) || '分析结果') +
+      '<span class="meta" style="font-size:11px;color:var(--muted);font-weight:normal;"> · ' + catEsc(d.type || '') + ' · 置信度 ' + conf + '</span></h4>' +
+      layers +
+      '<div class="cat-falsifier">逻辑削弱条件：' + catEsc(d.falsifier || '未给出') + '</div>' +
+      '<h4 style="margin:12px 0 0;font-size:12px;color:var(--accent);">候选标的（按资金确认状态）</h4>' + table +
+      '<div class="cat-falsifier">模型：' + catEsc(d.model || '') + (d.cached ? ' · 缓存结果' : '') + '</div>'
+    document.getElementById('catPush').disabled = false
+    document.getElementById('catMsg').textContent = '分析仅供参考，非买卖建议'
+  }
+  function analyzeCatEvent (idx) {
+    catCurrent = catEvents[idx]
+    if (!catCurrent) return
+    document.querySelectorAll('.cat-event').forEach(function (el) {
+      el.classList.toggle('is-active', Number(el.getAttribute('data-idx')) === idx)
+    })
+    const detail = document.getElementById('catDetail')
+    detail.innerHTML = '<div class="cat-empty">AI 多阶分析中（首次较慢，约 10-30 秒）…</div>'
+    document.getElementById('catPush').disabled = true
+    catApi('/api/analyze', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event: catCurrent })
+    }).then(function (d) {
+      catResult = d
+      renderCatDetail(d)
+    }).catch(function (err) {
+      detail.innerHTML = '<div class="cat-empty">分析失败：' + catEsc(err.message) + '</div>'
+      document.getElementById('catMsg').textContent = '分析失败，请稍后重试'
+    })
+  }
+  function openCatDialog (e) {
+    if (e) { e.preventDefault(); e.stopPropagation() }
+    $('#catalystDialog').addClass('show')
+    placeCatDialog()
+    loadCatEvents()
+  }
+  $(document).on('click', '#catalystEntry', openCatDialog)
+  $('#catalystBtn').on('click', openCatDialog)
+  $(document).on('click', '.cat-event', function () { analyzeCatEvent(Number($(this).attr('data-idx'))) })
+  $('#catClose').on('click', closeCat)
+  $(document).on('keydown', function (e) {
+    if (e.key === 'Escape' && $('#catalystDialog').hasClass('show')) closeCat()
+  })
+  $('#catalystHead').on('mousedown', function (e) {
+    if ($(e.target).closest('#catClose').length) return
+    const dlg = document.getElementById('catalystDialog')
+    catDrag = { dx: e.pageX - dlg.offsetLeft, dy: e.pageY - dlg.offsetTop }
+    e.preventDefault()
+  })
+  $(document).on('mousemove', function (e) {
+    if (!catDrag) return
+    const dlg = document.getElementById('catalystDialog')
+    const w = dlg.offsetWidth, h = dlg.offsetHeight
+    const b = catBounds()
+    dlg.style.left = Math.min(Math.max(0, e.pageX - catDrag.dx), Math.max(0, b.maxX - w)) + 'px'
+    dlg.style.top = Math.min(Math.max(0, e.pageY - catDrag.dy), Math.max(0, b.maxY - h)) + 'px'
+  })
+  $(document).on('mouseup', function () {
+    if (!catDrag) return
+    catDrag = null
+    const dlg = document.getElementById('catalystDialog')
+    catPos = { x: dlg.offsetLeft, y: dlg.offsetTop }
+    localStorage.setItem(CAT_POS_KEY, JSON.stringify(catPos))
+  })
+  $('#catPush').on('click', function () {
+    if (!catResult || !catCurrent) return
+    if (!window.confirm('确认将该催化卡推送到钉钉群？')) return
+    const btn = this
+    btn.disabled = true
+    document.getElementById('catMsg').textContent = '推送中…'
+    catApi('/api/push', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ event: catCurrent, result: catResult, card: catResult.card })
+    }).then(function (d) {
+      document.getElementById('catMsg').textContent = d.ok ? '已推送钉钉 ✓' : ('推送失败：' + (d.error || '未知错误'))
+    }).catch(function (err) {
+      document.getElementById('catMsg').textContent = '推送失败：' + err.message
+    }).finally(function () { btn.disabled = false })
+  })
+  window.addEventListener('resize', function () {
+    if ($('#catalystDialog').hasClass('show')) placeCatDialog()
   })
 </script>
 

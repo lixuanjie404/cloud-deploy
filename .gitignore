@@ -72,6 +72,7 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 .vscode-test
 .qoder/
 .atomcode/local/
+.claude/
 
 # ===== 系统文件 =====
 .DS_Store
@@ -90,6 +91,7 @@ venv/
 # ===== 本项目：agent 运行时与校验临时产物 =====
 .zwork/
 .tmp/
+_tmp/
 
 # ===== WorkBuddy 工作区数据（记忆 / 配置，勿删、不入库）=====
 .workbuddy/

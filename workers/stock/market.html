@@ -608,7 +608,8 @@
           const pvalue = platetype === 'strong'
             ? val.val
             : fmtMoney(val.val)
-          const zt = '<span class="zt-badge">' + (val.ztcount || 0) + ' 涨停</span>'
+          const ztCount = Number(val.ztcount) || 0
+          const zt = ztCount ? '<span class="zt-badge">' + ztCount + ' 涨停</span>' : ''
           return '<tr class="plate-row" data-code="' + val.code + '">' +
             '<td style="color:var(--muted);">' + (i + 1) + '</td>' +
             '<td>' + val.name + '</td>' +
@@ -624,15 +625,119 @@
       // 但个股行本身不带子板块归属，所以用「重新按子板块 code 拉明细」的方式过滤。
       let activeSubCode = ''        // 当前选中的子板块 code，''=全部
       let subplateCache = {}        // plateCode -> { html, ts }，55 秒 TTL（短于 60 秒刷新周期）
+      let pendingAll = {}           // 'all:<code>' -> { render }，并集拉取去重/补渲染
 
       function renderStockRows(html) {
         $('#stockBody').html(html || '<tr><td colspan="8" class="state">该板块暂无个股</td></tr>')
       }
 
-      // 按 code 拉个股明细并渲染；code 为空时回退到父板块全部。
+      // 个股行首列是 6 位代码，用它做合并去重
+      function stockCodeOf(row) {
+        const m = row.match(/width:70px;'>(\d+)<\/td>/)
+        return m ? m[1] : ''
+      }
+
+      // 接口每个板块只返回 50 只，「全部」取父板块 + 所有子板块的并集
+      // silent=true 后台预取，不打断当前视图
+      function fetchAllStockRows(silent) {
+        const parent = lastPlateCode
+        const key = 'all:' + parent
+        const hit = subplateCache[key]
+        if (hit && Date.now() - hit.ts < 300000) {
+          if (!silent) renderStockRows(hit.html)
+          return
+        }
+        if (pendingAll[key]) {
+          pendingAll[key].render = pendingAll[key].render || !silent
+          if (!silent) renderStockRows('<tr><td colspan="8" class="state">全部标的加载中…</td></tr>')
+          return
+        }
+        pendingAll[key] = { render: !silent }
+        if (!silent) renderStockRows('<tr><td colspan="8" class="state">全部标的加载中…</td></tr>')
+        const codes = [parent]
+        $('#subplate .subplate').each(function () {
+          const c = (($(this).attr('platecode') || $(this).attr('plateCode') || '') + '').trim()
+          if (c && c !== parent) codes.push(c)
+        })
+        const parts = {}
+        const tries = {}
+        let left = codes.length
+        const request = function (c, next) {
+          const settle = function (html) {
+            parts[c] = html
+            merge()
+            next()
+          }
+          $.ajax({
+            type: 'POST',
+            url: API + '/getWebKaipanStock',
+            data: { plateCode: c },
+            dataType: 'json',
+            success: function (d2) {
+              const html = (d2 && d2.result) || ''
+              // 并发高时接口偶发返回 null，空结果也重试
+              if (!html && (tries[c] || 0) < 2) {
+                tries[c] = (tries[c] || 0) + 1
+                setTimeout(function () { request(c, next) }, 300)
+                return
+              }
+              settle(html)
+            },
+            error: function () {
+              if ((tries[c] || 0) < 2) {
+                tries[c] = (tries[c] || 0) + 1
+                setTimeout(function () { request(c, next) }, 300)
+              } else {
+                settle('')
+              }
+            }
+          })
+        }
+        const merge = function () {
+          if (--left > 0) return
+          const seen = {}
+          const rows = []
+          codes.forEach(function (c) {
+            const list = (parts[c] || '').match(/<tr[\s\S]*?<\/tr>/g) || []
+            list.forEach(function (row) {
+              const code = stockCodeOf(row)
+              if (code && !seen[code]) {
+                seen[code] = 1
+                rows.push(row)
+              }
+            })
+          })
+          // data-sort-value = 100 - 涨幅，升序即涨幅倒序，合并后重新全局排序
+          const zf = function (row) {
+            const m = row.match(/data-sort-value='([0-9.]+)' class='zf/)
+            return m ? Number(m[1]) : 100
+          }
+          rows.sort(function (a, b) { return zf(a) - zf(b) })
+          const html = rows.join('')
+          subplateCache[key] = { html: html, ts: Date.now() }
+          const p = pendingAll[key]
+          delete pendingAll[key]
+          if (p && p.render && !activeSubCode && lastPlateCode === parent) renderStockRows(html)
+        }
+        // 分批并发，避免接口在大量并发下返回 null
+        let idx = 0
+        const pump = function () {
+          const batch = []
+          while (batch.length < 10 && idx < codes.length) batch.push(codes[idx++])
+          batch.forEach(function (c) { request(c, pump) })
+        }
+        pump()
+      }
+
+      // 按 code 拉个股明细并渲染；code 为空时取父板块 + 所有子板块的并集。
       // force=true 忽略缓存（自动刷新用），命中缓存且未过期则直接用。
       function fetchStockRows(code, force) {
-        const target = code || lastPlateCode
+        if (!code) {
+          // 已有并集缓存就继续用；首次进入先快速展示父板块，点「全部」再拉并集
+          if (subplateCache['all:' + lastPlateCode]) return fetchAllStockRows()
+          code = lastPlateCode
+        }
+        const target = code
         renderStockRows('<tr><td colspan="8" class="state">标的加载中…</td></tr>')
         const hit = subplateCache[target]
         if (!force && hit && Date.now() - hit.ts < 55000) {
@@ -675,6 +780,7 @@
             const html = data.result || ''
             $('#subplate').html(
               '<button type="button" class="btn btn-default btn-xs subplate is-active" ' +
+              'style="font-size:12px;float:left;border-radius:0;margin-left:7px;margin-top:10px;" ' +
               'plateCode="' + code + '" plateName="全部">全部</button>' + html)
             if (activeSubCode) {
               // 刷新后恢复原来的子板块选中态
@@ -693,6 +799,10 @@
               }
             }
             fetchStockRows(activeSubCode, true)
+            // 后台预取并集，用户点「全部」时可直接秒切
+            if (!subplateCache['all:' + code]) {
+              setTimeout(function () { if (lastPlateCode === code) fetchAllStockRows(true) }, 1200)
+            }
           },
           error: function () {
             $('#subplate').html('<span class="state">子板块暂不可用</span>')
@@ -1039,7 +1149,8 @@
         $('#detailTitle').text(activeSubCode
           ? '标的强度 · ' + (base ? base + ' / ' : '') + subName
           : '标的强度 · ' + (base || '全部'))
-        fetchStockRows(activeSubCode)   // 空串回退父板块全部；命中缓存则秒切
+        if (activeSubCode) fetchStockRows(activeSubCode)   // 子板块：单接口
+        else fetchAllStockRows()                          // 全部：父板块 + 所有子板块并集
       })
 
       $('#stockBody').on('click', 'tr.kpstock', function (e) {
