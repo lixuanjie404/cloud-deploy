@@ -2488,10 +2488,27 @@
     return axis
   }
 
+  // 分时纵轴按涨跌停坐标：按代码/名称推断涨跌幅限制（ST 5%、创业/科创 20%、北交所 30%、其余 10%）
+  function priceLimitPct (code, name) {
+    if (/ST/i.test(String(name || ''))) return 5
+    const c = String(code || '')
+    if (/^(30|68)/.test(c)) return 20
+    if (/^[48]/.test(c)) return 30
+    return 10
+  }
+
   function renderIntraday (el, data) {
     const theme = chartTheme()
     const pre = data.preClose
     const bars = data.points || []
+    // 上下边界固定为涨跌停价；若价格越界（如新股无涨跌幅限制）则回退自适应
+    const limitPct = pre ? priceLimitPct(data.code, data.name) : 0
+    let lo = null, hi = null
+    if (pre && limitPct) {
+      lo = pre * (1 - limitPct / 100)
+      hi = pre * (1 + limitPct / 100)
+      if (bars.some(function (b) { return b.price < lo || b.price > hi })) { lo = null; hi = null }
+    }
     const dates = bars.map(function (b) { return b.time })
     const axis = padIntradayAxis(dates)
     const padTail = function (arr) {
@@ -2535,7 +2552,7 @@
           ].join('<br>')
         },
       },
-      grid: { left: 2, right: 46, top: 8, bottom: 18, containLabel: false },
+      grid: { left: 2, right: 54, top: 8, bottom: 18, containLabel: false },
       xAxis: {
         type: 'category', data: axis, boundaryGap: false,
         axisLine: { lineStyle: { color: theme.axisColor } }, axisTick: { show: false },
@@ -2549,10 +2566,21 @@
       },
       yAxis: [
         {
-          scale: true, position: 'right',
+          type: 'value',
+          min: lo, max: hi,
+          interval: lo != null ? pre * limitPct / 200 : undefined,
+          splitNumber: 4,
+          scale: lo == null, position: 'right',
           axisLine: { show: false }, axisTick: { show: false },
           splitLine: { lineStyle: { color: theme.dark ? '#333' : '#eef0ec' } },
-          axisLabel: { color: theme.textColor, fontSize: 9, formatter: function (v) { return v.toFixed(1) } },
+          axisLabel: {
+            color: theme.textColor, fontSize: 9, lineHeight: 11,
+            formatter: function (v) {
+              if (lo == null) return v.toFixed(2)
+              const p = ((v - pre) / pre) * 100
+              return (p > 0 ? '+' : '') + p.toFixed(1).replace(/\.0$/, '') + '%\n' + v.toFixed(2)
+            },
+          },
         },
         {
           position: 'right', show: false,
@@ -2571,7 +2599,7 @@
           markLine: {
             symbol: 'none', silent: true,
             lineStyle: { type: 'dashed', width: 1, color: theme.dark ? '#68716c' : '#b9c2bc' },
-            label: { formatter: '昨收 ' + pre.toFixed(2), fontSize: 9, color: theme.textColor, position: 'insideEndTop' },
+            label: { formatter: '0% · 昨收 ' + pre.toFixed(2), fontSize: 9, color: theme.textColor, position: 'insideEndTop' },
             data: [{ yAxis: pre }],
           },
         },
