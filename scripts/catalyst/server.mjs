@@ -39,7 +39,8 @@ const keyOf = (e) => String(e.id || e.title || e.content || '').slice(0, 80)
 
 async function marketData () {
   if (cache.market && Date.now() - cache.market.ts < TTL.market) return cache.market.data
-  const boards = await fetchConceptBoards()
+  let boards = []
+  try { boards = await fetchConceptBoards() } catch (err) { console.warn('[catalyst] 板块数据降级为空:', err.message) }
   let ztMap = new Map(); let flowMap = new Map()
   try { ztMap = await fetchZTPool(new Date().toISOString().slice(0, 10)) } catch { /* 降级为空 */ }
   try { flowMap = await fetchMainFlow() } catch { /* 降级为空 */ }
@@ -54,12 +55,15 @@ app.get('/api/events', async (req, res) => {
   try {
     const days = Math.min(7, Math.max(1, Number(req.query.days) || 3))
     const limit = Math.min(40, Math.max(1, Number(req.query.limit) || 20))
-    if (cache.events && Date.now() - cache.events.ts < TTL.events && cache.events.days === days) {
-      return res.json({ ok: true, cached: true, events: cache.events.data })
+    // source: both（默认）| dingtalk | xinhua —— 前端页签切换用
+    const source = ['both', 'dingtalk', 'xinhua'].includes(req.query.source) ? req.query.source : 'both'
+    if (cache.events && Date.now() - cache.events.ts < TTL.events &&
+        cache.events.days === days && cache.events.source === source) {
+      return res.json({ ok: true, cached: true, source, events: cache.events.data })
     }
-    const events = await collectEvents({ days, limit, sources: 'both' })
-    cache.events = { ts: Date.now(), days, data: events }
-    res.json({ ok: true, cached: false, events })
+    const events = await collectEvents({ days, limit, sources: source })
+    cache.events = { ts: Date.now(), days, source, data: events }
+    res.json({ ok: true, cached: false, source, events })
   } catch (err) {
     res.status(500).json({ ok: false, error: String(err.message || err).slice(0, 300) })
   }
@@ -95,6 +99,7 @@ app.post('/api/analyze', async (req, res) => {
     const data = {
       type: classified.type,
       event: result.event || {},
+      mentionedStocks: result.mentionedStocks || [],
       layers: result.layers || [],
       falsifier: result.falsifier || '',
       confidence: result.confidence,

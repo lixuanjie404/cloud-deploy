@@ -95,3 +95,4 @@ _tmp/
 
 # ===== WorkBuddy 工作区数据（记忆 / 配置，勿删、不入库）=====
 .workbuddy/
+.wrangler-local/

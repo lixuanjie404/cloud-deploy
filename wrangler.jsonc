@@ -18,6 +18,40 @@
 		"enabled": true
 	},
 	/**
+	 * 定时任务（workers/cron.js）
+	 * - 5 7 * * 1-5：07:05 UTC ≈ 15:05 北京，周一至周五批量拉日线落表；节假日靠取数返回空自动跳过。
+	 * - 0 * * * *：每小时拉东财/同花顺/雪球/淘股吧热门人气股落 hot_stock，候选池读表。
+	 * 全量灌历史用本地 `wrangler dev --test-scheduled` 或临时设 BACKFILL=on，不常态开启。
+	 */
+	"triggers": {
+		"crons": ["5 7 * * 1-5", "0 * * * *"]
+	},
+	"vars": {
+		"WATCHLIST": "600127,002242,600519,300750,000002",
+		"INDEX_CODES": "000300",
+		"UPSERT_TAIL": "120",
+		"BACKFILL": "off",
+		"LLM_BASE": "https://open.bigmodel.cn/api/paas/v4",
+		"LLM_MODELS": "glm-4-flash-250414",
+		/**
+		 * LLM 多通道降级配置（JSON 字符串；按数组顺序尝试，未配置密钥的通道自动跳过）。
+		 * 格式：[{"base":接口地址,"keyEnv":密钥变量名,"models":[模型ID]}]
+		 * 当前顺序：智谱 glm-4-flash-250414 优先 → OpenRouter 免费模型兜底。
+		 * 未设置 LLM_API_KEY secret 时，第一通道被跳过，自动走 OpenRouter。
+		 * 智谱账户需有可用余额，否则该通道会失败并降级到 OpenRouter。
+		 */
+		"LLM_PROVIDERS": "[{\"base\":\"https://open.bigmodel.cn/api/paas/v4\",\"keyEnv\":\"LLM_API_KEY\",\"models\":[\"glm-4-flash-250414\"]},{\"base\":\"https://openrouter.ai/api/v1\",\"keyEnv\":\"OPENROUTER_API_KEY\",\"models\":[\"openrouter/free\"]}]"
+	},
+	/**
+	 * 敏感凭证走 wrangler secret（不入库），本地开发用 .dev.vars 提供同名变量：
+	 *   LLM_API_KEY       —— 智谱兼容接口 Key
+	 *   OPENROUTER_API_KEY —— OpenRouter Key（可选；未设置则跳过 OpenRouter 通道，走智谱）
+	 *   XINHUA_KEY      —— 新华财经 MCP Key
+	 *   DINGTALK_WEBHOOK —— 钉钉群机器人 Webhook（access_token 地址）
+	 *   DINGTALK_SECRET  —— 钉钉加签密钥（SEC 开头；用关键词模式则设 DINGTALK_KEYWORD）
+	 * 部署命令：wrangler secret put LLM_API_KEY（其余同理）。详见 README。
+	 */
+	/**
 	 * MySQL（Hyperdrive 绑定）
 	 *
 	 * id 已指向已创建的 Hyperdrive 配置；源库需公网可达并支持 TLS。

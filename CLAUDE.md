@@ -64,8 +64,9 @@ python scripts/check-ui-text.py --verbose  # 额外打印第二档命中分布�
 
 ```bash
 # Cloudflare Workers 开发（默认）
-npm run dev      # 启动 wrangler 开发服务器
-npm run deploy   # 部署到 Cloudflare Workers
+npm run dev      # 启动 wrangler 开发服务器（单端口 8787，含全部催化推演功能）
+npm run deploy   # 部署到 Cloudflare Workers（单端口/域名）
+npm run sync:dingtalk -- --days 7  # 手动同步钉钉群消息落库（本机 dws CLI，幂等）
 
 ```
 
@@ -109,8 +110,8 @@ npx wrangler hyperdrive create stock-mysql --connection-string="mysql://user:pas
 
 # 2. 把返回的 id 填到 wrangler.jsonc 的 hyperdrive 段（已预留注释模板）
 
-# 3. 本地调试先用 .dev.vars（参考 .dev.vars.example）
-cp .dev.vars.example .dev.vars
+# 3. 本地配置：从 config.example.json 拷到项目上一层，重命名 cloud-deploy.config.json 并填值
+#    （见 README「一、在新机器上运行」）
 npm run dev
 ```
 
@@ -151,7 +152,8 @@ npm run dev
 
 ## 配置
 
-- **`wrangler.jsonc`**: Cloudflare Workers 配置 — 使用 `workers/index.js` 作为入口，静态资源来自 `workers/stock/`，启用 Node.js 兼容性
+- **统一配置文件**：项目上一层的 `cloud-deploy.config.json`（模板 `config.example.json`）。专案不再直接引用 ai-stock / ai+stock 的项目文件。`scripts/config.mjs` 是唯一加载器，优先级：环境变量 > 配置文件 > 默认值。新机器运行 = 拉取项目 + 拷配置文件到上一层。详见 README。
+- **`wrangler.jsonc`**: Cloudflare Workers 配置 — 使用 `workers/index.js` 作为入口，静态资源来自 `workers/stock/`，启用 Node.js 兼容性。核心展示功能纯 fetch 东财、部署即用；`hyperdrive` id 换账号时需改。
 
 ## 代码规范
 

@@ -37,3 +37,16 @@ MYSQL_DATABASE=market
 
 # 可选白名单：只允许读取这些表，逗号分隔；留空表示可读全库（不建议）
 DB_TABLES=
+
+# 三、LLM 通道（AI 催化分析，线上走 wrangler secret，本地写这里）
+#   通道顺序与模型见 wrangler.jsonc 的 LLM_PROVIDERS：
+#   1) 智谱 glm-4-flash-250414 —— LLM_API_KEY，未填自动跳过
+#   2) OpenRouter 免费模型（openrouter/free）—— OPENROUTER_API_KEY
+LLM_API_KEY=
+OPENROUTER_API_KEY=
+
+# 四、duanxianxia 异动解析代理（辨识度候选池的炒作题材）
+#   登录 duanxianxia.com 后取 localStorage['app:auth-token:v1'] 里的 accessToken。
+#   JWT 约 3 天过期，失效（401）需更换；线上走 wrangler secret put DXX_TOKEN。
+#   免费账号每日次数有限：接口侧已做缓存与每次现拉预算，未覆盖标的回退同花顺涨停解析。
+DXX_TOKEN=

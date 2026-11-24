@@ -14,6 +14,11 @@ export function renderCard({ event, result, candidates, date }) {
     ? candidates.slice(0, 8).map((s) =>
         `  - ${s.name}(${s.code}) · ${s.board} · ${s.status} · ${s.reason} · 涨幅${s.chg}%`).join('\n')
     : '  - 暂无满足条件的标的（或接口未返回）'
+  const stocks = result.mentionedStocks || []
+  const stockText = stocks.length
+    ? stocks.map((s) =>
+      `  - ${s.name}${s.code ? '(' + s.code + ')' : ''}${s.context ? '：' + s.context : ''}`).join('\n')
+    : '  - 原文未明确提及公司'
   const confidence = typeof result.confidence === 'number' ? result.confidence.toFixed(2) : 'n/a'
   return [
     '【催化卡】' + (ev.summary || event.title || '未命名事件'),
@@ -22,6 +27,9 @@ export function renderCard({ event, result, candidates, date }) {
     '',
     '推演链：',
     layerText,
+    '',
+    '文中提到的公司：',
+    stockText,
     '',
     `逻辑削弱条件：${result.falsifier || '未给出'}`,
     '',

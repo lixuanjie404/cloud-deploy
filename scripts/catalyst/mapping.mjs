@@ -2,10 +2,19 @@
 const EM_HEADERS = { Referer: 'https://quote.eastmoney.com/', 'User-Agent': 'Mozilla/5.0' }
 const UT = '7eea3edcaed734bea9cbfc24409ed989'
 
-async function getJson(url) {
-  const res = await fetch(url, { headers: EM_HEADERS, signal: AbortSignal.timeout(20000) })
-  if (!res.ok) throw new Error(`HTTP ${res.status}`)
-  return res.json()
+async function getJson(url, attempts = 3) {
+  let lastErr
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const res = await fetch(url, { headers: EM_HEADERS, signal: AbortSignal.timeout(20000) })
+      if (!res.ok) throw new Error(`HTTP ${res.status}`)
+      return await res.json()
+    } catch (err) {
+      lastErr = err
+      if (i < attempts - 1) await new Promise((r) => setTimeout(r, 400 * (i + 1)))
+    }
+  }
+  throw lastErr
 }
 
 export async function fetchConceptBoards() {

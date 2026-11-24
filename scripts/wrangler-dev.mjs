@@ -10,14 +10,16 @@
  * - 该环境变量是 wrangler 自己从进程环境读的：shell 或 .env 有效，
  *   .dev.vars 只会注入 Worker 运行时，对这处校验无效。
  *
- * 本脚本从 .dev.vars / .env 的 MYSQL_*（或 DB_*）自动拼出 mysql:// 连接串，
- * 避免把明文口令写进受版本控制的 wrangler.jsonc。
+ * 本脚本从项目上一层的 cloud-deploy.config.json 的 db 段拼出 mysql:// 连接串
+ * （也可被 shell 环境变量覆盖），避免把明文口令写进受版本控制的 wrangler.jsonc。
+ * 新机器运行：拉取项目 + 把配置文件拷到上一层 → npm run dev。
  * 命令行参数原样透传：npm run dev -- --remote / --port 8799
  */
 import { spawn } from 'node:child_process'
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readFileSync, mkdirSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { dbConfig } from './config.mjs'
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const BINDING = 'HYPERDRIVE'
@@ -62,6 +64,17 @@ if (!connectionString) {
 }
 
 if (!connectionString) {
+  // 优先：统一配置文件（项目上一层）的 db 段
+  const cfg = dbConfig()
+  connectionString = buildMysqlUri({
+    MYSQL_HOST: cfg.host, MYSQL_PORT: cfg.port, MYSQL_USERNAME: cfg.user,
+    MYSQL_PASSWORD: cfg.password, MYSQL_DATABASE: cfg.database,
+  })
+  if (connectionString) source = '项目上一层的 cloud-deploy.config.json (db)'
+}
+
+if (!connectionString) {
+  // 兼容旧方式：.dev.vars / .env 的 MYSQL_*（或 DB_*）
   connectionString = buildMysqlUri({ ...parseDotEnv('.dev.vars'), ...parseDotEnv('.env') })
   if (connectionString) source = '.dev.vars / .env 的 MYSQL_*（或 DB_*）'
 }
@@ -82,9 +95,22 @@ if (!existsSync(wranglerBin)) {
   process.exit(1)
 }
 
+// wrangler 默认把 registry / logs 写到用户主目录（C:\Users\admin\.wrangler），
+// 在受限沙箱里会触发 EPERM 导致长时运行后进程退出。重定向到项目内目录规避。
+const localWrangler = path.join(root, '.wrangler-local')
+const registryDir = path.join(localWrangler, 'registry')
+const logDir = path.join(localWrangler, 'logs')
+mkdirSync(registryDir, { recursive: true })
+mkdirSync(logDir, { recursive: true })
+
 const child = spawn(process.execPath, [wranglerBin, 'dev', ...process.argv.slice(2)], {
   cwd: root,
-  env: { ...process.env, [ENV_KEY]: connectionString },
+  env: {
+    ...process.env,
+    [ENV_KEY]: connectionString,
+    WRANGLER_REGISTRY_PATH: registryDir,
+    WRANGLER_LOG_PATH: logDir,
+  },
   stdio: 'inherit',
 })
 

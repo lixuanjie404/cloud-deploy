@@ -32,7 +32,7 @@ export async function fetchDingTalk({ days = 1, maxItems = 200 } = {}) {
       source: '钉钉群',
       title: String(m.subject || m.title || '').trim(),
       content: String(m.content || m.text || m.contentSnippet || '').trim(),
-      time: m.createAt || m.createdAt || m.time || '',
+      time: m.createTime || m.createAt || m.createdAt || m.time || '',
       sender: m.senderName || m.sender || '',
       url: '',
     })).filter((e) => e.content)

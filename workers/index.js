@@ -11,6 +11,11 @@
 import { handleDbRequest } from './db.js'
 import { handleKlineRequest } from './kline.js'
 import { handleIntradayRequest } from './intraday.js'
+import { handleFeatRequest } from './feat.js'
+import { handleAnalyze } from './analyze/index.mjs'
+import { handlePush } from './push.js'
+import { handleEvents } from './events.js'
+import { scheduled as cronScheduled } from './cron.js'
 
 const dxxHost = 'https://duanxianxia.cn'
 
@@ -20,6 +25,11 @@ const routes = [
 ]
 
 export default {
+  // 定时批量拉取日线落表；读接口只读，催化分析异步补拉除外
+  async scheduled (controller, env, ctx) {
+    return cronScheduled(controller, env, ctx)
+  },
+
   async fetch (request, env, ctx) {
     const url = new URL(request.url)
 
@@ -36,6 +46,26 @@ export default {
     // 分时量能（今日进度 · 量）
     if (url.pathname.startsWith('/api/intraday/')) {
       return handleIntradayRequest(request, env, url)
+    }
+
+    // 辨识度因子（K 线类现拉现算，只读）
+    if (url.pathname.startsWith('/api/feat/')) {
+      return handleFeatRequest(request, env, url, ctx)
+    }
+
+    // 催化推演：事件源（钉钉从库/新华实时）
+    if (url.pathname === '/api/catalyst/events') {
+      return handleEvents(request, env, url)
+    }
+
+    // 催化推演：AI 多阶分析（上云；命中标的后 ctx.waitUntil 异步补拉日K入库）
+    if (url.pathname === '/api/analyze') {
+      return handleAnalyze(request, env, ctx)
+    }
+
+    // 催化推演：钉钉群机器人推送（上云）
+    if (url.pathname === '/api/push') {
+      return handlePush(request, env)
     }
 
     switch (url.pathname) {

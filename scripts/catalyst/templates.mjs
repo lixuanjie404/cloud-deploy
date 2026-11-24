@@ -40,6 +40,9 @@ const SYSTEM = `你是 A 股题材推演助手。只做逻辑推演与题材归�
 输出结构：
 {
   "event": {"type": "事件类型", "summary": "一句话概括", "entities": ["关键实体"]},
+  "mentionedStocks": [
+    {"name": "个股名称或简称", "code": "6位代码（原文给出时填，否则留空）", "context": "原文中提及此股的简短描述"}
+  ],
   "layers": [
     {"level": 1, "name": "直接影响", "targets": [{"board": "板块名", "direction": "利好|利空", "logic": "理由"}]},
     {"level": 2, "name": "反向/替代受益", "targets": [{"board": "板块名", "direction": "利好|利空", "logic": "理由"}]},
@@ -52,7 +55,9 @@ const SYSTEM = `你是 A 股题材推演助手。只做逻辑推演与题材归�
 1. board 字段必须逐字取自「可选板块列表」，禁止自造板块名、禁止输出股票代码。
 2. 每一层最多 4 个 board，总数为 3-8 个。
 3. logic 用中文，一句话，不超过 40 字。
-4. 不确定时降低 confidence，不要编造。`
+4. 不确定时降低 confidence，不要编造。
+5. mentionedStocks 只列消息原文中明确提到的个股（含简称/别名），不要从板块推演补充，不要编造；原文未提及则给空数组。code 仅在原文明确给出时填写，否则留空。最多 10 个。
+6. 若上下文附带联网检索资料，只能据此推演，仍严格输出上述 JSON；禁止输出引用标记（如 [来源:ref_1]）、来源清单或解释性文字。`
 
 export function buildMessages(event, boardNames, classified) {
   const tpl = classified.template
@@ -67,6 +72,7 @@ export function buildMessages(event, boardNames, classified) {
     `请按以下推演重点展开：${tpl.focus}`,
     layerText,
     `反事实检查：${tpl.falsifierHint}`,
+    `请单独列出消息原文中明确提到的个股（名称/简称及原文给出的代码），最多 10 个；原文没有就给空数组。`,
     '',
     `可选板块列表（board 字段只能从中逐字选取）：`,
     boardNames.join('、'),

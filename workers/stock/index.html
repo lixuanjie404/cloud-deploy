@@ -651,11 +651,19 @@
       .cat-body { display: flex; min-height: 420px; max-height: 68vh; }
       .cat-events { width: 300px; flex: none; border-right: 1px solid var(--timeline-border); overflow-y: auto; }
       .cat-events-head { padding: 8px 12px; font-size: 11px; color: var(--muted); border-bottom: 1px dashed var(--timeline-border); display: flex; justify-content: space-between; gap: 6px; }
+      .cat-tabs { display: flex; gap: 4px; padding: 6px 8px; border-bottom: 1px solid var(--timeline-border); }
+      .cat-tab { font-family: inherit; font-size: 11px; padding: 3px 10px; border: 1px solid var(--timeline-border); border-radius: 11px; background: transparent; color: var(--muted); cursor: pointer; }
+      .cat-tab:hover { color: var(--accent); border-color: var(--accent); }
+      .cat-tab.is-active { background: var(--accent-soft); color: var(--accent); border-color: var(--accent); font-weight: 600; }
+      .cat-search { position: sticky; top: 0; z-index: 2; padding: 6px 8px; background: var(--card); border-bottom: 1px dashed var(--timeline-border); }
+      .cat-search input { width: 100%; box-sizing: border-box; font-family: inherit; font-size: 11px; padding: 4px 8px; border: 1px solid var(--timeline-border); border-radius: 4px; background: transparent; color: var(--text); }
       .cat-event { padding: 9px 12px; border-bottom: 1px solid var(--timeline-border); cursor: pointer; }
       .cat-event:hover { background: var(--accent-soft); }
       .cat-event.is-active { background: var(--accent-soft); border-left: 3px solid var(--accent); padding-left: 9px; }
       .cat-event .t { font-size: 12px; line-height: 1.5; }
       .cat-event .m { font-size: 10px; color: var(--muted); margin-top: 4px; }
+      .cat-event .cat-toggle { margin-left: 8px; padding: 0 5px; font-size: 10px; color: var(--accent); border: 1px solid var(--timeline-border); border-radius: 3px; }
+      .cat-preview { margin-top: 8px; padding: 8px 10px; max-height: 240px; overflow-y: auto; background: var(--accent-soft); border: 1px solid var(--timeline-border); border-radius: 4px; font-size: 11px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
       .cat-src { display: inline-block; font-size: 10px; padding: 0 5px; border: 1px solid var(--timeline-border); border-radius: 3px; margin-right: 6px; }
       .cat-detail { flex: 1; overflow-y: auto; padding: 12px 14px; min-width: 0; }
       .cat-layer { margin-bottom: 10px; }
@@ -665,6 +673,8 @@
       .cat-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 6px; }
       .cat-table th { text-align: left; color: var(--muted); font-weight: normal; border-bottom: 1px solid var(--timeline-border); padding: 4px 5px; }
       .cat-table td { border-bottom: 1px solid var(--timeline-border); padding: 4px 5px; }
+      .cat-stock-link { color: var(--accent); text-decoration: none; cursor: pointer; }
+      .cat-stock-link:hover { text-decoration: underline; }
       .cat-badge { font-size: 10px; padding: 0 5px; border-radius: 3px; border: 1px solid var(--timeline-border); white-space: nowrap; }
       .cat-badge.wait { color: var(--accent); border-color: var(--accent); }
       .cat-badge.start { color: #b8860b; border-color: #b8860b; }
@@ -672,6 +682,12 @@
       .cat-foot { display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding: 8px 14px; border-top: 1px solid var(--timeline-border); }
       .cat-push { font-family: inherit; font-size: 12px; padding: 5px 14px; border: 1px solid var(--accent); border-radius: 5px; background: var(--accent); color: #fff; cursor: pointer; }
       .cat-push:disabled { opacity: .5; cursor: not-allowed; }
+      .cat-reanalyze { background: transparent; color: var(--accent); }
+      .cat-more { cursor: pointer; }
+      .cat-more:hover { color: var(--accent); }
+      .cat-loading { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 24px 12px; font-size: 12px; color: var(--muted); }
+      .cat-spinner { width: 13px; height: 13px; flex: none; border: 2px solid var(--timeline-border); border-top-color: var(--accent); border-radius: 50%; animation: cat-spin .7s linear infinite; }
+      @keyframes cat-spin { to { transform: rotate(360deg) } }
       .cat-msg { font-size: 11px; color: var(--muted); margin-right: auto; }
       .cat-empty { color: var(--muted); font-size: 12px; padding: 24px 12px; text-align: center; }
 
@@ -1690,7 +1706,7 @@
             <strong>支线</strong>
             <small>浏览 / 归档</small>
           </div>
-          <div class="timeline-slot" tabindex="0" data-links="#/news.html|https://duanxianxia.cn/web/jjlive|#trend-intraday|https://wenda.tdx.com.cn/site/wenda/stock_index.html?message=去除st,去除北交所,成交额前100,量比,实际换手率|https://wenda.tdx.com.cn/site/wenda/page-user-center.html|/qxlive.html">
+          <div class="timeline-slot" tabindex="0" data-links="#/news.html|https://duanxianxia.cn/web/jjlive|https://wenda.tdx.com.cn/site/wenda/stock_index.html?message=去除st,去除北交所,成交额前100,量比,实际换手率|https://wenda.tdx.com.cn/site/wenda/page-user-center.html|/qxlive.html">
             <span class="timeline-dot"></span>
             <span class="timeline-label">早间工具</span>
             <span class="timeline-hint">展开入口</span>
@@ -1699,7 +1715,6 @@
               <div class="timeline-links">
                 <a href="#/news.html" id="news">快讯</a>
                 <a href="https://duanxianxia.cn/web/jjlive" class="jjlive-link">竞价数据</a>
-                <a href="javascript:void(0)" class="kline-entry" data-view="intraday">分时·竞价</a>
                 <a href="https://wenda.tdx.com.cn/site/wenda/stock_index.html?message=去除st,去除北交所,成交额前100,量比,实际换手率" target="_blank">问小达</a>
                 <a href="https://wenda.tdx.com.cn/site/wenda/page-user-center.html" target="_blank">问小达模板</a>
                 <a href="/qxlive.html" target="_blank">指标面板</a>
@@ -1768,6 +1783,7 @@
         <a class="tag" href="/market.html" target="_blank">今日市场</a>
         <button class="tag" type="button" id="heatBtn">情绪热度</button>
         <button class="tag" type="button" id="catalystBtn">AI 催化推演</button>
+        <button class="tag" type="button" id="coreFactorBtn">辨识度候选池</button>
         <a class="quiet-link" href="https://www.duanxianxia.cn" target="_blank" rel="noopener noreferrer" title="duanxianxia.cn">数据源</a>
       </div>
     </section>
@@ -1797,7 +1813,13 @@
   </div>
   <div class="cat-body">
     <div class="cat-events">
-      <div class="cat-events-head"><span>近期事件源</span><span>钉钉 + 新华财经</span></div>
+      <div class="cat-events-head"><span>近期事件源</span><span id="catSourceCount"></span></div>
+      <div class="cat-tabs" id="catTabs">
+        <button type="button" class="cat-tab is-active" data-source="both">全部</button>
+        <button type="button" class="cat-tab" data-source="dingtalk">钉钉群</button>
+        <button type="button" class="cat-tab" data-source="xinhua">新华财经</button>
+      </div>
+      <div class="cat-search"><input type="search" id="catSearch" placeholder="搜索事件关键词（标题 / 正文 / 发送人）…" autocomplete="off"></div>
       <div id="catEventList"><div class="cat-empty">加载中…</div></div>
     </div>
     <div class="cat-detail" id="catDetail">
@@ -1806,6 +1828,7 @@
   </div>
   <div class="cat-foot">
     <span class="cat-msg" id="catMsg">分析仅供参考，非买卖建议</span>
+    <button type="button" class="cat-push cat-reanalyze" id="catReanalyze" disabled>重新分析</button>
     <button type="button" class="cat-push" id="catPush" disabled>推送钉钉</button>
   </div>
 </div>
@@ -2267,6 +2290,23 @@
     })
   })
 
+  // 运行指标 · 辨识度候选池下钻页
+  $('#coreFactorBtn').on('click', function () {
+    layer.open({
+      id: 'coreFactorT',
+      type: 2,
+      title: '辨识度候选池',
+      move: true,
+      moveOut: true,
+      maxmin: true,
+      area: ['920px', '88%'],
+      offset: 'b',
+      shade: 0,
+      fixed: false,
+      content: '/core.html' + (document.documentElement.getAttribute('data-theme') === 'dark' ? '?theme=dark' : '')
+    })
+  })
+
   $('#yidong').click(function () {
     layer.open({
       id: 'yidong_',
@@ -2636,9 +2676,16 @@
     })
   }
 
-  function openTrendDialog (defaultView) {
+  function openTrendDialog (defaultView, code) {
     if (defaultView === 'intraday' || defaultView === 'kline') stockView = defaultView
+    // 从个股链接（候选池 / AI 分析）打开时，用传入的 6 位代码覆盖上次选择
+    var picked = String(code || '').match(/\d{6}/)
+    if (picked) {
+      stockCode = picked[0]
+      localStorage.setItem('stock_last_code', stockCode)
+    }
     layer.open({
+      id: 'stockTrend',
       type: 1,
       title: '走势详情',
       area: ['440px', '340px'],
@@ -3436,14 +3483,34 @@
   })
 
   // ========== 催化推演浮窗：事件源 -> AI 多阶分析 -> 是否推送钉钉 ==========
-  const CAT_API = 'http://127.0.0.1:8788'
+  // 催化推演已上云：事件/分析/推送全部走同源 Worker（无需本地 8788 服务）
+  const CAT_API = ''
   const CAT_POS_KEY = 'index_catalyst_pos'
   let catPos = null
   try { catPos = JSON.parse(localStorage.getItem(CAT_POS_KEY) || 'null') } catch (err) { catPos = null }
   let catDrag = null
   let catEvents = []
   let catCurrent = null
+  let catCurrentIdx = -1
   let catResult = null
+  let catSource = 'both'
+  let catQuery = ''
+  let catLoadedQuery = ''
+  let catSearchTimer = null
+  let catOffset = 0
+  let catHasMore = false
+  let catLoading = false
+  let catAnalyzeSeq = 0
+  let catAnalyzeAbort = null
+  let catBusy = false
+
+  // 钉钉图片消息正文形如 [图片消息](mediaId=xxx)，mediaId 不是可访问链接，
+  // 直接显示一长串难以辨认，统一收敛成 [图片] 标签。
+  function catFriendly (s) {
+    return String(s == null ? '' : s)
+      .replace(/「图片」/g, '')
+      .replace(/\[图片消息\]\(mediaId=[^)]*\)/g, '[图片]')
+  }
 
   function catBounds () {
     const de = document.documentElement
@@ -3463,6 +3530,15 @@
   function closeCat () {
     document.getElementById('catalystDialog').classList.remove('show')
   }
+  // 取消尚未完成的 AI 分析：递增序号让旧响应失效，并中断请求
+  function catCancelAnalysis () {
+    catAnalyzeSeq++
+    if (catAnalyzeAbort) {
+      try { catAnalyzeAbort.abort() } catch (err) { /* 忽略 */ }
+      catAnalyzeAbort = null
+    }
+    catBusy = false
+  }
   function catApi (path, opts) {
     return fetch(CAT_API + path, opts || {}).then(function (r) {
       return r.json().catch(function () { throw new Error('HTTP ' + r.status) })
@@ -3476,26 +3552,99 @@
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]
     })
   }
-  function loadCatEvents () {
+  // 个股链接：提取 6 位代码，点击打开分时走势弹窗；无有效代码则退化为纯文本
+  function catStockLink (code, text) {
+    var m = String(code || '').match(/\d{6}/)
+    var label = catEsc(text == null ? code : text)
+    if (!m) return label
+    return '<a href="javascript:void(0)" class="cat-stock-link" data-code="' + m[0] + '">' + label + '</a>'
+  }
+  function catEventHtml (e, i) {
+    const t = catFriendly(e.title || e.content || '(无标题)')
+    // 单来源页签下来源标签冗余，省略
+    const badge = catSource === 'both' ? '<span class="cat-src">' + catEsc(e.source || '?') + '</span>' : ''
+    const toggle = e.content ? '<span class="cat-toggle" data-toggle="' + i + '">展开原文 ▾</span>' : ''
+    const preview = e.content ? '<div class="cat-preview" data-preview="' + i + '" hidden>' + catEsc(catFriendly(e.content)) + '</div>' : ''
+    return '<div class="cat-event" data-idx="' + i + '">' +
+      '<div class="t">' + badge + catEsc(t) + '</div>' +
+      '<div class="m">' + catEsc(e.time || '') + toggle + '</div>' +
+      preview + '</div>'
+  }
+  function loadCatEvents (reset) {
+    if (catLoading) return
     const list = document.getElementById('catEventList')
-    list.innerHTML = '<div class="cat-empty">加载中…</div>'
-    document.getElementById('catMeta').textContent = '近期事件 · 加载中…'
-    catApi('/api/events?days=3&limit=20').then(function (d) {
-      catEvents = d.events || []
-      document.getElementById('catMeta').textContent = '近期事件 ' + catEvents.length + ' 条' + (d.cached ? '（缓存）' : '')
+    const query = catQuery
+    catLoading = true
+    if (reset) {
+      catCancelAnalysis()
+      catOffset = 0
+      catHasMore = false
+      catEvents = []
+      // 清空当前选中与右侧详情，避免切换来源后详情与列表错位
+      catCurrent = null
+      catCurrentIdx = -1
+      catResult = null
+      document.getElementById('catPush').disabled = true
+      document.getElementById('catReanalyze').disabled = true
+      document.getElementById('catDetail').innerHTML = '<div class="cat-empty">↑ 点击事件源，生成 AI 多阶分析与标的明细</div>'
+      list.innerHTML = '<div class="cat-empty">加载中…</div>'
+      document.getElementById('catMeta').textContent = (catQuery ? '搜索「' + catQuery + '」' : '近期事件') + ' · 加载中…'
+    }
+    const more = document.getElementById('catMore')
+    if (more) more.remove()
+    // 加载更多：在列表底部放 spinner，占据原「加载更多」提示的位置，避免抖动
+    if (!reset) {
+      const loading = document.createElement('div')
+      loading.id = 'catLoading'
+      loading.className = 'cat-loading'
+      loading.innerHTML = '<span class="cat-spinner"></span><span>加载更多…</span>'
+      list.appendChild(loading)
+    }
+    catApi('/api/catalyst/events?days=30&limit=20&offset=' + catOffset + '&source=' + catSource + '&q=' + encodeURIComponent(query)).then(function (d) {
+      const loadingEl = document.getElementById('catLoading')
+      if (loadingEl) loadingEl.remove()
+      const batch = d.events || []
+      catLoadedQuery = query
+      catHasMore = !!d.hasMore
+      catOffset = d.nextOffset != null ? d.nextOffset : catOffset + batch.length
+      const startIdx = catEvents.length
+      catEvents = catEvents.concat(batch)
+      const srcLabel = query ? '搜索「' + query + '」' : ({ both: '全部', dingtalk: '钉钉群', xinhua: '新华财经' }[catSource] || '全部')
+      document.getElementById('catMeta').textContent = srcLabel + ' ' + catEvents.length + ' 条' + (catHasMore ? ' · 可继续加载' : '')
+      document.getElementById('catSourceCount').textContent = catEvents.length + ' 条'
       if (!catEvents.length) {
-        list.innerHTML = '<div class="cat-empty">暂无事件，请确认 catalyst 服务已启动</div>'
+        list.innerHTML = '<div class="cat-empty">' + (query ? '未找到匹配事件' : '该来源暂无事件') + '</div>'
         return
       }
-      list.innerHTML = catEvents.map(function (e, i) {
-        const t = e.title || e.content || '(无标题)'
-        return '<div class="cat-event" data-idx="' + i + '">' +
-          '<div class="t"><span class="cat-src">' + catEsc(e.source || '?') + '</span>' + catEsc(t) + '</div>' +
-          '<div class="m">' + catEsc(e.time || '') + '</div></div>'
-      }).join('')
+      const html = batch.map(function (e, i) { return catEventHtml(e, startIdx + i) }).join('')
+      if (reset) list.innerHTML = html
+      else list.insertAdjacentHTML('beforeend', html)
+      if (catHasMore) {
+        const hint = document.createElement('div')
+        hint.id = 'catMore'
+        hint.className = 'cat-empty cat-more'
+        hint.textContent = '点击或滚动加载更多…'
+        list.appendChild(hint)
+      }
     }).catch(function (err) {
-      list.innerHTML = '<div class="cat-empty">加载失败：' + catEsc(err.message) + '</div>'
+      catLoadedQuery = query
+      if (reset) list.innerHTML = '<div class="cat-empty">加载失败：' + catEsc(err.message) + '</div>'
+    }).finally(function () {
+      const loadingEl = document.getElementById('catLoading')
+      if (loadingEl) loadingEl.remove()
+      catLoading = false
+      // 输入过程中请求落后于最新关键词时，收敛到最新一次
+      if (catLoadedQuery !== catQuery) loadCatEvents(true)
     })
+  }
+  function setCatSource (source) {
+    if (catSource === source) return
+    catSource = source
+    catEvents = []
+    document.querySelectorAll('#catTabs .cat-tab').forEach(function (el) {
+      el.classList.toggle('is-active', el.getAttribute('data-source') === source)
+    })
+    loadCatEvents(true)
   }
   function renderCatDetail (d) {
     const detail = document.getElementById('catDetail')
@@ -3517,51 +3666,124 @@
     const table = cands.length
       ? '<table class="cat-table"><thead><tr><th>代码 / 名称</th><th>题材</th><th>状态</th><th>依据</th></tr></thead><tbody>' +
         cands.map(function (s) {
-          return '<tr><td>' + catEsc(s.name) + '<br>' + catEsc(s.code) + '</td><td>' + catEsc(s.board) + '</td>' +
+          return '<tr><td>' + catStockLink(s.code, s.name) + '<br>' + catStockLink(s.code, s.code) + '</td><td>' + catEsc(s.board) + '</td>' +
             '<td><span class="cat-badge ' + (clsMap[s.status] || '') + '">' + catEsc(s.status) + '</span></td>' +
             '<td>' + catEsc(s.reason) + '</td></tr>'
         }).join('') + '</tbody></table>'
       : '<div class="cat-empty">暂无符合条件的标的</div>'
+    const stocks = d.mentionedStocks || []
+    const stockBlock = stocks.length
+      ? '<h4 style="margin:12px 0 0;font-size:12px;color:var(--accent);">文中提到的公司</h4>' +
+        '<ul>' + stocks.map(function (s) {
+          return '<li>' + catStockLink(s.code, s.name) + (s.code ? '（' + catEsc(s.code) + '）' : '') +
+            (s.context ? '：' + catEsc(s.context) : '') + '</li>'
+        }).join('') + '</ul>'
+      : ''
     const conf = typeof d.confidence === 'number' ? (d.confidence * 100).toFixed(0) + '%' : 'n/a'
     detail.innerHTML =
       '<h4 style="margin:0 0 8px;font-size:13px;">' + catEsc((d.event && d.event.summary) || (catCurrent && catCurrent.title) || '分析结果') +
       '<span class="meta" style="font-size:11px;color:var(--muted);font-weight:normal;"> · ' + catEsc(d.type || '') + ' · 置信度 ' + conf + '</span></h4>' +
       layers +
+      stockBlock +
       '<div class="cat-falsifier">逻辑削弱条件：' + catEsc(d.falsifier || '未给出') + '</div>' +
       '<h4 style="margin:12px 0 0;font-size:12px;color:var(--accent);">候选标的（按资金确认状态）</h4>' + table +
-      '<div class="cat-falsifier">模型：' + catEsc(d.model || '') + (d.cached ? ' · 缓存结果' : '') + '</div>'
+      '<div class="cat-falsifier">模型：' + catEsc(d.model || '') +
+      (d.cached ? ' · 缓存结果（' + catEsc(d.cachedAt || '') + '）' : '') + '</div>'
     document.getElementById('catPush').disabled = false
+    document.getElementById('catReanalyze').disabled = false
     document.getElementById('catMsg').textContent = '分析仅供参考，非买卖建议'
   }
-  function analyzeCatEvent (idx) {
-    catCurrent = catEvents[idx]
-    if (!catCurrent) return
+  function analyzeCatEvent (idx, refresh) {
+    // 同一事件重复点击直接忽略；切换事件则取消上一个请求，只保留最后一次分析
+    if (catBusy && idx === catCurrentIdx && !refresh) return
+    const event = catEvents[idx]
+    if (!event) return
+    catCancelAnalysis()
+    catCurrent = event
+    catCurrentIdx = idx
+    const seq = catAnalyzeSeq
+    const controller = new AbortController()
+    catAnalyzeAbort = controller
+    catBusy = true
     document.querySelectorAll('.cat-event').forEach(function (el) {
       el.classList.toggle('is-active', Number(el.getAttribute('data-idx')) === idx)
     })
     const detail = document.getElementById('catDetail')
-    detail.innerHTML = '<div class="cat-empty">AI 多阶分析中（首次较慢，约 10-30 秒）…</div>'
+    detail.innerHTML = '<div class="cat-empty">' +
+      (refresh ? '重新分析中（约 30-90 秒）…' : 'AI 多阶分析中（首次较慢，约 30-90 秒）…') + '</div>'
     document.getElementById('catPush').disabled = true
+    document.getElementById('catReanalyze').disabled = true
     catApi('/api/analyze', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ event: catCurrent })
+      body: JSON.stringify({ event: catCurrent, refresh: !!refresh }),
+      signal: controller.signal
     }).then(function (d) {
+      if (seq !== catAnalyzeSeq) return
       catResult = d
       renderCatDetail(d)
     }).catch(function (err) {
+      if (seq !== catAnalyzeSeq || (err && err.name === 'AbortError')) return
       detail.innerHTML = '<div class="cat-empty">分析失败：' + catEsc(err.message) + '</div>'
       document.getElementById('catMsg').textContent = '分析失败，请稍后重试'
+      document.getElementById('catReanalyze').disabled = !catResult
+    }).finally(function () {
+      if (seq === catAnalyzeSeq) {
+        catBusy = false
+        catAnalyzeAbort = null
+      }
     })
   }
   function openCatDialog (e) {
     if (e) { e.preventDefault(); e.stopPropagation() }
     $('#catalystDialog').addClass('show')
     placeCatDialog()
-    loadCatEvents()
+    loadCatEvents(true)
   }
   $(document).on('click', '#catalystEntry', openCatDialog)
   $('#catalystBtn').on('click', openCatDialog)
-  $(document).on('click', '.cat-event', function () { analyzeCatEvent(Number($(this).attr('data-idx'))) })
+  $(document).on('click', '.cat-toggle', function (ev) {
+    ev.preventDefault(); ev.stopPropagation()
+    const i = $(this).attr('data-toggle')
+    const p = document.querySelector('[data-preview="' + i + '"]')
+    if (!p) return
+    const opening = p.hidden
+    p.hidden = !opening
+    $(this).text(opening ? '收起原文 ▴' : '展开原文 ▾')
+  })
+  $(document).on('click', '.cat-stock-link', function (ev) {
+    ev.preventDefault(); ev.stopPropagation()
+    openTrendDialog('intraday', $(this).attr('data-code'))
+  })
+  $(document).on('click', '.cat-event', function (ev) {
+    // 点“展开原文”或预览正文时不触发分析，只有点标题/时间才分析
+    if ($(ev.target).closest('.cat-toggle, .cat-preview').length) return
+    analyzeCatEvent(Number($(this).attr('data-idx')))
+  })
+  $(document).on('click', '#catTabs .cat-tab', function () { setCatSource($(this).attr('data-source')) })
+  // 关键词搜索：防抖后走后端 LIKE 查询；清空即恢复全部事件
+  $('#catSearch').on('input', function () {
+    clearTimeout(catSearchTimer)
+    const q = String($(this).val() || '').trim().slice(0, 80)
+    catSearchTimer = setTimeout(function () {
+      if (q === catQuery) return
+      catQuery = q
+      loadCatEvents(true)
+    }, 300)
+  })
+  $('#catReanalyze').on('click', function () {
+    if (!catCurrent || catCurrentIdx < 0) return
+    analyzeCatEvent(catCurrentIdx, true)
+  })
+  // 事件列表滚到底自动加载更多：滚动容器是 .cat-events（#catEventList 只是其内容）
+  document.querySelector('.cat-events').addEventListener('scroll', function () {
+    if (!catHasMore || catLoading) return
+    if (this.scrollTop + this.clientHeight >= this.scrollHeight - 60) loadCatEvents(false)
+  })
+  // 点击底部提示也能加载（滚动触发失效时的兜底）
+  $(document).on('click', '#catMore', function () {
+    if (!catHasMore || catLoading) return
+    loadCatEvents(false)
+  })
   $('#catClose').on('click', closeCat)
   $(document).on('keydown', function (e) {
     if (e.key === 'Escape' && $('#catalystDialog').hasClass('show')) closeCat()

@@ -7,6 +7,7 @@
     "dev": "node scripts/wrangler-dev.mjs",
     "start": "node scripts/wrangler-dev.mjs",
     "catalyst:server": "node scripts/catalyst/server.mjs",
+    "sync:dingtalk": "node scripts/sync-dingtalk.mjs",
     "cf-typegen": "wrangler types"
   },
   "dependencies": {

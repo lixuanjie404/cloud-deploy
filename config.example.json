@@ -1,0 +1,29 @@
+{
+  "_comment": "配置模板：复制本文件到【项目上一层目录】并重命名为 cloud-deploy.config.json，填入真实值。该文件含密钥，切勿提交到仓库。",
+
+  "db": {
+    "host": "db.example.com",
+    "port": 3306,
+    "user": "app_ro",
+    "password": "",
+    "database": "market"
+  },
+
+  "llm": {
+    "key": "",
+    "base": "https://open.bigmodel.cn/api/paas/v4",
+    "models": "glm-4-flash",
+    "timeout": 120000
+  },
+
+  "xinhua": {
+    "key": ""
+  },
+
+  "dws": {
+    "entry": "C:/Users/<你的用户名>/.workbuddy/binaries/node/cli-connector-packages/node_modules/dingtalk-workspace-cli/bin/dws.js",
+    "group": "每日调研──破晓📈"
+  },
+
+  "watchlist": "600127,002242,600519,300750,000002"
+}
