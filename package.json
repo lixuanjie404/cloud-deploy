@@ -8,7 +8,9 @@
     "start": "node scripts/wrangler-dev.mjs",
     "catalyst:server": "node scripts/catalyst/server.mjs",
     "sync:dingtalk": "node scripts/sync-dingtalk.mjs",
-    "cf-typegen": "wrangler types"
+    "cf-typegen": "wrangler types",
+    "setup": "node scripts/dev-vars.mjs open",
+    "vars:seal": "node scripts/dev-vars.mjs seal"
   },
   "dependencies": {
     "compression": "^1.8.0",
