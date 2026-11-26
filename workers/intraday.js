@@ -3,6 +3,7 @@
  *
  *   GET /api/intraday/amount
  *   GET /api/intraday/stock/:code   个股分时（现价/均价/昨收/分钟量）
+ *                                  ?days=1-5 连续多日分时（默认 1；多日时逐日昨收见响应 days）
  *
  * 返回「沪深两市合计」的分时成交额（口径与原 duanxianxia 量能页一致：
  * 昨日量能 14421 亿 = 上证 6427.52 + 深证 7993.x）。单市数据不足以代表
@@ -16,6 +17,7 @@ import { createConnection } from 'mysql2/promise'
 import { connectionOptions } from './kline.js'
 
 const EM = 'https://push2.eastmoney.com/api/qt/stock/trends2/get'
+const EM_HIS = 'https://push2his.eastmoney.com/api/qt/stock/trends2/get'
 const EM_DAILY = 'https://push2his.eastmoney.com/api/qt/stock/kline/get'
 const MARKETS = [
   { secid: '1.000001', name: '上证指数' },
@@ -143,6 +145,30 @@ function secidFor (code) {
   return '0.' + code
 }
 
+/** 近 N 个交易日的日线收盘（升序），供多日分时逐日昨收 */
+async function fetchDailyCloses (secid, lmt) {
+  const target = EM_DAILY +
+    '?secid=' + encodeURIComponent(secid) +
+    '&fields1=f1,f2,f3,f4,f5,f6' +
+    '&fields2=f51,f52,f53,f54,f55,f56,f57' +
+    '&klt=101&fqt=0&lmt=' + lmt + '&end=20500101'
+
+  const res = await fetchWithRetry(target, {
+    headers: { 'User-Agent': UA, Referer: 'https://quote.eastmoney.com/' },
+    cf: { cacheTtl: 300, cacheEverything: true },
+  })
+  if (!res.ok) return []
+
+  const daily = await res.json()
+  const list = (daily && daily.data && daily.data.klines) || []
+  return list
+    .map(function (row) {
+      const cols = String(row).split(',')
+      return { date: cols[0], close: Number(cols[2]) }
+    })
+    .filter(function (d) { return Number.isFinite(d.close) })
+}
+
 /**
  * 指定代码的分时走势（含集合竞价）
  *
@@ -153,15 +179,22 @@ function secidFor (code) {
  *   09:31 起     连续竞价
  * 前端据此用 auction 标记画出竞价区，并在竞价段断开均价线。
  */
-async function stockIntraday (env, code) {
+async function stockIntraday (env, code, url) {
   if (!/^\d{6}$/.test(code)) return json({ ok: false, error: '代码需为 6 位数字' }, 400)
 
+  // days=1 当日分时（含集合竞价）；days=2-5 连续多日分时。
+  // 注意：ndays>1 上游不返回竞价段（含当日），每天从 09:30 到 15:00 首尾相接；
+  // 且多日只能在 push2his 拿到（push2 无论 ndays 都只回当日）。
+  let days = 1
+  const daysParam = parseInt(url && url.searchParams.get('days'), 10)
+  if (Number.isFinite(daysParam)) days = Math.min(5, Math.max(1, daysParam))
+
   const secid = secidFor(code)
-  const target = EM +
+  const target = (days > 1 ? EM_HIS : EM) +
     '?secid=' + encodeURIComponent(secid) +
     '&fields1=f1,f2,f3,f4,f5,f6,f7,f8' +
     '&fields2=f51,f52,f53,f54,f55,f56,f57,f58' +
-    '&ndays=1&iscr=1'
+    '&ndays=' + days + '&iscr=1'
 
   let res
   try {
@@ -192,10 +225,12 @@ async function stockIntraday (env, code) {
     const parts = String(row).split(',')
     const stamp = parts[0].trim()
     const space = stamp.indexOf(' ')
+    const date = space >= 0 ? stamp.slice(0, space) : ''
     const time = space >= 0 ? stamp.slice(space + 1, space + 6) : stamp
     const auction = time >= '09:15' && time <= '09:25'
     if (auction) auctionEnd = i
     return {
+      date,
       time,
       price: Number(parts[2]),
       avg: Number(parts[7]),
@@ -203,6 +238,19 @@ async function stockIntraday (env, code) {
       auction,
     }
   })
+
+  // 多日分时：逐日昨收（前一交易日收盘价），前端按日着色成交量/算涨跌
+  let dayMeta = []
+  if (days > 1) {
+    try {
+      const closes = await fetchDailyCloses(secid, 10)
+      const seen = [...new Set(points.map(function (p) { return p.date }))].sort()
+      dayMeta = seen.map(function (d) {
+        const idx = closes.findIndex(function (c) { return c.date === d })
+        return { date: d, preClose: idx > 0 ? closes[idx - 1].close : null }
+      })
+    } catch { dayMeta = [] }
+  }
 
   // 中文名优先从本地 MySQL stock_list 回查；查不到不影响主图
   let name = null
@@ -220,6 +268,7 @@ async function stockIntraday (env, code) {
       name,
       preClose,
       auctionEnd,
+      days: dayMeta,
       updatedAt: new Date().toISOString(),
       points,
     },
@@ -232,7 +281,7 @@ export async function handleIntradayRequest (request, env, url) {
   if (request.method !== 'GET') return json({ ok: false, error: '仅支持 GET' }, 405)
 
   const stockMatch = url.pathname.match(/^\/api\/intraday\/stock\/([^/]+)$/)
-  if (stockMatch) return stockIntraday(env, decodeURIComponent(stockMatch[1]))
+  if (stockMatch) return stockIntraday(env, decodeURIComponent(stockMatch[1]), url)
 
   if (!url.pathname.startsWith('/api/intraday/amount')) {
     return json({ ok: false, error: '用法：/api/intraday/amount、/api/intraday/stock/:code' }, 404)

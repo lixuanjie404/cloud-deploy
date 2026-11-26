@@ -100,7 +100,8 @@ npm run sync:dingtalk -- --days 7  # 手动同步钉钉群消息落库（本机 
 | `GET /api/db/table/:name` | 读表数据，支持 `limit`（≤500，默认 50）/ `offset` / `order` / `dir` / `fields` |
 | `GET /api/kline/:code` | 个股日线（默认 120 根），支持 `days`（10-300）/ `adjust`（raw 或 hfq）；仅 index 页「600127 量价」按钮使用，未全站铺开 |
 | `GET /api/intraday/amount` | 分时量能（默认 `code=sh000001`），返回当日累计成交额与上一交易日全天成交额；供 `/amount` 页面使用 |
-| `GET /api/intraday/stock/:code` | 指定代码的分时走势，含 09:15-09:25 集合竞价虚拟撮合点；供首页「运行指标」弹窗使用 |
+| `GET /api/intraday/stock/:code` | 指定代码的分时走势，含 09:15-09:25 集合竞价虚拟撮合点；`?days=2-5` 连续多日分时（走 push2his，无竞价段，响应 `days` 回填逐日昨收）；供走势详情弹窗使用 |
+| `GET /api/suggest?q=` | 标的检索（拼音首字母/全拼/中文/代码前缀），数据源东财 suggest，仅返回 A 股；供走势弹窗按名称首字母选标的 |
 
 启用方式：
 
@@ -116,6 +117,32 @@ npm run dev
 ```
 
 安全约束：只允许 GET；表名/列名做标识符校验且必须是库中存在的；`DB_TABLES` 白名单可选但建议开启；不支持任意 SQL 透传。
+
+### 日线表 daily_bar 与后台补全（workers/backfill.js）
+
+- 辨识度候选池 `/api/feat/candidates` 的 20日收益 / 独立性等 K 线因子**只读 `daily_bar` 表**，不在请求里同步现拉。表内只有约 40 只 watchlist/催化标的 + 8 个指数，候选池票几乎都不在表里。
+- 读完表后把缺口交给 `backfill.js` 在 `ctx.waitUntil` 里后台补全，响应不阻塞：**缺失**（无数据或不足 81 根）→ 全量拉取落表；**过期**（最新日 < 表内最晚日）→ 只补尾部分（含最新日重写，刷新盘中变动）。成功后冷却 10 分钟，失败 30 秒后可重试；并发 6、总预算 25 秒。
+- 待补全时响应 `pending > 0`、`Cache-Control` 缩到 15s 且**不走 stale 复用**，补全完成后下一次请求立即重算出值。前端显示 `--` 即表示正在补全。
+- 独立性按标的最后日期对齐基准（`factors.independence`），基准过期覆盖不到时返回 `null`，不会用错位的两段相减。
+- 写入口径必须与读一致：指数落表 code 是 `indexDbCode()` → `idx_sh000300`（2026-11-25 修了 cron 写成 `000300` 导致指数停在 10-16 的 bug）。
+- 本机 wrangler（workerd）到 `push2his` 常被 `Network connection lost` 断连，node 直连正常；本地验证补全链路可在 `.tmp` 下用 node 脚本直接调 `runBarFill(env, missing, stale)`，`env` 用 `DB_*`。
+
+### 催化推演 · 联网情绪分析（function calls，2026-11-25 实施）
+
+设计与实现细节见根目录《催化推演-联网情绪分析-设计.md》。链路：
+
+1. **预取情绪包**（`tools.mjs prefetchSentiment`，并行、失败不阻塞）：hot_stock 四源聚合 + 涨停原因/板块涨幅聚合，拼成 hotText/topicsText 注入轮 A user。
+2. **轮 A**（推演 + 消息网络情绪）：`chatWithTools` 按 OpenAI 兼容 tools 协议循环；**首轮 tool_choice=required 强制至少一次工具调用**（防弱模型跳过工具直接编造；通道不支持 required 时自动退回 auto，不支持 tools 时去 tools 退化纯推演）。输出在原 schema 上增 sentiment 块（heatLevel/bias/momentum/keyPosts/evidence）与层内 onlineSignal。
+3. **轮 B**（情绪载体×热门话题共振）：映射确认后用 `buildCarrierMessages` 二次会话，输出 carrierAnalysis[]（resonance/stage/matchedTopics/risk）；独立降级，失败给空数组。
+4. 展示：card.mjs 与弹窗 renderCatDetail 各增“网络情绪/载体共振”区块；无数据不占行。
+
+工具（`workers/analyze/tools.mjs`）：get_hot_stocks（hot_stock 多源聚合，5min 缓存）、get_stock_heat（人气排名+连板/炸板）、get_hot_topics（涨停原因计数+概念板块涨幅榜，fetchConceptBoards 已补 changePct 字段）、search_web（联网搜索，默认未配置不暴露，配置 SEARCH_PROVIDER/SEARCH_API_KEY 后启用）。硬性纪律：sentiment 无数据时整块 null 禁止编造；网络情绪只调整 confidence 与提示风险，禁止改变 layers 方向（templates.mjs 约束 7）。
+
+已修 bug：chatWithTools 的 giveTools 曾写成布尔表达式，导致 tools 参数丢失、模型静默降级并编造结果（2026-11-25）。
+
+**来源角标（2026-11-25）**：网络/站内数据支撑的结论必须带角标 —— 工具结果返回 `ref`/`label`（H=人气榜、T=题材热度、P=标的热度、W#=网络检索条目），SYSTEM/guidance/CARRIER_SYSTEM 强制 evidence/onlineSignal/keyPosts 句尾带角标、禁止自造编号；`index.mjs` 用 onTool 收集 ref→label 为 `sourceLegend`，card 末尾与弹窗底部渲染图例，弹窗里 `[H]` 等由 `withRefs()` 转成可悬浮的 `.cat-ref` 上标（title=来源说明）。
+
+**模型优先级链（2026-11-25）**：服务端默认链在 `.dev.vars`（线上用 secret）`LLM_PROVIDERS`：移动云 `glm-5.3`（`moma.cmecloud.cn/v1`，推理模型，extraBody max_tokens=16384）→ 智谱 `glm-4-flash`/`glm-4.5-flash` → OpenRouter。**浏览器入口**：催化推演弹窗「模型」按钮，优先级列表存 localStorage（`cat_llm_providers_v1`），随 POST body `providers` 下发；`normalizeProviders(env, browser)` 合并规则 = 浏览器条目在前（base/key/models 缺一即跳过，最多 6 条，不收 extraBody）、服务端链兑底；任一通道失败自动切下一个。注意：移动云账号可用模型名是 `glm-5.3`（curl 里的 `zhipu/glm-5.3` 会 402 subscription_required）；glm-5.3 支持 function calling 与 `tool_choice=required`（已实测）。
 
 ### 今日进度 · 量能图
 
@@ -133,9 +160,10 @@ npm run dev
 
 ### 分时 / 日线窗口（含集合竞价）
 
-`workers/stock/index.html` 的走势详情 layer 弹窗入口在工作流程支线 popover：早间工具 →「分时·竞价」（默认分时 tab）、资料归档 →「日线回看」（默认日线 tab），同一弹窗复用：可输入 6 位代码（默认 `002242`，用 localStorage 记住上次代码与视图），在「分时·竞价」和「日线」两个 tab 间切换，交易时段每 30 秒刷新一次。第二档字样只放在弹窗与支线 popover 内（均为交互后可见位置），运行指标面板不再保留按钮。
+`workers/stock/index.html` 的走势详情 layer 弹窗入口：资料归档 →「日线回看」（默认日线 tab）；候选池 / AI 分析里的个股代码链接也会打开弹窗（默认分时 tab）。同一弹窗复用：输入支持 6 位代码或名称首字母/中文（走 `GET /api/suggest`，回车取首个匹配、输入时下拉候选；默认 `002242`，用 localStorage 记住上次代码与视图），在「分时·竞价」「5日分时」「日线」三个 tab 间切换，交易时段每 30 秒刷新一次。第二档字样只放在弹窗与支线 popover 内（均为交互后可见位置），运行指标面板不再保留按钮。
 
 - **分时**：`GET /api/intraday/stock/:code`，上游是东方财富 `trends2/get`，**必须带 `iscr=1`**，否则只有 09:30 之后的连续竞价。带上后 09:15-09:25 共 11 个竞价虚拟撮合点（成交量为 0、均价锚在昨收），09:26 那一点带 9:25 的撮合成交量，09:27-09:30 是无成交占位点，09:31 起进入连续竞价。接口按时间给点打 `auction` 标记并返回 `auctionEnd`，前端据此画竞价区背景、在竞价段断开均价线，竞价点的 tooltip 不显示成交量。
+- **5日分时**：`GET /api/intraday/stock/:code?days=5`（days 1-5，默认 1）。ndays>1 必须走 `push2his` 域名（push2 无论 ndays 都只回当日）；上游多日不含竞价段（含当日），每天 09:30-15:00 首尾相接；响应 `days` 字段用日线收盘回填逐日昨收，前端据此按日着色成交量、画日界虚线。
 - **日线**：`GET /api/kline/:code?days=120&adjust=raw`，ECharts 蜡烛图 + 成交量 + MA5/MA10；MySQL 无该代码时回退东方财富日线，回退响应同样带 `latest`。
 
 默认用 `raw` 口径：排查发现 `hfq` 在 2026-10-19、2026-10-21 两天的复权比例异常（常态约 5.732，这两天为 4.215 / 3.876），`raw` 序列连续。这两天的成交量也比前后低两个数量级，属数据源自身的待修问题。

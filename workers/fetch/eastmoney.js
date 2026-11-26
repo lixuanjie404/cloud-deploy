@@ -229,12 +229,12 @@ export async function fetchName(code) {
 }
 
 /**
- * 概念板块列表（东财 push2 clist，板块 name/code）
- * @returns {Promise<Array<{code,name}>>}
+ * 概念板块列表（东财 push2 clist，板块 name/code/当日涨幅%）
+ * @returns {Promise<Array<{code,name,changePct}>>}
  */
 export async function fetchConceptBoards() {
   const base = 'https://push2.eastmoney.com/api/qt/clist/get' +
-    '?po=1&np=1&fltt=2&invt=2&fid=f3&fs=m%3A90%2Bt%3A3&fields=f12,f14'
+    '?po=1&np=1&fltt=2&invt=2&fid=f3&fs=m%3A90%2Bt%3A3&fields=f12,f14,f3'
   const all = []
   let total = Infinity
   for (let pn = 1; all.length < total && pn <= 10; pn++) {
@@ -252,7 +252,7 @@ export async function fetchConceptBoards() {
     total = Number(data.total) || 0
     const diff = data.diff || []
     if (!diff.length) break
-    for (const d of diff) all.push({ code: d.f12, name: d.f14 })
+    for (const d of diff) all.push({ code: d.f12, name: d.f14, changePct: Number(d.f3) })
     await new Promise((r) => setTimeout(r, 60))
   }
   const seen = new Set()

@@ -16,7 +16,7 @@
  *   - 默认：增量，仅 upsert 最近 UPSERT_TAIL 根（幂等，重复无害）
  */
 
-import { fetchDaily, INDEXES, stockSecid } from './fetch/eastmoney.js'
+import { fetchDaily, INDEXES, stockSecid, indexDbCode } from './fetch/eastmoney.js'
 import { fetchAllHot } from './fetch/hot.js'
 import { upsertDailyBars, upsertHotStocks } from './store.js'
 
@@ -99,7 +99,9 @@ export async function scheduled(controller, env, ctx) {
 
   for (const code of indexes) {
     if (!/^\d{6}$/.test(code)) { console.log('[cron] 非法指数代码跳过', code); continue }
-    results.push(await pullOne(env, code, 'idx', INDEXES[code] || stockSecid(code), tail))
+    // 落表 code 必须与读侧一致（indexDbCode → idx_sh000300），否则因子接口读的那组永远不更新
+    const dbCode = indexDbCode(code) || code
+    results.push(await pullOne(env, dbCode, 'idx', INDEXES[code] || stockSecid(code), tail))
   }
 
   const ok = results.filter((r) => r.ok).length
@@ -119,7 +121,7 @@ export async function runBackfill(env) {
     if (/^\d{6}$/.test(code)) results.push(await pullOne(env, code, 'raw', stockSecid(code), 0))
   }
   for (const code of indexes) {
-    if (/^\d{6}$/.test(code)) results.push(await pullOne(env, code, 'idx', INDEXES[code] || stockSecid(code), 0))
+    if (/^\d{6}$/.test(code)) results.push(await pullOne(env, indexDbCode(code) || code, 'idx', INDEXES[code] || stockSecid(code), 0))
   }
   return results
 }

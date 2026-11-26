@@ -670,6 +670,21 @@
       .cat-layer h4 { margin: 0 0 5px; font-size: 12px; color: var(--accent); }
       .cat-layer ul { margin: 0; padding-left: 18px; font-size: 11px; line-height: 1.7; }
       .cat-falsifier { font-size: 11px; color: var(--muted); border-top: 1px dashed var(--timeline-border); padding-top: 8px; margin-top: 8px; line-height: 1.6; }
+      .cat-ref { color: var(--accent); font-size: 9px; font-weight: 600; cursor: help; vertical-align: super; }
+      .cat-model-btn { font-size: 11px; padding: 2px 8px; border: 1px solid var(--timeline-border); border-radius: 3px; background: transparent; color: var(--muted); cursor: pointer; margin-right: 6px; }
+      .cat-model-btn:hover { color: var(--accent); border-color: var(--accent); }
+      .cat-model-panel { position: absolute; top: 34px; left: 10px; right: 10px; z-index: 40; background: var(--card); border: 1px solid var(--timeline-border); border-radius: 6px; box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18); padding: 10px; max-height: 72%; overflow: auto; font-size: 11px; }
+      .cmp-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-weight: 600; color: var(--accent); }
+      .cmp-head button { background: transparent; border: none; cursor: pointer; color: var(--muted); font-size: 12px; }
+      .cmp-row { display: grid; grid-template-columns: 76px 1fr 1fr 1fr auto; gap: 4px; margin-bottom: 6px; align-items: center; }
+      .cmp-row input { font-size: 11px; padding: 3px 4px; border: 1px solid var(--timeline-border); border-radius: 3px; background: transparent; color: inherit; min-width: 0; }
+      .cmp-row .cmp-ops { display: flex; gap: 2px; }
+      .cmp-op { padding: 2px 5px; font-size: 10px; border: 1px solid var(--timeline-border); background: transparent; color: var(--muted); border-radius: 3px; cursor: pointer; }
+      .cmp-op:hover { color: var(--accent); border-color: var(--accent); }
+      .cmp-actions { display: flex; gap: 6px; margin: 6px 0; }
+      .cmp-actions button { font-size: 11px; padding: 3px 8px; border: 1px solid var(--timeline-border); background: transparent; color: var(--muted); border-radius: 3px; cursor: pointer; }
+      .cmp-actions button:hover { color: var(--accent); border-color: var(--accent); }
+      .cmp-hint { font-size: 10px; color: var(--muted); line-height: 1.6; border-top: 1px dashed var(--timeline-border); padding-top: 6px; }
       .cat-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 6px; }
       .cat-table th { text-align: left; color: var(--muted); font-weight: normal; border-bottom: 1px solid var(--timeline-border); padding: 4px 5px; }
       .cat-table td { border-bottom: 1px solid var(--timeline-border); padding: 4px 5px; }
@@ -690,6 +705,42 @@
       @keyframes cat-spin { to { transform: rotate(360deg) } }
       .cat-msg { font-size: 11px; color: var(--muted); margin-right: auto; }
       .cat-empty { color: var(--muted); font-size: 12px; padding: 24px 12px; text-align: center; }
+      .cat-result-pane { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+      .cat-view-tabs { display: flex; gap: 4px; padding: 6px 12px 0; border-bottom: 1px solid var(--timeline-border); flex: none; }
+      .cat-view-tab { font-family: inherit; font-size: 12px; padding: 5px 12px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: var(--muted); cursor: pointer; }
+      .cat-view-tab.is-active { color: var(--accent); border-bottom-color: var(--accent); }
+      .cat-task-list { flex: 1; overflow-y: auto; padding: 10px 12px; }
+      .cat-task-group-title { font-size: 11px; color: var(--muted); margin: 6px 0; }
+      .cat-task-item { border: 1px solid var(--timeline-border); border-radius: 5px; padding: 8px 10px; margin-bottom: 6px; cursor: pointer; }
+      .cat-task-item:hover { border-color: var(--accent); }
+      .cat-task-item .t { font-size: 12px; line-height: 1.5; }
+      .cat-task-item .m { font-size: 11px; color: var(--muted); margin-top: 3px; }
+      .cat-task-status { display: inline-block; font-size: 11px; padding: 1px 6px; border-radius: 8px; margin-right: 6px; background: rgba(127,127,127,.15); }
+      .cat-task-status.st-running { color: #4a90e2; }
+      .cat-task-status.st-done { color: #2e9e5b; }
+      .cat-task-status.st-failed { color: #d9534f; }
+      .cat-task-status.st-cancelled { color: #999; }
+      .cat-task-hint { font-size: 11px; color: var(--muted); padding: 4px 0 10px; }
+      /* 分析进度：步骤时间线 + 思考过程 */
+      .cat-progress { padding: 12px 14px; font-size: 12px; }
+      .cat-progress-head { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--muted); margin-bottom: 10px; }
+      .cat-progress-head .cat-spinner { width: 11px; height: 11px; }
+      .cat-steps { position: relative; margin: 0; padding: 0 0 0 20px; list-style: none; }
+      .cat-steps:before { content: ""; position: absolute; left: 6px; top: 6px; bottom: 6px; width: 1px; background: var(--timeline-border); }
+      .cat-step { position: relative; display: flex; align-items: center; gap: 8px; padding: 5px 0; color: var(--muted); }
+      .cat-step:before { content: ""; position: absolute; left: -18px; top: 11px; width: 7px; height: 7px; border-radius: 50%; background: var(--timeline-border); box-shadow: 0 0 0 3px var(--card); }
+      .cat-step.is-running { color: var(--text); }
+      .cat-step.is-running:before { background: var(--accent); }
+      .cat-step.is-done { color: var(--text); }
+      .cat-step.is-done:before { background: #2e9e5b; }
+      .cat-step-label { flex: 1; }
+      .cat-step-ms { font-size: 10px; color: var(--muted); }
+      .cat-thinking { margin-top: 12px; border: 1px solid var(--timeline-border); border-radius: 6px; background: var(--card); }
+      .cat-thinking summary { cursor: pointer; padding: 7px 10px; font-size: 11px; color: var(--muted); list-style: none; }
+      .cat-thinking summary::-webkit-details-marker { display: none; }
+      .cat-thinking summary:before { content: "▸ "; color: var(--accent); }
+      .cat-thinking[open] summary:before { content: "▾ "; }
+      .cat-thinking-body { max-height: 220px; overflow-y: auto; margin: 0; padding: 0 10px 10px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 11px; line-height: 1.65; color: var(--muted); white-space: pre-wrap; word-break: break-word; }
 
       /* 低打扰外链：平时几乎隐形，悬停才浮现下划线 */
       .panel a.quiet-link {
@@ -720,7 +771,7 @@
       }
 
       #stockCodeInput {
-          width: 58px;
+          width: 78px;
           font-size: 11px;
           padding: 2px 4px;
           border: 1px solid var(--timeline-border);
@@ -728,6 +779,35 @@
           background: transparent;
           color: inherit;
           font-variant-numeric: tabular-nums;
+      }
+
+      #stockSuggest {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          min-width: 148px;
+          max-height: 172px;
+          overflow: auto;
+          background: var(--card);
+          border: 1px solid var(--timeline-border);
+          border-radius: 4px;
+          box-shadow: 0 6px 18px rgba(0, 0, 0, 0.14);
+          z-index: 99;
+          font-size: 11px;
+      }
+
+      .stock-suggest-item {
+          padding: 4px 8px;
+          cursor: pointer;
+          color: inherit;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+      }
+
+      .stock-suggest-item:hover {
+          background: var(--accent-soft);
+          color: var(--accent);
       }
 
       .focus-timeline {
@@ -1659,14 +1739,13 @@
             <div class="timeline-popover">
               <strong>快速入口</strong>
               <div class="timeline-links">
-                <a href="#" id="catalystEntry" title="AI 多阶事件推演">AI 催化推演（事件源 → 多阶分析 → 推送）›</a>
                 <a href="https://www.jin10.com/activities/2026/02/pizza_index/index.html" target="_blank">金十数据</a>
                 <a href="https://724.guzhang.com/" target="_blank">7×24 快讯</a>
                 <a href="https://data.eastmoney.com/rzrq/total.html" target="_blank">融资余额</a>
               </div>
             </div>
           </div>
-          <div class="timeline-slot" tabindex="0" data-links="https://weibo.com/3608427684|https://weibo.com/mygroups?gid=4140006190600547|https://eq.10jqka.com.cn/frontend/thsTopRank/index.html#/|https://space.bilibili.com/43295527/dynamic|https://www.tgb.cn/user/blog/moreTopic?userID=12533004|https://www.jiuyangongshe.com/">
+          <div class="timeline-slot" tabindex="0" data-links="https://weibo.com/3608427684|https://weibo.com/u/2014433131|https://eq.10jqka.com.cn/frontend/thsTopRank/index.html#/|https://www.tgb.cn/user/blog/moreTopic?userID=12533004|https://www.jiuyangongshe.com/">
             <span class="timeline-dot"></span>
             <span class="timeline-label">实时筛选</span>
             <span class="timeline-hint">展开入口</span>
@@ -1674,9 +1753,8 @@
               <strong>快速入口</strong>
               <div class="timeline-links">
                 <a href="https://weibo.com/3608427684" target="_blank">微博-索道登云</a>
-                <a href="https://weibo.com/mygroups?gid=4140006190600547" target="_blank">微博关注</a>
+                <a href="https://weibo.com/u/2014433131" target="_blank">wb-唐史主任</a>
                 <a href="https://eq.10jqka.com.cn/frontend/thsTopRank/index.html#/" target="_blank">热榜排行</a>
-                <a href="https://space.bilibili.com/43295527/dynamic" target="_blank">B站动态</a>
                 <a href="https://www.tgb.cn/user/blog/moreTopic?userID=12533004" target="_blank">胖橘</a>
                 <a href="https://www.jiuyangongshe.com/" target="_blank">韭研公社</a>
               </div>
@@ -1688,17 +1766,11 @@
             <span class="timeline-hint">悬浮查看</span>
             <div class="timeline-popover"><strong>可能使用</strong><span>工具集、异动监控、实时提醒。</span></div>
           </div>
-          <div class="timeline-slot" tabindex="0" data-links="https://ima.qq.com/">
+          <div class="timeline-slot" tabindex="0">
             <span class="timeline-dot"></span>
             <span class="timeline-label">归档总结</span>
-            <span class="timeline-hint">展开入口</span>
-            <div class="timeline-popover">
-              <strong>快速入口</strong>
-              <div class="timeline-links">
-                <a href="https://ima.qq.com/" target="_blank">IMA 知识库</a>
-              </div>
-              <span>归档记录、AI 总结、对照清单。</span>
-            </div>
+            <span class="timeline-hint">悬浮查看</span>
+            <div class="timeline-popover"><strong>可能使用</strong><span>归档记录、AI 总结、对照清单。</span></div>
           </div>
         </div>
         <div class="timeline-row">
@@ -1706,7 +1778,7 @@
             <strong>支线</strong>
             <small>浏览 / 归档</small>
           </div>
-          <div class="timeline-slot" tabindex="0" data-links="#/news.html|https://duanxianxia.cn/web/jjlive|https://wenda.tdx.com.cn/site/wenda/stock_index.html?message=去除st,去除北交所,成交额前100,量比,实际换手率|https://wenda.tdx.com.cn/site/wenda/page-user-center.html|/qxlive.html">
+          <div class="timeline-slot" tabindex="0" data-links="#/news.html|https://duanxianxia.cn/web/jjlive|https://wenda.tdx.com.cn/site/wenda/stock_index.html?message=去除st,去除北交所,成交额前100,量比,实际换手率|https://wenda.tdx.com.cn/site/wenda/page-user-center.html">
             <span class="timeline-dot"></span>
             <span class="timeline-label">早间工具</span>
             <span class="timeline-hint">展开入口</span>
@@ -1717,7 +1789,19 @@
                 <a href="https://duanxianxia.cn/web/jjlive" class="jjlive-link">竞价数据</a>
                 <a href="https://wenda.tdx.com.cn/site/wenda/stock_index.html?message=去除st,去除北交所,成交额前100,量比,实际换手率" target="_blank">问小达</a>
                 <a href="https://wenda.tdx.com.cn/site/wenda/page-user-center.html" target="_blank">问小达模板</a>
-                <a href="/qxlive.html" target="_blank">指标面板</a>
+              </div>
+            </div>
+          </div>
+          <div class="timeline-slot" tabindex="0" data-links="#https://duanxianxia.cn/web/fupan|https://data.10jqka.com.cn/market/longhu/|https://xuangutong.com.cn/top-gainer">
+            <span class="timeline-dot"></span>
+            <span class="timeline-label">热点跟进</span>
+            <span class="timeline-hint">展开入口</span>
+            <div class="timeline-popover">
+              <strong>快速入口</strong>
+              <div class="timeline-links">
+                <a href="#https://duanxianxia.cn/web/fupan" id="fupan">涨停分析</a>
+                <a href="https://data.10jqka.com.cn/market/longhu/" target="_blank">龙虎榜</a>
+                <a href="https://xuangutong.com.cn/top-gainer" target="_blank">每日热点解读</a>
               </div>
             </div>
           </div>
@@ -1731,19 +1815,6 @@
                 <a href="#https://duanxianxia.cn/web/fupangu/" id="lianban">复盘</a>
                 <a href="https://duanxianxia.cn/lt" target="_blank">龙头高度</a>
                 <a href="http://page.tdx.com.cn:7615/site/kggx/tk_yzlhb_yz.html" target="_blank">连板统计</a>
-              </div>
-            </div>
-          </div>
-          <div class="timeline-slot" tabindex="0" data-links="#https://duanxianxia.cn/web/fupan|https://data.10jqka.com.cn/market/longhu/|https://xuangutong.com.cn/top-gainer">
-            <span class="timeline-dot"></span>
-            <span class="timeline-label">热点跟进</span>
-            <span class="timeline-hint">展开入口</span>
-            <div class="timeline-popover">
-              <strong>快速入口</strong>
-              <div class="timeline-links">
-                <a href="#https://duanxianxia.cn/web/fupan" id="fupan">涨停分析</a>
-                <a href="https://data.10jqka.com.cn/market/longhu/" target="_blank">龙虎榜</a>
-                <a href="https://xuangutong.com.cn/top-gainer" target="_blank">涨幅排行</a>
               </div>
             </div>
           </div>
@@ -1809,7 +1880,18 @@
 <div class="catalyst-dialog" id="catalystDialog" role="dialog" aria-modal="false">
   <div class="cat-head" id="catalystHead">
     <h3>催化推演<span class="meta" id="catMeta">近期事件 · 等待加载</span></h3>
+    <button type="button" class="cat-model-btn" id="catModelBtn" title="模型优先级配置（保存在浏览器）">模型</button>
     <button type="button" class="cat-close" id="catClose" title="关闭">✕</button>
+  </div>
+  <div class="cat-model-panel" id="catModelPanel" hidden>
+    <div class="cmp-head"><span>模型优先级（按序尝试；保存在浏览器）</span><button type="button" id="catModelClose" title="收起">✕</button></div>
+    <div id="catModelRows"></div>
+    <div class="cmp-actions">
+      <button type="button" id="catModelAdd">+ 添加通道</button>
+      <button type="button" id="catModelSave">保存</button>
+      <button type="button" id="catModelClear">清空（用服务端默认链）</button>
+    </div>
+    <div class="cmp-hint">key/models 为空的通道会被跳过；未配置任何通道时使用服务端默认链：移动云 glm-5.3 → 智谱 glm-4 → OpenRouter。密钥仅存浏览器 localStorage，随分析请求发送，服务端不落库。</div>
   </div>
   <div class="cat-body">
     <div class="cat-events">
@@ -1822,8 +1904,17 @@
       <div class="cat-search"><input type="search" id="catSearch" placeholder="搜索事件关键词（标题 / 正文 / 发送人）…" autocomplete="off"></div>
       <div id="catEventList"><div class="cat-empty">加载中…</div></div>
     </div>
-    <div class="cat-detail" id="catDetail">
-      <div class="cat-empty">↑ 点击事件源，生成 AI 多阶分析与标的明细</div>
+    <div class="cat-result-pane">
+      <div class="cat-view-tabs" id="catViewTabs">
+        <button type="button" class="cat-view-tab is-active" data-view="detail">分析详情</button>
+        <button type="button" class="cat-view-tab" data-view="tasks">任务列表</button>
+      </div>
+      <div class="cat-detail" id="catDetail">
+        <div class="cat-empty">↑ 点击事件源，生成 AI 多阶分析与标的明细</div>
+      </div>
+      <div class="cat-task-list" id="catTaskList" hidden>
+        <div class="cat-empty">任务列表</div>
+      </div>
     </div>
   </div>
   <div class="cat-foot">
@@ -2410,7 +2501,8 @@
   const STOCK_DEFAULT = '002242'
   const KLINE_DAYS = 120
   let stockCode = localStorage.getItem('stock_last_code') || STOCK_DEFAULT
-  let stockView = localStorage.getItem('stock_last_view') === 'kline' ? 'kline' : 'intraday'
+  let stockView = localStorage.getItem('stock_last_view') || 'intraday'
+  if (stockView !== 'kline' && stockView !== 'days5') stockView = 'intraday'
   let stockChart = null
   let stockTimer = null
   let loadSeq = 0
@@ -2608,6 +2700,123 @@
     }, true)
   }
 
+  // 5 日连续分时：每天 09:30-15:00 首尾相接（上游历史日无竞价段），
+  // 竖虚线为日界，成交量按当日昨收着色（逐日昨收由接口用日线收盘回填）
+  function renderIntraday5 (el, data) {
+    const theme = chartTheme()
+    const bars = (data.points || []).filter(function (b) {
+      return b && !b.auction && b.time >= '09:30'
+    })
+    if (!bars.length) throw new Error('无 5 日分时数据')
+
+    const byDay = new Map()
+    bars.forEach(function (b) {
+      if (!byDay.has(b.date)) byDay.set(b.date, [])
+      byDay.get(b.date).push(b)
+    })
+    const dayDates = Array.from(byDay.keys()).sort()
+
+    // 逐日昨收：接口回填日线收盘；缺失时回退前一日的分钟线最后价
+    const dayPre = {}
+    ;(data.days || []).forEach(function (d) { if (d && d.preClose != null) dayPre[d.date] = d.preClose })
+    let lastClose = null
+    dayDates.forEach(function (date) {
+      if (dayPre[date] == null) dayPre[date] = lastClose
+      const pts = byDay.get(date)
+      lastClose = pts[pts.length - 1].price
+    })
+
+    const axis = [], prices = [], avgs = [], vols = [], barList = [], boundaries = []
+    dayDates.forEach(function (date, di) {
+      if (di > 0) boundaries.push(date + ' 09:30')
+      const pts = byDay.get(date)
+      const full = padIntradayAxis(pts.map(function (p) { return p.time }))
+      const map = new Map(pts.map(function (p) { return [p.time, p] }))
+      const pre = dayPre[date]
+      full.forEach(function (t) {
+        axis.push(date + ' ' + t)
+        const b = map.get(t)
+        barList.push(b || null)
+        prices.push(b ? b.price : null)
+        avgs.push(b ? b.avg : null)
+        vols.push(b ? {
+          value: b.volume,
+          itemStyle: { color: pre ? (b.price >= pre ? theme.up : theme.down) : theme.textColor, opacity: 0.5 },
+        } : null)
+      })
+    })
+
+    const chart = getChart(el)
+    const markData = boundaries.map(function (x) { return { xAxis: x } })
+    if (data.preClose) {
+      markData.push({
+        yAxis: data.preClose,
+        label: { formatter: '昨收 ' + data.preClose.toFixed(2), fontSize: 9, color: theme.textColor, position: 'insideEndTop' },
+      })
+    }
+    chart.setOption({
+      animation: false,
+      backgroundColor: 'transparent',
+      textStyle: { color: theme.textColor, fontSize: 11 },
+      tooltip: {
+        trigger: 'axis',
+        confine: true,
+        axisPointer: { type: 'cross', label: { backgroundColor: theme.dark ? '#3a3a3a' : '#8b948e' } },
+        formatter: function (params) {
+          const b = barList[params[0].dataIndex]
+          if (!b) return ''
+          const dpre = dayPre[b.date]
+          const pct = dpre ? (((b.price - dpre) / dpre) * 100).toFixed(2) : '--'
+          return [
+            b.date + ' ' + b.time,
+            '价 ' + b.price.toFixed(2) + '　均 ' + b.avg.toFixed(2),
+            '涨跌 ' + (dpre && b.price >= dpre ? '+' : '') + pct + '%',
+            '量 ' + formatAmount(b.volume),
+          ].join('<br>')
+        },
+      },
+      grid: { left: 2, right: 54, top: 8, bottom: 18, containLabel: false },
+      xAxis: {
+        type: 'category', data: axis, boundaryGap: false,
+        axisLine: { lineStyle: { color: theme.axisColor } }, axisTick: { show: false },
+        axisLabel: {
+          color: theme.textColor, fontSize: 9, margin: 2,
+          interval: function (index, value) { return value.slice(-5) === '09:30' },
+          formatter: function (v) { return v.slice(5, 10) },
+        },
+        splitLine: { show: false },
+      },
+      yAxis: [
+        {
+          type: 'value', scale: true, position: 'right',
+          axisLine: { show: false }, axisTick: { show: false },
+          splitLine: { lineStyle: { color: theme.dark ? '#333' : '#eef0ec' } },
+          axisLabel: { color: theme.textColor, fontSize: 9, formatter: function (v) { return v.toFixed(2) } },
+        },
+        {
+          position: 'right', show: false,
+          axisLine: { show: false }, axisTick: { show: false }, splitLine: { show: false }, axisLabel: { show: false },
+        },
+      ],
+      dataZoom: [{ type: 'inside', start: 0, end: 100 }],
+      series: [
+        { name: '分钟量', type: 'bar', yAxisIndex: 1, data: vols, barWidth: '100%' },
+        {
+          name: '分时', type: 'line', data: prices, showSymbol: false,
+          lineStyle: { width: 1.2, color: theme.up },
+          markLine: {
+            symbol: 'none', silent: true,
+            lineStyle: { type: 'dashed', width: 1, color: theme.dark ? '#68716c' : '#b9c2bc' },
+            label: { show: false },
+            data: markData,
+          },
+        },
+        { name: '均价', type: 'line', data: avgs, showSymbol: false, lineStyle: { width: 1, color: '#d9a441' } },
+      ],
+    }, true)
+    return chart
+  }
+
   function renderKline (el, data) {
     const dark = document.documentElement.getAttribute('data-theme') === 'dark'
     const axisColor = dark ? '#4a4a4a' : '#d8dcd6'
@@ -2723,9 +2932,13 @@
       content: '<div style="box-sizing:border-box;padding:6px 8px 4px;">' +
         '<div style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">' +
           '<a id="tabIntraday" class="kline-tab is-active" href="###">分时·竞价</a>' +
+          '<a id="tabDays5" class="kline-tab" href="###">5日分时</a>' +
           '<a id="tabKline" class="kline-tab" href="###">日线</a>' +
-          '<span style="font-size:11px;color:#7b857f;">代码</span>' +
-          '<input id="stockCodeInput" maxlength="6" inputmode="numeric" autocomplete="off" spellcheck="false">' +
+          '<span style="font-size:11px;color:#7b857f;">代码/首字母</span>' +
+          '<span style="position:relative;display:inline-flex;">' +
+            '<input id="stockCodeInput" maxlength="10" autocomplete="off" spellcheck="false">' +
+            '<div id="stockSuggest" style="display:none;"></div>' +
+          '</span>' +
           '<span id="klineMeta" style="flex:1;font-size:11px;color:#7b857f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">加载中…</span>' +
         '</div>' +
         '<div id="klineChart" style="height:262px;"></div>' +
@@ -2733,9 +2946,24 @@
       success: function () {
         const input = document.getElementById('stockCodeInput')
         input.value = stockCode
-        input.onkeydown = function (e) { if (e.key === 'Enter') applyCode(input.value) }
-        input.onblur = function () { input.value = stockCode }
+        input.onkeydown = function (e) {
+          if (e.key === 'Escape') { hideSuggest(); return }
+          if (e.key !== 'Enter') return
+          const v = input.value.trim()
+          if (/^\d{6}$/.test(v)) { hideSuggest(); applyCode(v) }
+          else if (v) applySuggestQuery(v)
+        }
+        input.oninput = function () {
+          const v = input.value.trim()
+          clearTimeout(suggestTimer)
+          if (!v || /^\d{6}$/.test(v)) { hideSuggest(); return }
+          suggestTimer = setTimeout(function () { querySuggest(v) }, 250)
+        }
+        input.onblur = function () {
+          setTimeout(function () { input.value = stockCode; hideSuggest() }, 120)
+        }
         document.getElementById('tabIntraday').onclick = function () { setView('intraday') }
+        document.getElementById('tabDays5').onclick = function () { setView('days5') }
         document.getElementById('tabKline').onclick = function () { setView('kline') }
         setView(stockView)
       },
@@ -3306,8 +3534,71 @@
     stockView = view
     localStorage.setItem('stock_last_view', view)
     document.getElementById('tabIntraday').classList.toggle('is-active', view === 'intraday')
+    document.getElementById('tabDays5').classList.toggle('is-active', view === 'days5')
     document.getElementById('tabKline').classList.toggle('is-active', view === 'kline')
     loadStock()
+  }
+
+  // ========== 名称首字母选标的（/api/suggest，仅沪深京市场） ==========
+  let suggestTimer = null
+  let suggestSeq = 0
+
+  function hideSuggest () {
+    const el = document.getElementById('stockSuggest')
+    if (el) { el.style.display = 'none'; el.innerHTML = '' }
+  }
+
+  function pickSuggest (code) {
+    if (!/^\d{6}$/.test(code)) return
+    hideSuggest()
+    stockCode = code
+    localStorage.setItem('stock_last_code', code)
+    const input = document.getElementById('stockCodeInput')
+    if (input) input.value = code
+    loadStock()
+  }
+
+  function renderSuggest (items) {
+    const el = document.getElementById('stockSuggest')
+    if (!el) return
+    if (!items.length) { hideSuggest(); return }
+    el.innerHTML = items.map(function (it) {
+      return '<div class="stock-suggest-item" data-code="' + it.code + '">' +
+        it.name + ' <span style="color:#7b857f;">' + it.code + '</span></div>'
+    }).join('')
+    el.style.display = 'block'
+    Array.prototype.forEach.call(el.children, function (node) {
+      // mousedown + preventDefault：先于 blur 生效，点击候选项不让输入框失焦
+      node.onmousedown = function (ev) {
+        ev.preventDefault()
+        pickSuggest(node.getAttribute('data-code'))
+      }
+    })
+  }
+
+  function querySuggest (q) {
+    const seq = ++suggestSeq
+    fetch('/api/suggest?q=' + encodeURIComponent(q))
+      .then(function (r) { return r.json() })
+      .then(function (res) {
+        if (seq !== suggestSeq || !document.getElementById('stockSuggest')) return
+        renderSuggest((res && res.ok && res.items) || [])
+      })
+      .catch(function () {})
+  }
+
+  // 回车直接应用首个匹配项
+  function applySuggestQuery (q) {
+    const seq = ++suggestSeq
+    fetch('/api/suggest?q=' + encodeURIComponent(q))
+      .then(function (r) { return r.json() })
+      .then(function (res) {
+        if (seq !== suggestSeq || !document.getElementById('klineMeta')) return
+        const items = (res && res.ok && res.items) || []
+        if (items.length) pickSuggest(items[0].code)
+        else document.getElementById('klineMeta').textContent = '未匹配「' + q + '」，可改用 6 位代码'
+      })
+      .catch(function () {})
   }
 
   function applyCode (value) {
@@ -3328,7 +3619,9 @@
     document.getElementById('klineMeta').textContent = '加载中…'
     const url = stockView === 'intraday'
       ? '/api/intraday/stock/' + code
-      : '/api/kline/' + code + '?days=' + KLINE_DAYS
+      : stockView === 'days5'
+        ? '/api/intraday/stock/' + code + '?days=5'
+        : '/api/kline/' + code + '?days=' + KLINE_DAYS
     ensureEcharts()
       .then(function () { return fetch(url) })
       .then(function (r) { return r.json() })
@@ -3343,6 +3636,13 @@
           const sign = res.preClose && b.price >= res.preClose ? '+' : ''
           document.getElementById('klineMeta').textContent =
             (res.name || code) + ' · 分时 · 现 ' + b.price.toFixed(2) + '（' + sign + pct + '%）'
+        } else if (stockView === 'days5') {
+          renderIntraday5(chartEl, res)
+          const b = res.points[res.points.length - 1]
+          const pct = res.preClose ? (((b.price - res.preClose) / res.preClose) * 100).toFixed(2) : '--'
+          const sign = res.preClose && b.price >= res.preClose ? '+' : ''
+          document.getElementById('klineMeta').textContent =
+            (res.name || code) + ' · 5日分时 · 现 ' + b.price.toFixed(2) + '（' + sign + pct + '%）'
         } else {
           renderKline(chartEl, res)
           const last = res.latest
@@ -3370,7 +3670,7 @@
     '按 t 定位工作流程',
     '支线节点工具支持点击展开、悬停预览',
     '今日进度「无」视图内置便签滚动',
-    '走势详情可输入 6 位代码，自动记住上次选择'
+    '走势详情支持名称首字母选标的、5 日分时连续查看'
   ]
   const XQ_QUOTES = [
     { n: 1, t: '杜绝临时起意，只计划操作。临时起意的操作通常是大亏的根源。或许你与赵老哥的区别就在于：不该冲动的时候你冲动了而他没冲动，该坚决的的时候他坚决了而你退缩了。失之毫厘，差之千里。淡泊一切以后，也许就会否极泰来。' },
@@ -3531,6 +3831,9 @@
   let catAnalyzeSeq = 0
   let catAnalyzeAbort = null
   let catBusy = false
+  let catTaskTab = 'detail'
+  let catPollTimer = null
+  let catPollId = ''
 
   // 钉钉图片消息正文形如 [图片消息](mediaId=xxx)，mediaId 不是可访问链接，
   // 直接显示一长串难以辨认，统一收敛成 [图片] 标签。
@@ -3557,6 +3860,7 @@
   }
   function closeCat () {
     document.getElementById('catalystDialog').classList.remove('show')
+    catStopPoll()
   }
   // 取消尚未完成的 AI 分析：递增序号让旧响应失效，并中断请求
   function catCancelAnalysis () {
@@ -3566,6 +3870,7 @@
       catAnalyzeAbort = null
     }
     catBusy = false
+    catStopPoll()
   }
   function catApi (path, opts) {
     return fetch(CAT_API + path, opts || {}).then(function (r) {
@@ -3575,6 +3880,99 @@
       return d
     })
   }
+  // ===== 模型优先级配置（保存在浏览器 localStorage，随分析请求下发；服务端链兑底） =====
+  const CAT_PROVIDERS_KEY = 'cat_llm_providers_v1'
+  let catModelRows = []
+
+  function loadCatProviders () {
+    try {
+      const v = JSON.parse(localStorage.getItem(CAT_PROVIDERS_KEY) || '[]')
+      return Array.isArray(v) ? v.filter(function (p) { return p && p.base && p.key && p.models }) : []
+    } catch (e) { return [] }
+  }
+
+  function renderCatModelRows () {
+    const box = document.getElementById('catModelRows')
+    box.innerHTML = ''
+    if (!catModelRows.length) {
+      box.innerHTML = '<div class="cat-empty">未配置 —— 使用服务端默认链（移动云 glm-5.3 → 智谱 glm-4 → OpenRouter）</div>'
+      return
+    }
+    catModelRows.forEach(function (p, i) {
+      const row = document.createElement('div')
+      row.className = 'cmp-row'
+      row.innerHTML =
+        '<input class="cmp-label" placeholder="名称" maxlength="20">' +
+        '<input class="cmp-base" placeholder="API 地址 https://…" autocomplete="off">' +
+        '<input class="cmp-key" type="password" placeholder="密钥" autocomplete="new-password">' +
+        '<input class="cmp-models" placeholder="模型名（逗号分隔）" autocomplete="off">' +
+        '<span class="cmp-ops">' +
+        '<button type="button" class="cmp-op" data-op="up" data-i="' + i + '" title="上移">↑</button>' +
+        '<button type="button" class="cmp-op" data-op="down" data-i="' + i + '" title="下移">↓</button>' +
+        '<button type="button" class="cmp-op" data-op="del" data-i="' + i + '" title="删除">✕</button>' +
+        '</span>'
+      row.querySelector('.cmp-label').value = p.label || ''
+      row.querySelector('.cmp-base').value = p.base || ''
+      row.querySelector('.cmp-key').value = p.key || ''
+      row.querySelector('.cmp-models').value = Array.isArray(p.models) ? p.models.join(',') : (p.models || '')
+      box.appendChild(row)
+    })
+  }
+
+  function catModelRowValues () {
+    return Array.prototype.map.call(document.querySelectorAll('#catModelRows .cmp-row'), function (row) {
+      return {
+        label: row.querySelector('.cmp-label').value.trim(),
+        base: row.querySelector('.cmp-base').value.trim(),
+        key: row.querySelector('.cmp-key').value.trim(),
+        models: row.querySelector('.cmp-models').value.trim(),
+      }
+    }).filter(function (p) { return p.base && p.key && p.models })
+  }
+
+  function openCatModelPanel () {
+    catModelRows = loadCatProviders()
+    renderCatModelRows()
+    document.getElementById('catModelPanel').hidden = false
+  }
+
+  function bindCatModelPanel () {
+    document.getElementById('catModelBtn').onclick = openCatModelPanel
+    document.getElementById('catModelClose').onclick = function () { document.getElementById('catModelPanel').hidden = true }
+    document.getElementById('catModelAdd').onclick = function () {
+      catModelRows = catModelRowValues()
+      catModelRows.push({ label: '', base: '', key: '', models: '' })
+      renderCatModelRows()
+    }
+    document.getElementById('catModelSave').onclick = function () {
+      catModelRows = catModelRowValues()
+      localStorage.setItem(CAT_PROVIDERS_KEY, JSON.stringify(catModelRows))
+      renderCatModelRows()
+      document.getElementById('catModelPanel').hidden = true
+      document.getElementById('catMsg').textContent = '模型优先级已保存（' + catModelRows.length + ' 个通道）'
+    }
+    document.getElementById('catModelClear').onclick = function () {
+      localStorage.removeItem(CAT_PROVIDERS_KEY)
+      catModelRows = []
+      renderCatModelRows()
+      document.getElementById('catMsg').textContent = '已清空，将使用服务端默认链'
+    }
+    document.getElementById('catModelRows').addEventListener('click', function (e) {
+      const op = e.target.closest('.cmp-op')
+      if (!op) return
+      catModelRows = catModelRowValues()
+      const i = Number(op.getAttribute('data-i'))
+      if (op.getAttribute('data-op') === 'up' && i > 0) {
+        const t = catModelRows[i - 1]; catModelRows[i - 1] = catModelRows[i]; catModelRows[i] = t
+      } else if (op.getAttribute('data-op') === 'down' && i < catModelRows.length - 1) {
+        const t = catModelRows[i + 1]; catModelRows[i + 1] = catModelRows[i]; catModelRows[i] = t
+      } else if (op.getAttribute('data-op') === 'del') {
+        catModelRows.splice(i, 1)
+      }
+      renderCatModelRows()
+    })
+  }
+
   function catEsc (s) {
     return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]
@@ -3674,8 +4072,18 @@
     })
     loadCatEvents(true)
   }
+  // 网络来源角标：[H]/[T]/[P]/[W#] 渲染成可悬浮的上标，图例来自响应 sourceLegend
+  function withRefs (text, legendMap) {
+    return catEsc(String(text || '')).replace(/\[([HTP]|W\d+)\]/g, function (m, ref) {
+      const info = legendMap && legendMap[ref]
+      return '<sup class="cat-ref"' + (info ? ' title="' + catEsc(info) + '"' : '') + '>[' + ref + ']</sup>'
+    })
+  }
+
   function renderCatDetail (d) {
     const detail = document.getElementById('catDetail')
+    const legendMap = {}
+    ;(d.sourceLegend || []).forEach(function (s) { legendMap[s.ref] = s.label })
     const layers = (d.layers || []).map(function (l) {
       let items
       if (Number(l.level) === 3) {
@@ -3684,7 +4092,8 @@
         items = '<ul>' + bs + '</ul>' + (cs ? '<div class="cat-falsifier">载体标准：' + catEsc(cs) + '</div>' : '')
       } else {
         items = '<ul>' + (l.targets || []).map(function (t) {
-          return '<li>' + catEsc(t.board) + '（' + catEsc(t.direction) + '）：' + catEsc(t.logic) + '</li>'
+          return '<li>' + catEsc(t.board) + '（' + catEsc(t.direction) + '）：' + catEsc(t.logic) +
+            (t.onlineSignal ? '<div class="cat-online">网络呼应：' + withRefs(t.onlineSignal, legendMap) + '</div>' : '') + '</li>'
         }).join('') + '</ul>'
       }
       return '<div class="cat-layer"><h4>' + catEsc(l.level) + '. ' + catEsc(l.name) + '</h4>' + items + '</div>'
@@ -3707,22 +4116,182 @@
             (s.context ? '：' + catEsc(s.context) : '') + '</li>'
         }).join('') + '</ul>'
       : ''
+    // 网络情绪块（轮 A 产出；无数据不占行）
+    const s = d.sentiment || null
+    const sentimentBlock = s && (s.heatLevel != null || s.bias || s.momentum)
+      ? '<div class="cat-falsifier">网络情绪：' + [
+          s.heatLevel != null ? '热度 ' + catEsc(s.heatLevel) : '',
+          s.bias ? '倾向 ' + catEsc(s.bias) : '',
+          s.momentum || '',
+        ].filter(Boolean).join(' ｜') +
+        ((s.keyPosts || []).length ? ' ｜ 话题：' + withRefs(s.keyPosts.slice(0, 5).join('、'), legendMap) : '') +
+        (s.evidence ? ' ｜ 依据：' + withRefs(s.evidence, legendMap) : '') + '</div>'
+      : ''
+    // 载体共振块（轮 B 产出；无数据不占行）
+    const carriers = d.carrierAnalysis || []
+    const carrierBlock = carriers.length
+      ? '<h4 style="margin:12px 0 0;font-size:12px;color:var(--accent);">载体共振（与网络热点）</h4><ul>' +
+        carriers.map(function (c) {
+          return '<li>' + catEsc(c.target) + ' — 共振 ' + (c.resonance != null ? catEsc(c.resonance) : '--') +
+            '（' + catEsc(c.stage || '--') + '）' +
+            ((c.matchedTopics || []).length ? '｜话题：' + withRefs(c.matchedTopics.join('、'), legendMap) : '') +
+            (c.risk ? '｜风险：' + withRefs(c.risk, legendMap) : '') + '</li>'
+        }).join('') + '</ul>'
+      : ''
+    // 来源角标图例（与响应 sourceLegend 对应；无角标不占行）
+    const legendArr = d.sourceLegend || []
+    const legendBlock = legendArr.length
+      ? '<div class="cat-falsifier">来源角标：' + legendArr.map(function (x) {
+          return '<span class="cat-ref">[' + catEsc(x.ref) + ']</span> ' + catEsc(x.label)
+        }).join(' ｜ ') + '</div>'
+      : ''
     const conf = typeof d.confidence === 'number' ? (d.confidence * 100).toFixed(0) + '%' : 'n/a'
     detail.innerHTML =
       '<h4 style="margin:0 0 8px;font-size:13px;">' + catEsc((d.event && d.event.summary) || (catCurrent && catCurrent.title) || '分析结果') +
       '<span class="meta" style="font-size:11px;color:var(--muted);font-weight:normal;"> · ' + catEsc(d.type || '') + ' · 置信度 ' + conf + '</span></h4>' +
       layers +
+      sentimentBlock +
       stockBlock +
       '<div class="cat-falsifier">逻辑削弱条件：' + catEsc(d.falsifier || '未给出') + '</div>' +
       '<h4 style="margin:12px 0 0;font-size:12px;color:var(--accent);">候选标的（按资金确认状态）</h4>' + table +
+      carrierBlock +
+      legendBlock +
       '<div class="cat-falsifier">模型：' + catEsc(d.model || '') +
       (d.cached ? ' · 缓存结果（' + catEsc(d.cachedAt || '') + '）' : '') + '</div>'
     document.getElementById('catPush').disabled = false
     document.getElementById('catReanalyze').disabled = false
     document.getElementById('catMsg').textContent = '分析仅供参考，非买卖建议'
   }
+  // ===== 异步任务队列：提交、轮询、任务列表 =====
+  function catStopPoll () {
+    if (catPollTimer) { clearInterval(catPollTimer); catPollTimer = null }
+    catPollId = ''
+  }
+  function catShowView (view) {
+    catTaskTab = view
+    document.querySelectorAll('.cat-view-tab').forEach(function (b) {
+      b.classList.toggle('is-active', b.getAttribute('data-view') === view)
+    })
+    document.getElementById('catDetail').hidden = view !== 'detail'
+    const list = document.getElementById('catTaskList')
+    list.hidden = view !== 'tasks'
+    if (view === 'tasks') catLoadTaskList()
+  }
+  function catLoadTaskList () {
+    const box = document.getElementById('catTaskList')
+    box.innerHTML = '<div class="cat-loading"><span class="cat-spinner"></span>加载任务列表…</div>'
+    catApi('/api/analyze/tasks?limit=50').then(function (d) {
+      const tasks = d.tasks || []
+      const running = tasks.filter(function (t) { return t.status === 'running' || t.status === 'queued' })
+      const finished = tasks.filter(function (t) { return t.status !== 'running' && t.status !== 'queued' })
+      const labels = { queued: '排队中', running: '运行中', done: '已完成', failed: '失败', cancelled: '已取消' }
+      const item = function (t) {
+        const title = catEsc(String(t.title || t.eventKey || '').slice(0, 60))
+        return '<div class="cat-task-item" data-id="' + catEsc(t.id) + '">' +
+          '<div class="t"><span class="cat-task-status st-' + catEsc(t.status) + '">' + (labels[t.status] || catEsc(t.status)) + '</span>' + title + '</div>' +
+          '<div class="m">' + catEsc(t.createdAt || '') + (t.error ? ' · ' + catEsc(String(t.error).slice(0, 80)) : '') + '</div></div>'
+      }
+      box.innerHTML =
+        '<div class="cat-task-group-title">运行中 / 排队中（' + running.length + '）</div>' +
+        (running.length ? running.map(item).join('') : '<div class="cat-task-hint">暂无运行中的任务</div>') +
+        '<div class="cat-task-group-title">已完成 / 失败（' + finished.length + '）</div>' +
+        (finished.length ? finished.map(item).join('') : '<div class="cat-task-hint">暂无历史任务</div>')
+      box.querySelectorAll('.cat-task-item').forEach(function (el) {
+        el.addEventListener('click', function () { catOpenTask(el.getAttribute('data-id')) })
+      })
+    }).catch(function (err) {
+      box.innerHTML = '<div class="cat-empty">任务列表加载失败：' + catEsc(err.message) + '</div>'
+    })
+  }
+  function catOpenTask (id) {
+    catApi('/api/analyze/tasks/' + encodeURIComponent(id)).then(function (d) {
+      const t = d.task
+      if (t.status === 'done' && t.result) {
+        catResult = t.result
+        catShowView('detail')
+        renderCatDetail(t.result)
+      } else {
+        document.getElementById('catMsg').textContent = '任务状态：' + t.status + (t.error ? ' · ' + String(t.error).slice(0, 120) : '')
+      }
+    }).catch(function (err) {
+      document.getElementById('catMsg').textContent = '读取任务失败：' + err.message
+    })
+  }
+  function renderCatProgress (p, detail) {
+    if (!p || typeof p !== 'object') return false
+    const steps = Array.isArray(p.steps) ? p.steps : []
+    const thinking = String(p.thinking || '')
+    if (!steps.length && !thinking) return false
+    const prev = detail.querySelector('.cat-thinking')
+    const wasOpen = prev ? prev.open : false
+    const prevBody = prev ? prev.querySelector('.cat-thinking-body') : null
+    const atBottom = !prevBody || (prevBody.scrollHeight - prevBody.scrollTop - prevBody.clientHeight < 40)
+    const clsMap = { running: 'st-running', done: 'st-done', failed: 'st-failed', cancelled: 'st-cancelled' }
+    const textMap = { running: '进行中', done: '完成', failed: '失败', cancelled: '已取消' }
+    const html = ['<div class="cat-progress">',
+      '<div class="cat-progress-head"><span class="cat-spinner"></span>后台分析中…</div>',
+      '<ul class="cat-steps">']
+    for (const s of steps) {
+      const status = s.status || 'wait'
+      html.push('<li class="cat-step ' + (status === 'running' ? 'is-running' : status === 'done' ? 'is-done' : '') + '">' +
+        '<span class="cat-step-label">' + catEsc(s.label || s.key || '') + '</span>' +
+        '<span class="cat-task-status ' + (clsMap[status] || '') + '">' + (textMap[status] || catEsc(status)) + '</span>' +
+        (s.ms ? '<span class="cat-step-ms">' + Math.round(s.ms / 1000) + 's</span>' : '') +
+        '</li>')
+    }
+    html.push('</ul>')
+    if (thinking) {
+      html.push('<details class="cat-thinking"><summary>思考过程 · 已记录 ' + thinking.length + ' 字</summary>' +
+        '<div class="cat-thinking-body">' + catEsc(thinking) + '</div></details>')
+    }
+    html.push('</div>')
+    detail.innerHTML = html.join('')
+    const now = detail.querySelector('.cat-thinking')
+    if (now) {
+      if (wasOpen) now.open = true
+      const body = now.querySelector('.cat-thinking-body')
+      if (body && atBottom) body.scrollTop = body.scrollHeight
+    }
+    return true
+  }
+  function catStartPoll (id, seq, detail) {
+    catStopPoll()
+    catPollId = id
+    const poll = function () {
+      catApi('/api/analyze/tasks/' + encodeURIComponent(id)).then(function (d) {
+        if (seq !== catAnalyzeSeq) { catStopPoll(); return }
+        const t = d.task
+        if (t.status === 'done') {
+          catStopPoll()
+          catBusy = false
+          catResult = t.result
+          catShowView('detail')
+          renderCatDetail(t.result)
+        } else if (t.status === 'cancelled') {
+          catStopPoll()
+          catBusy = false
+          detail.innerHTML = '<div class="cat-empty">该任务已被同一消息的新任务取代</div>'
+        } else if (t.status === 'failed') {
+          catStopPoll()
+          catBusy = false
+          detail.innerHTML = '<div class="cat-empty">分析失败：' + catEsc(t.error || '未知错误') + '</div>'
+          document.getElementById('catReanalyze').disabled = !catResult
+        } else {
+          if (!renderCatProgress(t.progress, detail)) {
+            detail.innerHTML = '<div class="cat-loading"><span class="cat-spinner"></span>' +
+              (t.status === 'queued' ? '排队中' : '后台分析中') + '（任务 ' + catEsc(id.slice(0, 8)) + '…）…</div>'
+          }
+        }
+      }).catch(function (err) {
+        // 网络抖动不终止轮询，下一轮继续
+        console.warn('[task] 轮询失败', err)
+      })
+    }
+    poll()
+    catPollTimer = setInterval(poll, 800)
+  }
   function analyzeCatEvent (idx, refresh) {
-    // 同一事件重复点击直接忽略；切换事件则取消上一个请求，只保留最后一次分析
+    // 同一事件重复点击直接忽略；切换事件以服务端 eventKey 取消旧任务为准
     if (catBusy && idx === catCurrentIdx && !refresh) return
     const event = catEvents[idx]
     if (!event) return
@@ -3730,35 +4299,28 @@
     catCurrent = event
     catCurrentIdx = idx
     const seq = catAnalyzeSeq
-    const controller = new AbortController()
-    catAnalyzeAbort = controller
     catBusy = true
     document.querySelectorAll('.cat-event').forEach(function (el) {
       el.classList.toggle('is-active', Number(el.getAttribute('data-idx')) === idx)
     })
+    catShowView('detail')
     const detail = document.getElementById('catDetail')
-    detail.innerHTML = '<div class="cat-empty">' +
-      (refresh ? '重新分析中（约 30-90 秒）…' : 'AI 多阶分析中（首次较慢，约 30-90 秒）…') + '</div>'
+    detail.innerHTML = '<div class="cat-loading"><span class="cat-spinner"></span>任务提交中…</div>'
     document.getElementById('catPush').disabled = true
     document.getElementById('catReanalyze').disabled = true
-    catApi('/api/analyze', {
+    catApi('/api/analyze/tasks', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ event: catCurrent, refresh: !!refresh }),
-      signal: controller.signal
+      body: JSON.stringify({ event: catCurrent, refresh: !!refresh, providers: loadCatProviders() })
     }).then(function (d) {
       if (seq !== catAnalyzeSeq) return
-      catResult = d
-      renderCatDetail(d)
+      detail.innerHTML = '<div class="cat-loading"><span class="cat-spinner"></span>任务已入队（' +
+        catEsc(String(d.taskId).slice(0, 8)) + '…），后台分析中…</div>'
+      catStartPoll(d.taskId, seq, detail)
     }).catch(function (err) {
-      if (seq !== catAnalyzeSeq || (err && err.name === 'AbortError')) return
-      detail.innerHTML = '<div class="cat-empty">分析失败：' + catEsc(err.message) + '</div>'
-      document.getElementById('catMsg').textContent = '分析失败，请稍后重试'
+      if (seq !== catAnalyzeSeq) return
+      catBusy = false
+      detail.innerHTML = '<div class="cat-empty">任务提交失败：' + catEsc(err.message) + '</div>'
       document.getElementById('catReanalyze').disabled = !catResult
-    }).finally(function () {
-      if (seq === catAnalyzeSeq) {
-        catBusy = false
-        catAnalyzeAbort = null
-      }
     })
   }
   function openCatDialog (e) {
@@ -3767,8 +4329,11 @@
     placeCatDialog()
     loadCatEvents(true)
   }
-  $(document).on('click', '#catalystEntry', openCatDialog)
+  $(document).on('click', '.cat-view-tab', function () {
+    catShowView($(this).attr('data-view'))
+  })
   $('#catalystBtn').on('click', openCatDialog)
+  bindCatModelPanel()
   $(document).on('click', '.cat-toggle', function (ev) {
     ev.preventDefault(); ev.stopPropagation()
     const i = $(this).attr('data-toggle')

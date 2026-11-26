@@ -60,12 +60,18 @@ export function dbConfig() {
 export function llmSettings() {
   const key = pick('CATALYST_LLM_KEY', ['llm', 'key'])
   if (!key) throw new Error('未找到 API Key：请配置 ' + CONFIG_FILE + ' 的 llm.key，或设置 CATALYST_LLM_KEY')
+  const samples = Number(pick('CATALYST_SAMPLES', ['llm', 'samples'], 1))
+  const temperature = Number(pick('CATALYST_TEMPERATURE', ['llm', 'temperature'], 0.2))
   return {
     key,
     base: pick('CATALYST_LLM_BASE', ['llm', 'base'], 'https://open.bigmodel.cn/api/paas/v4'),
     models: String(pick('CATALYST_MODELS', ['llm', 'models'], 'glm-4-flash'))
       .split(',').map((s) => s.trim()).filter(Boolean),
     timeout: Number(pick('CATALYST_LLM_TIMEOUT', ['llm', 'timeout'], 120000)),
+    // 同模型多次采样：默认 1 次 + temperature 0.2，保持原有单结果行为；
+    // 调试多样性时设 samples=3~5、temperature=0.8~1.2。
+    samples: Number.isFinite(samples) && samples >= 1 ? Math.floor(samples) : 1,
+    temperature: Number.isFinite(temperature) ? temperature : 0.2,
   }
 }
 

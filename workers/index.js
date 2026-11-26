@@ -11,8 +11,10 @@
 import { handleDbRequest } from './db.js'
 import { handleKlineRequest } from './kline.js'
 import { handleIntradayRequest } from './intraday.js'
+import { handleSuggestRequest } from './suggest.js'
 import { handleFeatRequest } from './feat.js'
 import { handleAnalyze } from './analyze/index.mjs'
+import { handleSubmitTask, handleListTasks, handleGetTask } from './analyze/queue.mjs'
 import { handlePush } from './push.js'
 import { handleEvents } from './events.js'
 import { scheduled as cronScheduled } from './cron.js'
@@ -48,6 +50,11 @@ export default {
       return handleIntradayRequest(request, env, url)
     }
 
+    // 标的检索（名称首字母 / 中文 / 代码前缀，仅 A 股；走势弹窗选标的用）
+    if (url.pathname.startsWith('/api/suggest')) {
+      return handleSuggestRequest(request, url)
+    }
+
     // 辨识度因子（K 线类现拉现算，只读）
     if (url.pathname.startsWith('/api/feat/')) {
       return handleFeatRequest(request, env, url, ctx)
@@ -58,7 +65,17 @@ export default {
       return handleEvents(request, env, url)
     }
 
-    // 催化推演：AI 多阶分析（上云；命中标的后 ctx.waitUntil 异步补拉日K入库）
+    // 催化推演：异步多阶分析任务队列（提交 / 列表 / 单任务详情）
+    if (url.pathname === '/api/analyze/tasks') {
+      return request.method === 'POST'
+        ? handleSubmitTask(request, env, ctx)
+        : handleListTasks(request, env, url)
+    }
+    if (url.pathname.startsWith('/api/analyze/tasks/')) {
+      return handleGetTask(request, env, decodeURIComponent(url.pathname.slice('/api/analyze/tasks/'.length)))
+    }
+
+    // 催化推演：AI 多阶分析（同步接口，保留兼容；命中标的后 ctx.waitUntil 异步补拉日K入库）
     if (url.pathname === '/api/analyze') {
       return handleAnalyze(request, env, ctx)
     }

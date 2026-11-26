@@ -8,7 +8,10 @@
  * 数据策略：候选池自动扫描全市场（不局限库内标的）；涨停/炸板池按 date 现拉，
  * 热门人气股读 hot_stock 表（每小时 Cron 聚合东财/同花顺/雪球/淘股吧四源，表空回退东财现拉），
  * 涨幅/成交额榜补充非涨停强势股（辨识度不以涨停为前提）。
- * K 线优先读 daily_bar 缓存，表内无数据时回退 push2his 现拉。名称优先读 stock_list 映射，缺失才查东财。
+ * K 线只读 daily_bar 表；缺失（候选池票几乎不在 watchlist）或过期（最新日 < 表内最晚日）的序列
+ * 由 backfill.js 在 ctx.waitUntil 里后台补全：缺失全量落表、过期增量补尾；本次响应不阻塞，
+ * 待补全时响应 pending>0 且缓存缩短到 15s，下一次请求即有值。基准与标的按日期对齐（factors.independence）。
+ * 名称优先读 stock_list 映射，缺失才查东财。
  *
  * 安全边界（沿用 db.js）：只允许 GET；代码走 6 位数字校验；codes 数量上限；
  * 带 Cache-Control 与数据截止日，明示新鲜度。
@@ -19,6 +22,7 @@ import { fetchLimitUpReasons } from './fetch/ths.js'
 import { fetchDxxThemes } from './fetch/dxx.js'
 import { HOT_SOURCES } from './fetch/hot.js'
 import { readDailyBarsBatch, readBarsWithNames, readHotStocks } from './store.js'
+import { diffBars, latestBarDate, dbCodeOf, scheduleBackfill } from './backfill.js'
 import { computeKlineFactors, FACTOR_SPEC } from './factors.js'
 
 const CODE = /^\d{6}$/
@@ -45,7 +49,7 @@ export function handleSpec() {
  * @param {string} codes 逗号分隔的 6 位标的代码
  * @param {string} bench 基准指数代码（默认 000300 沪深300）
  */
-export async function handleFactor(url, env) {
+export async function handleFactor(url, env, ctx) {
   const codesRaw = url.searchParams.get('codes') || ''
   const bench = url.searchParams.get('bench') || '000300'
 
@@ -55,8 +59,6 @@ export async function handleFactor(url, env) {
   const bad = codes.filter((c) => !CODE.test(c))
   if (bad.length) return json({ ok: false, error: `非法代码: ${bad.join(', ')}` }, 400)
   if (!CODE.test(bench)) return json({ ok: false, error: '基准指数代码需为 6 位数字' }, 400)
-
-  const benchSecid = INDEXES[bench] || stockSecid(bench)
 
   // 一次连接批量读表：基准候选 + 所有标的
   const min = FACTOR_SPEC.window.breakout + FACTOR_SPEC.window.ret + 1
@@ -72,6 +74,14 @@ export async function handleFactor(url, env) {
     // 表不可读时全部回退现拉
   }
 
+  // 缺失/过期的序列在后台补全落表（不阻塞本次响应）；本次先用表内已有数据
+  let pending = 0
+  try {
+    const plan = diffBars(tableData, [{ code: bench, adjust: 'idx' }, ...codes.map((code) => ({ code, adjust: 'raw' }))], latestBarDate(tableData), min)
+    pending = plan.missing.length + plan.stale.length
+    scheduleBackfill(env, ctx, plan.missing, plan.stale)
+  } catch { /* 补全失败不影响返回 */ }
+
   function pickTable(candidateCodes, adjust) {
     for (const c of candidateCodes) {
       const bars = tableData.get(c + '|' + adjust)
@@ -81,19 +91,18 @@ export async function handleFactor(url, env) {
   }
 
   const benchHit = pickTable(benchCandidates, 'idx')
-  const benchData = benchHit || await fetchDaily(benchSecid)
-  if (!benchData) return json({ ok: false, error: `基准 ${bench} 历史取数失败` }, 502)
+  const benchData = benchHit || await fetchDaily(INDEXES[bench] || stockSecid(bench), { attempts: 1, timeout: 4000 })
+  if (!benchData) return json({ ok: false, error: `基准 ${bench} 历史取数失败（已安排后台补全，稍后重试）`, pending }, 502)
   if (benchData && !benchData.source) benchData.source = 'live'
 
   const results = []
   for (const code of codes) {
-    const hit = pickTable([code], 'raw')
-    const data = hit || await fetchDaily(stockSecid(code))
+    const hit = pickTable([dbCodeOf(code, 'raw')], 'raw')
+    const data = hit
     if (!data) {
-      results.push({ code, ok: false, error: '历史取数失败' })
+      results.push({ code, ok: false, error: '表内无日线，已安排后台补全，稍后重试' })
       continue
     }
-    if (!data.source) data.source = 'live'
     const factors = computeKlineFactors(data.bars, benchData.bars)
     const indep = factors.independence
     const label = indep != null && indep > FACTOR_SPEC.thresholds.independence
@@ -119,6 +128,7 @@ export async function handleFactor(url, env) {
       bench,
       benchName: benchData.name || bench,
       asOf,
+      pending,
       cacheDaysHint: '情绪池类因子仅约14个日线，K线类因子全历史',
       rows: results,
     },
@@ -157,11 +167,13 @@ export async function handleCandidates(url, env, ctx) {
   const now = Date.now()
   const hit = candCache.get(key)
 
-  if (hit && now - hit.at < CAND_FRESH_MS) return cachedJson(hit.body, 'hit')
-  if (hit && now - hit.at < CAND_STALE_MS) {
+  // 待补全的响应不走 stale 复用：补全完成后下一次请求必须立即重算，否则已入库的数据还要多等一轮
+  const fresh = hit ? (hit.body.pending ? 15000 : CAND_FRESH_MS) : 0
+  if (hit && now - hit.at < fresh) return cachedJson(hit.body, 'hit')
+  if (hit && !hit.body.pending && now - hit.at < CAND_STALE_MS) {
     if (!hit.busy) {
       hit.busy = true
-      const p = computeCandidates(limit, date, env)
+      const p = computeCandidates(limit, date, env, ctx)
         .then(({ body }) => { if (body.ok) candCache.set(key, { at: Date.now(), body }) })
         .catch(() => {})
         .finally(() => { hit.busy = false })
@@ -169,18 +181,18 @@ export async function handleCandidates(url, env, ctx) {
     }
     return cachedJson(hit.body, 'stale')
   }
-  const { status, body } = await computeCandidates(limit, date, env)
+  const { status, body } = await computeCandidates(limit, date, env, ctx)
   if (body.ok) candCache.set(key, { at: Date.now(), body })
-  return json(body, status, 'public, max-age=60, s-maxage=120')
+  return json(body, status, body.pending ? 'public, max-age=15, s-maxage=15' : 'public, max-age=60, s-maxage=120')
 }
 
 function cachedJson(body, tag) {
-  const res = json(body, 200, 'public, max-age=60, s-maxage=120')
+  const res = json(body, 200, body.pending ? 'public, max-age=15, s-maxage=15' : 'public, max-age=60, s-maxage=120')
   res.headers.set('X-Cache', tag)
   return res
 }
 
-async function computeCandidates(limit, date, env) {
+async function computeCandidates(limit, date, env, ctx) {
 
   // 1. 涨停/炸板池、涨幅/成交额榜、热榜落表并行拉取；同花顺涨停解析补炒作题材
   const [zt, zb, rankUp, rankAmt, thsReasons, hotRows0] = await Promise.all([
@@ -300,29 +312,18 @@ async function computeCandidates(limit, date, env) {
   } catch { /* 回退现拉 */ }
   const dxxThemes = await dxxPromise
 
-  const benchBars = tableData.get(indexDbCode('000300') + '|idx')
-  let bench = { bars: benchBars }
-  if (!bench.bars || bench.bars.length < 90) {
-    const live = await fetchDaily(INDEXES['000300'], { attempts: 1, timeout: 4000 })
-    bench = live || { bars: [] }
-  }
-
-  // 5. 缺失 K 线并行现拉（并发 6，共享总时长预算，避免上游不通时拖垮接口）
+  // 缺失（候选池票几乎都不在 watchlist）→ 后台全量拉取落表；过期 → 后台增量补尾。
+  // 本次响应只用表内已有数据，不阻塞；下一次请求（缓存新鲜期已按 pending 缩短）即有值。
   const min = FACTOR_SPEC.window.breakout + FACTOR_SPEC.window.ret + 1
-  const liveDeadline = Date.now() + 8000
-  const liveBars = new Map()
-  const missing = candidates.filter((c) => {
-    const b = tableData.get(c.code + '|raw')
-    return !(b && b.length >= min)
-  })
-  for (let i = 0; i < missing.length; i += 6) {
-    if (Date.now() > liveDeadline) break
-    await Promise.all(missing.slice(i, i + 6).map(async (c) => {
-      if (Date.now() > liveDeadline) return
-      const live = await fetchDaily(stockSecid(c.code), { attempts: 1, timeout: 4000 })
-      if (live && live.bars.length >= min) liveBars.set(c.code, live.bars)
-    }))
-  }
+  let pending = 0
+  try {
+    const plan = diffBars(tableData, [{ code: '000300', adjust: 'idx' }, ...candidates.map((c) => ({ code: c.code, adjust: 'raw' }))], latestBarDate(tableData), min)
+    pending = plan.missing.length + plan.stale.length
+    scheduleBackfill(env, ctx, plan.missing, plan.stale)
+  } catch { /* 补全失败不影响返回 */ }
+
+  const benchKey = indexDbCode('000300') + '|idx'
+  const bench = { bars: tableData.get(benchKey) || [] }
 
   // 名称兜底并行补齐（stock_list 与池内名称都缺的少数标的）
   const needName = candidates.filter((c) => !names.get(c.code) && !c.name)
@@ -331,17 +332,16 @@ async function computeCandidates(limit, date, env) {
     if (n) names.set(c.code, n)
   }))
 
-  // 6. 逐标的算 K 线因子（表缓存优先，其次现拉结果）
+  // 5. 逐标的算 K 线因子（只用表内数据；基准与标的按日期对齐，见 factors.independence）
   const rows = []
   for (const c of candidates) {
-    let bars = tableData.get(c.code + '|raw')
-    let source = bars && bars.length >= min ? 'table' : null
-    if (!source && liveBars.has(c.code)) { bars = liveBars.get(c.code); source = 'live' }
+    const bars = tableData.get(c.code + '|raw')
+    const source = bars && bars.length >= min ? 'table' : null
     const name = names.get(c.code) || c.name || ''
 
-    const factors = bars && bench.bars && bench.bars.length >= min
+    const factors = bars && bars.length >= min && bench.bars.length >= min
       ? computeKlineFactors(bars, bench.bars)
-      : { breakout60: null, ret20: null, std20: null, independence: null, asOf: null }
+      : { breakout60: null, ret20: null, std20: null, independence: null, asOf: bars && bars.length ? bars[bars.length - 1].date : null }
     const indep = factors.independence
     const label = indep != null && indep > FACTOR_SPEC.thresholds.independence
       ? '独立走势'
@@ -383,6 +383,7 @@ async function computeCandidates(limit, date, env) {
       asOf,
       scanned: { zt: zt.length, zb: zb.length, hot: hotAgg.size, strong: strongPicked, hotBySource, hotFallback },
       hotAsOf,
+      pending,
       count: rows.length,
       rows,
     },
@@ -393,7 +394,7 @@ export async function handleFeatRequest(request, env, url, ctx) {
   if (request.method !== 'GET') return json({ ok: false, error: '仅支持 GET' }, 405)
 
   if (url.pathname === '/api/feat/spec') return handleSpec()
-  if (url.pathname === '/api/feat/factor') return await handleFactor(url, env)
+  if (url.pathname === '/api/feat/factor') return await handleFactor(url, env, ctx)
   if (url.pathname === '/api/feat/candidates') return await handleCandidates(url, env, ctx)
 
   return json({ ok: false, error: '未知接口。可用：/api/feat/factor、/api/feat/candidates、/api/feat/spec' }, 404)

@@ -15,8 +15,9 @@
 import express from 'express'
 import { collectEvents } from './sources.mjs'
 import { classifyEvent, buildMessages } from './templates.mjs'
-import { reasonEvent } from './llm.mjs'
+import { reasonEventSampled } from './llm.mjs'
 import { fetchConceptBoards, matchBoard, fetchZTPool, fetchMainFlow, mapAndConfirm } from './mapping.mjs'
+import { FALLBACK_BOARDS } from '../../workers/analyze/templates.mjs'
 import { renderCard } from './card.mjs'
 import { pushToGroup } from './push.mjs'
 import { appendFeedback, readFeedback } from './feedback.mjs'
@@ -41,6 +42,7 @@ async function marketData () {
   if (cache.market && Date.now() - cache.market.ts < TTL.market) return cache.market.data
   let boards = []
   try { boards = await fetchConceptBoards() } catch (err) { console.warn('[catalyst] 板块数据降级为空:', err.message) }
+  if (!boards || !boards.length) boards = FALLBACK_BOARDS
   let ztMap = new Map(); let flowMap = new Map()
   try { ztMap = await fetchZTPool(new Date().toISOString().slice(0, 10)) } catch { /* 降级为空 */ }
   try { flowMap = await fetchMainFlow() } catch { /* 降级为空 */ }
@@ -75,15 +77,19 @@ app.post('/api/analyze', async (req, res) => {
     if (!event || !(event.title || event.content)) {
       return res.status(400).json({ ok: false, error: '缺少 event.title / event.content' })
     }
-    const key = keyOf(event)
+    // 调试参数：samples=采样次数（默认 1），temperature=采样温度（默认取配置），refresh=true 绕过缓存
+    const samples = Math.max(1, Number(req.body.samples) || 1)
+    const temperature = Number.isFinite(Number(req.body.temperature)) ? Number(req.body.temperature) : undefined
+    const refresh = req.body.refresh === true || req.body.force === true
+    const key = keyOf(event) + ':' + samples + ':' + (temperature == null ? 'default' : temperature)
     const hit = cache.analysis.get(key)
-    if (hit && Date.now() - hit.ts < 6 * 60 * 60 * 1000) {
+    if (!refresh && hit && Date.now() - hit.ts < 6 * 60 * 60 * 1000) {
       return res.json({ ok: true, cached: true, ...hit.data })
     }
     const classified = classifyEvent(event.title || event.content)
     const { boardNames, boards, ztMap, flowMap } = await marketData()
     const messages = buildMessages(event, boardNames, classified)
-    const result = await reasonEvent(messages)
+    const result = await reasonEventSampled(messages, { samples, temperature })
     const boardSet = []
     for (const layer of result.layers || []) {
       const names = layer.level === 3
@@ -106,8 +112,17 @@ app.post('/api/analyze', async (req, res) => {
       candidates,
       card,
       model: result._model || '',
+      // 多样性调试观测点：每次样本的 board 集合 + 样本间平均 Jaccard 距离
+      samples: result._samples || [],
+      diversity: result._diversity ?? 0,
+      sampleCount: samples,
+      temperature: temperature == null ? '默认' : temperature,
     }
     cache.analysis.set(key, { ts: Date.now(), data })
+    console.log(`[analyze] 模型=${data.model} 采样=${samples} 多样性=${data.diversity}`)
+    for (const s of data.samples) {
+      console.log(`  #${s.index} conf=${s.confidence} boards=${s.boards.join('、')}`)
+    }
     res.json({ ok: true, cached: false, ...data })
   } catch (err) {
     res.status(500).json({ ok: false, error: String(err.message || err).slice(0, 400), raw: err.raw ? String(err.raw).slice(0, 600) : undefined })

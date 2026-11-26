@@ -5,7 +5,7 @@
  * 本模块只做计算，不取数、不写库；输入为日线 bars 数组（date/open/close/high/low/volume/amount）。
  *
  * 对拍约定：收益用前复权口径；std 采用样本标准差 ddof=1（与 pandas 默认一致）；
- * 前高突破不含当日自身。
+ * 前高突破不含当日自身；独立性按标的最后日期对齐基准，基准过期则返回 null。
  */
 
 /**
@@ -105,14 +105,23 @@ export function stdN(bars, n = FACTOR_SPEC.window.std) {
 
 /**
  * 指数独立性：(标的 n 日收益 - 基准 n 日收益) / 标的 n 日收益标准差
+ *
+ * 日期对齐：基准只取「 ≤ 标的最后日期」的 bars，保证两边窗口同日结束；
+ * 基准覆盖不到标的最后日期（基准表内过期）时返回 null，避免两段错位相减出假值。
  * @param {Array} stockBars 标的日线
  * @param {Array} indexBars 基准指数日线
  * @param {number} n 日线根数，默认 20
  * @returns {number|null}
  */
 export function independence(stockBars, indexBars, n = FACTOR_SPEC.window.ret) {
+  if (!Array.isArray(stockBars) || !stockBars.length) return null
+  const stockLast = String(stockBars[stockBars.length - 1].date).slice(0, 10)
+  const aligned = Array.isArray(indexBars)
+    ? indexBars.filter((b) => String(b.date).slice(0, 10) <= stockLast)
+    : []
+  if (!aligned.length || String(aligned[aligned.length - 1].date).slice(0, 10) < stockLast) return null
   const rs = retN(stockBars, n)
-  const ri = retN(indexBars, n)
+  const ri = retN(aligned, n)
   const sd = stdN(stockBars, n)
   if (rs == null || ri == null || sd == null || sd === 0) return null
   return (rs - ri) / sd

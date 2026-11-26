@@ -1,7 +1,8 @@
 /**
  * 日线落表模块（Cloudflare Workers）
  *
- * 写入只发生在 Cron 处理器内；HTTP 层仍保持只读（见 feat.js / db.js / kline.js）。
+ * 写入只发生在后台任务（Cron 处理器，或读接口通过 ctx.waitUntil 调度的 backfill.js 补全）；
+ * HTTP 响应本身只用表内已有数据，不阻塞等待写库。
  * 表结构：主键 (code, adjust, trade_date)。
  *
  * 口径约定（本系统）：
@@ -21,6 +22,12 @@ const UPSERT_SQL =
 async function connect(env) {
   const opts = connectionOptions(env)
   if (!opts) throw new Error('未配置数据库连接（HYPERDRIVE 或 DB_* / MYSQL_*）')
+  // DB_* 直连模式返回 { uri, ssl, ... }：uri 必须作为 createConnection 的独立参数传入，
+  // 否则 mysql2 不认 uri 键（会连到默认 localhost 且不走 TLS）；Hyperdrive 分支已是对象形态
+  if (opts && typeof opts.uri === 'string') {
+    const { uri, ...rest } = opts
+    return createConnection(uri, rest)
+  }
   return createConnection(opts)
 }
 
