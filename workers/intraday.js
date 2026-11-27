@@ -36,19 +36,23 @@ function json(body, status = 200, cache = 'no-store') {
   })
 }
 
-/** 上游偶发断连，重试一次更稳 */
+/** 上游偶发 502/断连：双节点轮换 + 退避重试，重试绕过 CF 缓存避免命中缓存的错误响应 */
 async function fetchWithRetry (url, init, attempts) {
-  const total = attempts || 2
+  const total = attempts || 4
   let lastErr = null
   for (let i = 0; i < total; i++) {
     try {
-      const res = await fetch(url, init)
+      // push2 偶发 502；push2his 提供同一 trends2/kline 接口（单日含竞价段），可作备节点
+      const target = i % 2 === 0 ? url : url.replace('push2.eastmoney.com', 'push2his.eastmoney.com')
+      const res = await fetch(target, i === 0 ? init : { ...init, cache: 'no-store' })
       if (res.ok) return res
       lastErr = new Error('上游返回 ' + res.status)
+      // cacheEverything 会把 502 一并缓存，清掉避免后续请求持续命中错误响应
+      try { await caches.default.delete(url) } catch {}
     } catch (err) {
       lastErr = err
     }
-    if (i < total - 1) await new Promise((r) => setTimeout(r, 250))
+    if (i < total - 1) await new Promise((r) => setTimeout(r, 300 * (i + 1)))
   }
   throw lastErr || new Error('上游请求失败')
 }
